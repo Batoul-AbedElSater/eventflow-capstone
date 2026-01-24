@@ -1,0 +1,15 @@
+/* EventFlow Color Palette */
+:root {
+    /* Primary Colors */
+    --onyx: #070C02;
+    --ivory: #FCFFF2;
+    --white: #FFFFFF;
+    --beige: #F0F0D8;
+    --ebony: #586041;
+    
+    /* Status Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+}
