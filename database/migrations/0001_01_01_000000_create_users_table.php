@@ -11,22 +11,35 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // USERS TABLE - Modified for EventFlow
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            
+            // Required fields
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['client', 'planner'])->default('client');
+            $table->string('phone')->unique(); // Added: Required phone
+            
+            // Optional fields
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('avatar_url')->nullable(); // Added: Profile picture
+            $table->decimal('rating_avg', 3, 2)->default(0); // Added: Average rating
+            $table->integer('review_count')->default(0); // Added: Review count
+            
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // PASSWORD RESET TOKENS TABLE
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // SESSIONS TABLE
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
