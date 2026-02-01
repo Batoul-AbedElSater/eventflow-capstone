@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
+use App\Http\Controllers\Client\EventController;
 
 // Guest routes (not logged in)
 Route::middleware('guest')->group(function () {
@@ -18,17 +20,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']); // GET method too
     
     // Client Dashboard
-    Route::prefix('client')->name('client.')->group(function () {
-        Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
-        
-        // Placeholder routes (we'll build these next)
-        Route::get('/events', fn() => 'Events page coming soon')->name('events.index');
-        Route::get('/events/create', fn() => 'Create event coming soon')->name('events.create');
-        Route::get('/events/{id}', fn() => 'Event details coming soon')->name('events.show');
-        Route::get('/messages', fn() => 'Messages coming soon')->name('messages');
-        Route::get('/profile', fn() => 'Profile coming soon')->name('profile');
-        Route::get('/settings', fn() => 'Settings coming soon')->name('settings');
-    });
+Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    
+    // Event routes
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
+    
+    // Placeholder routes
+    Route::get('/messages', fn() => 'Messages coming soon')->name('messages');
+    Route::get('/profile', fn() => 'Profile coming soon')->name('profile');
+    Route::get('/settings', fn() => 'Settings coming soon')->name('settings');
+});
     
     // Planner Dashboard (placeholder)
     Route::get('/planner/dashboard', function () {
