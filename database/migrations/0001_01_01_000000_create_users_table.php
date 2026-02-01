@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['client', 'planner'])->default('client');
-            $table->string('phone')->unique(); // Added: Required phone
+            $table->string('phone')->nullable(); // Added: Required phone
             
             // Optional fields
             $table->timestamp('email_verified_at')->nullable();
