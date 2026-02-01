@@ -72,7 +72,7 @@ class EventController extends Controller
             'location_text' => $validated['location_text'],
             'guest_estimate' => $validated['guest_estimate'],
             'budget_overall' => $validated['budget_overall'],
-            'status' => 'planning',
+            'status' => 'draft',
         ]);
 
         // TODO: Store RSVP deadline and guest list lock in event settings table (future)

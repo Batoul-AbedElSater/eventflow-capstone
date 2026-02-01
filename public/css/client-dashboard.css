@@ -567,6 +567,10 @@ body {
     font-weight: 600;
     text-transform: uppercase;
 }
+.badge.purple {
+    background: rgba(144, 19, 254, 0.1);
+    color: #9013FE;
+}
 
 .badge.blue {
     background: rgba(74, 144, 226, 0.1);

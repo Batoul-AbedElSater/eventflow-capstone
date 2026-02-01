@@ -110,12 +110,14 @@
                             {{ $event->eventType->name === 'Wedding' ? '💒' : '🎉' }}
                         </div>
                         <div class="event-status">
-                            @if($event->status === 'planning')
-                                <span class="badge blue">Planning</span>
+                            @if($event->status === 'draft')
+                                <span class="badge blue">Draft</span>
+                            @elseif($event->status === 'planned')
+                                <span class="badge green">Planned</span>
                             @elseif($event->status === 'in_progress')
-                                <span class="badge green">Active</span>
+                                <span class="badge gray">In Progress</span>
                             @elseif($event->status === 'completed')
-                                <span class="badge gray">Completed</span>
+                                <span class="badge purple">Completed</span>
                             @else
                                 <span class="badge red">Cancelled</span>
                             @endif

@@ -25,7 +25,7 @@ class DashboardController extends Controller
         // Calculate quick stats
         $stats = [
             'total_events' => $events->count(),
-            'active_events' => $events->whereIn('status', ['planning', 'in_progress'])->count(),
+            'active_events' => $events->whereIn('status', ['draft', 'planned', 'in_progress'])->count(),
             'total_guests' => $events->sum(fn($e) => $e->guests->count()),
             'total_rsvp' => $events->sum(fn($e) => $e->guests->whereIn('rsvp_status', ['accepted', 'declined'])->count()),
         ];
