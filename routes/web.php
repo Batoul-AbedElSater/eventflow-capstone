@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\EventController;
+use App\Http\Controllers\Client\GuestController;
 
 // Guest routes (not logged in)
 Route::middleware('guest')->group(function () {
@@ -20,14 +21,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']); // GET method too
     
     // Client Dashboard
-Route::prefix('client')->name('client.')->group(function () {
+    Route::prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+
     
     // Event routes
     Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
     Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
+
+    // Guest routes (AJAX endpoints)
+    Route::post('/events/{eventId}/guests', [GuestController::class, 'store'])->name('events.guests.store');
+    Route::put('/events/{eventId}/guests/{guestId}', [GuestController::class, 'update'])->name('events.guests.update');
+    Route::delete('/events/{eventId}/guests/{guestId}', [GuestController::class, 'destroy'])->name('events.guests.destroy');
     
     // Placeholder routes
     Route::get('/messages', fn() => 'Messages coming soon')->name('messages');

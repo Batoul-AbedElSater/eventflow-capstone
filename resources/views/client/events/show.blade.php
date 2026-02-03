@@ -235,28 +235,149 @@
             </div>
 
             <!-- GUESTS TAB -->
-            <div class="tab-pane" id="guests">
-                <div class="guests-container">
-                    @if($event->guests->count() > 0)
-                        <!-- Guest stats and list will go here -->
-                        <div class="coming-soon-notice">
-                            <i class="fas fa-users"></i>
-                            <h3>Guest Management</h3>
-                            <p>You have {{ $event->guests->count() }} guests invited</p>
-                            <p class="note">Full guest management features coming in next part!</p>
-                        </div>
-                    @else
-                        <div class="empty-state">
-                            <i class="fas fa-user-plus"></i>
-                            <h3>No Guests Yet</h3>
-                            <p>Start adding guests to your event</p>
-                            <button class="btn-primary" disabled>
-                                <i class="fas fa-plus"></i> Add Guests (Coming Soon)
-                            </button>
-                        </div>
-                    @endif
+           <div class="tab-pane" id="guests">
+    <div class="guests-container">
+        
+        <!-- Guest Stats -->
+        <div class="guest-stats-bar">
+            <div class="stat-box">
+                <i class="fas fa-users"></i>
+                <div>
+                    <h4 id="total-guests">{{ $event->guests->count() }}</h4>
+                    <p>Total Invited</p>
                 </div>
             </div>
+            <div class="stat-box">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h4 id="accepted-guests">{{ $event->guests->where('rsvp_status', 'accepted')->count() }}</h4>
+                    <p>Accepted</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <i class="fas fa-times-circle"></i>
+                <div>
+                    <h4 id="declined-guests">{{ $event->guests->where('rsvp_status', 'declined')->count() }}</h4>
+                    <p>Declined</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <h4 id="pending-guests">{{ $event->guests->where('rsvp_status', 'pending')->count() }}</h4>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="guest-actions-bar">
+            <button class="btn-primary" id="add-guest-btn">
+                <i class="fas fa-plus"></i> Add Guest
+            </button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-guests" placeholder="Search guests...">
+            </div>
+            <select id="filter-rsvp" class="filter-select">
+                <option value="all">All Guests</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="declined">Declined</option>
+            </select>
+        </div>
+
+        <!-- Guest List -->
+        @if($event->guests->count() > 0)
+            <div class="guest-table-container">
+                <table class="guest-table" id="guest-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Dietary</th>
+                            <th>Plus One</th>
+                            <th>RSVP Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($event->guests as $guest)
+                            <tr data-guest-id="{{ $guest->id }}" data-rsvp="{{ $guest->rsvp_status }}">
+                                <td class="guest-name">
+                                    <div class="name-cell">
+                                        <div class="avatar">{{ strtoupper(substr($guest->name, 0, 1)) }}</div>
+                                        <span>{{ $guest->name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $guest->email }}</td>
+                                <td>{{ $guest->phone ?? '-' }}</td>
+                                <td>{{ $guest->dietary_restrictions ?? 'None' }}</td>
+                                <td>
+                                    @if($guest->plus_one_allowed)
+                                        <span class="plus-one-badge">
+                                            <i class="fas fa-check"></i> {{ $guest->plus_one_name ?? 'Yes' }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">No</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($guest->rsvp_status === 'accepted')
+                                        <span class="rsvp-badge accepted">
+                                            <i class="fas fa-check-circle"></i> Accepted
+                                        </span>
+                                    @elseif($guest->rsvp_status === 'declined')
+                                        <span class="rsvp-badge declined">
+                                            <i class="fas fa-times-circle"></i> Declined
+                                        </span>
+                                    @else
+                                        <span class="rsvp-badge pending">
+                                            <i class="fas fa-clock"></i> Pending
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon edit-guest" 
+                                                data-guest-id="{{ $guest->id }}"
+                                                data-guest-name="{{ $guest->name }}"
+                                                data-guest-email="{{ $guest->email }}"
+                                                data-guest-phone="{{ $guest->phone }}"
+                                                data-guest-dietary="{{ $guest->dietary_restrictions }}"
+                                                data-guest-plus-one="{{ $guest->plus_one_allowed ? 'true' : 'false' }}"
+                                                data-guest-plus-one-name="{{ $guest->plus_one_name }}"
+                                                data-guest-notes="{{ $guest->notes }}"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete-guest" 
+                                                data-guest-id="{{ $guest->id }}"
+                                                data-guest-name="{{ $guest->name }}"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="empty-state" id="empty-state">
+                <i class="fas fa-user-plus"></i>
+                <h3>No Guests Yet</h3>
+                <p>Start adding guests to your event</p>
+                <button class="btn-primary" id="add-first-guest-btn">
+                    <i class="fas fa-plus"></i> Add Your First Guest
+                </button>
+            </div>
+        @endif
+
+    </div>
+</div>
 
             <!-- BUDGET TAB -->
             <div class="tab-pane" id="budget">
@@ -325,6 +446,122 @@
     </div>
 
 </div>
+
+<!-- ADD/EDIT GUEST MODAL -->
+<div class="modal" id="guest-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Add Guest</h3>
+            <button class="modal-close" id="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="guest-form">
+            <input type="hidden" id="guest-id">
+            <input type="hidden" id="form-method" value="POST">
+            
+            <div class="form-grid">
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="guest-name">
+                        Name <span class="required">*</span>
+                    </label>
+                    <input type="text" id="guest-name" required>
+                    <span class="form-error" id="error-name"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="guest-email">
+                        Email <span class="required">*</span>
+                    </label>
+                    <input type="email" id="guest-email" required>
+                    <span class="form-error" id="error-email"></span>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label for="guest-phone">Phone (Optional)</label>
+                    <input type="text" id="guest-phone">
+                </div>
+
+                <!-- Dietary Restrictions -->
+                <div class="form-group">
+                    <label for="guest-dietary">Dietary Restrictions</label>
+                    <select id="guest-dietary">
+                        <option value="">None</option>
+                        <option value="Vegan">Vegan</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Gluten-Free">Gluten-Free</option>
+                        <option value="Halal">Halal</option>
+                        <option value="Kosher">Kosher</option>
+                        <option value="Allergies">Allergies (specify in notes)</option>
+                    </select>
+                </div>
+
+                <!-- Plus One Allowed -->
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="guest-plus-one">
+                        <span>Allow Plus One</span>
+                    </label>
+                </div>
+
+                <!-- Plus One Name -->
+                <div class="form-group" id="plus-one-name-group" style="display: none;">
+                    <label for="guest-plus-one-name">Plus One Name</label>
+                    <input type="text" id="guest-plus-one-name" placeholder="Guest's plus one">
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group full-width">
+                    <label for="guest-notes">Notes (Optional)</label>
+                    <textarea id="guest-notes" rows="3" placeholder="Any special notes about this guest..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <i class="fas fa-save"></i> Save Guest
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal" id="delete-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-small">
+        <div class="modal-header">
+            <h3>Delete Guest</h3>
+            <button class="modal-close" id="close-delete-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="delete-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Are you sure you want to remove <strong id="delete-guest-name"></strong>?</p>
+                <p class="note">This action cannot be undone.</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancel-delete-btn">Cancel</button>
+            <button type="button" class="btn-danger" id="confirm-delete-btn">
+                <i class="fas fa-trash"></i> Delete Guest
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pass event ID to JavaScript
+    const EVENT_ID = {{ $event->id }};
+    const CSRF_TOKEN = '{{ csrf_token() }}';
+</script>
 @endsection
 
 @push('styles')
