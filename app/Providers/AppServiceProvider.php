@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
+     * force https if we are not in local comuter
      */
         public function boot()
     {
