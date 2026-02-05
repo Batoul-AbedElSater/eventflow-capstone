@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\EventController;
 use App\Http\Controllers\Client\GuestController;
+use App\Http\Controllers\Client\InvitationController;
 
 // Guest routes (not logged in)
 Route::middleware('guest')->group(function () {
@@ -36,17 +37,25 @@ Route::middleware('auth')->group(function () {
     Route::put('/events/{eventId}/guests/{guestId}', [GuestController::class, 'update'])->name('events.guests.update');
     Route::delete('/events/{eventId}/guests/{guestId}', [GuestController::class, 'destroy'])->name('events.guests.destroy');
     
+    // Invitation routes
+    Route::post('/events/{eventId}/invitations/send', [InvitationController::class, 'send'])
+        ->name('events.invitations.send');
+    
     // Placeholder routes
     Route::get('/messages', fn() => 'Messages coming soon')->name('messages');
     Route::get('/profile', fn() => 'Profile coming soon')->name('profile');
     Route::get('/settings', fn() => 'Settings coming soon')->name('settings');
-});
+  });
     
     // Planner Dashboard (placeholder)
     Route::get('/planner/dashboard', function () {
         return 'Planner Dashboard - Coming Soon!';
     })->name('planner.dashboard');
 });
+
+// Public RSVP routes (no authentication required)
+Route::get('/rsvp/{token}', [InvitationController::class, 'showRsvp'])->name('rsvp.show');
+Route::post('/rsvp/{token}', [InvitationController::class, 'submitRsvp'])->name('rsvp.submit');
 
 // Default redirect
 Route::get('/', function () {
@@ -58,3 +67,7 @@ Route::get('/', function () {
     }
     return redirect()->route('login');
 });
+
+
+
+

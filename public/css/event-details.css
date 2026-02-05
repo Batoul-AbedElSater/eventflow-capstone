@@ -1089,3 +1089,67 @@
 .toast i {
     font-size: 20px;
 }
+
+
+/* ====================================
+   INVITATION FEATURES
+   ==================================== */
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #7ED321, #5FA119);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(126, 211, 33, 0.4);
+}
+
+.invitation-info {
+    text-align: center;
+    padding: 20px;
+}
+
+.invitation-info i {
+    font-size: 60px;
+    color: var(--beige);
+    margin-bottom: 20px;
+}
+
+.invitation-info p {
+    font-size: 16px;
+    color: var(--onyx);
+    margin-bottom: 20px;
+}
+
+.invitation-stats {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.invitation-stats .stat-item {
+    text-align: center;
+}
+
+.invitation-stats strong {
+    display: block;
+    font-size: 32px;
+    color: var(--ebony);
+    margin-bottom: 5px;
+}
+
+.invitation-stats span {
+    font-size: 14px;
+    color: var(--gray);
+}

@@ -253,6 +253,67 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
+
+
+    // ====================================
+    // SEND INVITATIONS
+    // ====================================
+    const invitationModal = document.getElementById('invitation-modal');
+    const sendInvitationsBtn = document.getElementById('send-invitations-btn');
+    
+    if (sendInvitationsBtn) {
+        sendInvitationsBtn.addEventListener('click', function() {
+            invitationModal.classList.add('active');
+        });
+    }
+    
+    document.getElementById('close-invitation-modal').addEventListener('click', () => {
+        invitationModal.classList.remove('active');
+    });
+    
+    document.getElementById('cancel-invitation-btn').addEventListener('click', () => {
+        invitationModal.classList.remove('active');
+    });
+    
+    document.getElementById('confirm-send-invitations-btn').addEventListener('click', async function() {
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        try {
+            const response = await fetch(`/client/events/${EVENT_ID}/invitations/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                },
+                body: JSON.stringify({
+                    send_to_all: true
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast(data.message, 'success');
+                invitationModal.classList.remove('active');
+                
+                // Reload page after 2 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                showToast(data.message || 'Failed to send invitations', 'error');
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-paper-plane"></i> Send to All Pending';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Failed to send invitations', 'error');
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-paper-plane"></i> Send to All Pending';
+        }
+    });
     
     console.log('✅ Event Details with Guest Management loaded!');
 });
+

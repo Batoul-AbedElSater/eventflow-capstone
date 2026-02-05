@@ -235,8 +235,8 @@
             </div>
 
             <!-- GUESTS TAB -->
-           <div class="tab-pane" id="guests">
-    <div class="guests-container">
+     <div class="tab-pane" id="guests">
+        <div class="guests-container">
         
         <!-- Guest Stats -->
         <div class="guest-stats-bar">
@@ -272,20 +272,28 @@
 
         <!-- Actions Bar -->
         <div class="guest-actions-bar">
-            <button class="btn-primary" id="add-guest-btn">
-                <i class="fas fa-plus"></i> Add Guest
-            </button>
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-guests" placeholder="Search guests...">
-            </div>
-            <select id="filter-rsvp" class="filter-select">
-                <option value="all">All Guests</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="declined">Declined</option>
-            </select>
-        </div>
+    <button class="btn-primary" id="add-guest-btn">
+        <i class="fas fa-plus"></i> Add Guest
+    </button>
+    
+    <!-- NEW: Send Invitations Button -->
+    @if($event->guests->count() > 0)
+        <button class="btn-success" id="send-invitations-btn">
+            <i class="fas fa-envelope"></i> Send Invitations
+        </button>
+    @endif
+    
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-guests" placeholder="Search guests...">
+    </div>
+    <select id="filter-rsvp" class="filter-select">
+        <option value="all">All Guests</option>
+        <option value="pending">Pending</option>
+        <option value="accepted">Accepted</option>
+        <option value="declined">Declined</option>
+    </select>
+    </div>
 
         <!-- Guest List -->
         @if($event->guests->count() > 0)
@@ -555,6 +563,7 @@
             </button>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -562,6 +571,42 @@
     const EVENT_ID = {{ $event->id }};
     const CSRF_TOKEN = '{{ csrf_token() }}';
 </script>
+
+
+<!-- SEND INVITATIONS MODAL -->
+<div class="modal" id="invitation-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-small">
+        <div class="modal-header">
+            <h3>Send Invitations</h3>
+            <button class="modal-close" id="close-invitation-modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="invitation-info">
+                <i class="fas fa-envelope"></i>
+                <p>Send email invitations to your guests</p>
+                <div class="invitation-stats">
+                    <div class="stat-item">
+                        <strong id="total-not-sent">{{ $event->guests->where('invitation_sent', false)->count() }}</strong>
+                        <span>Not sent yet</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong id="total-sent">{{ $event->guests->where('invitation_sent', true)->count() }}</strong>
+                        <span>Already sent</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancel-invitation-btn">Cancel</button>
+            <button type="button" class="btn-primary" id="confirm-send-invitations-btn">
+                <i class="fas fa-paper-plane"></i> Send to All Pending
+            </button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('styles')
