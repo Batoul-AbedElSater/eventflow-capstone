@@ -9,6 +9,13 @@ use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\InvitationController;
 use App\Models\EventType;
 
+Route::get('/setup-db', function() {
+    \App\Models\EventType::firstOrCreate(['name' => 'Wedding'], ['description' => 'Wedding ceremony']);
+    \App\Models\EventType::firstOrCreate(['name' => 'Birthday'], ['description' => 'Birthday celebration']);
+    \App\Models\EventType::firstOrCreate(['name' => 'Corporate'], ['description' => 'Business events']);
+    return "Success! Dropdowns restored.";
+});
+
 // Guest routes (not logged in)
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -71,12 +78,7 @@ Route::get('/', function () {
 //------------------------------------------------------------------------------------------
 
 
-Route::get('/setup-db', function() {
-    \App\Models\EventType::firstOrCreate(['name' => 'Wedding'], ['description' => 'Wedding ceremony']);
-    \App\Models\EventType::firstOrCreate(['name' => 'Birthday'], ['description' => 'Birthday celebration']);
-    \App\Models\EventType::firstOrCreate(['name' => 'Corporate'], ['description' => 'Business events']);
-    return "Success! Dropdowns restored.";
-});
+
 
 
 
