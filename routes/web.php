@@ -67,6 +67,19 @@ Route::get('/', function () {
     }
     return redirect()->route('login');
 });
+//------------------------------------------------------------------------------------------
+
+
+use App\Models\EventType;
+
+Route::get('/setup-db', function() {
+    // This adds the rows your migration expects
+    EventType::firstOrCreate(['name' => 'Wedding', 'description' => 'Wedding ceremony and reception']);
+    EventType::get(['name' => 'Birthday', 'description' => 'Birthday party celebration']);
+    EventType::firstOrCreate(['name' => 'Corporate', 'description' => 'Business meetings and events']);
+    
+    return "Database filled! Check your dropdown now.";
+});
 
 
 
