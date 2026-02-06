@@ -71,17 +71,12 @@ Route::get('/', function () {
 //------------------------------------------------------------------------------------------
 
 
-
-
 Route::get('/setup-db', function() {
-    // This adds the rows your migration expects
-    EventType::firstOrCreate(['name' => 'Wedding'], [ 'description' => 'Wedding ceremony and reception']);
-    EventType::firstOrCreate(['name' => 'Birthday'], ['description' => 'Birthday party celebration']);
-    EventType::firstOrCreate(['name' => 'Corporate'], ['description' => 'Business meetings and events']);
-    
-    return "Database filled! Check your dropdown now.";
+    \App\Models\EventType::firstOrCreate(['name' => 'Wedding'], ['description' => 'Wedding ceremony']);
+    \App\Models\EventType::firstOrCreate(['name' => 'Birthday'], ['description' => 'Birthday celebration']);
+    \App\Models\EventType::firstOrCreate(['name' => 'Corporate'], ['description' => 'Business events']);
+    return "Success! Dropdowns restored.";
 });
-
 
 
 
