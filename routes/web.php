@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\DashboardController as ClientDashboardController
 use App\Http\Controllers\Client\EventController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\InvitationController;
+use App\Models\EventType;
 
 // Guest routes (not logged in)
 Route::middleware('guest')->group(function () {
@@ -70,7 +71,7 @@ Route::get('/', function () {
 //------------------------------------------------------------------------------------------
 
 
-use App\Models\EventType;
+
 
 Route::get('/setup-db', function() {
     // This adds the rows your migration expects
