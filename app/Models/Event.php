@@ -34,8 +34,8 @@ class Event extends Model
     protected function casts(): array
     {
         return [
-            'start_date' => 'date',
-            'end_date' => 'date',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
             'budget_overall' => 'decimal:2',
             'cancelled_at' => 'datetime',
             'completed_at' => 'datetime',
