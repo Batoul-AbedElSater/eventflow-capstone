@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str; // <--- Added this line
 
 class GuestController extends Controller
 {
@@ -48,6 +49,7 @@ class GuestController extends Controller
             'notes' => $validated['notes'] ?? null,
             'rsvp_status' => 'pending',
             'invitation_sent' => false,
+            'rsvp_token' => Str::random(32), // <--- Added this line
         ]);
 
         return response()->json([

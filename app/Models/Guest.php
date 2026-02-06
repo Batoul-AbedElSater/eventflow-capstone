@@ -25,6 +25,7 @@ class Guest extends Model
         'plus_one_allowed',
         'plus_one_name',
         'check_in_time',
+        'rsvp_token',
     ];
 
     /**
