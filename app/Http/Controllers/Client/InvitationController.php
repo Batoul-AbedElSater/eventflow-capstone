@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\EventType;
+use App\Mail\InvitationEmail;
 
 class InvitationController extends Controller
 {
