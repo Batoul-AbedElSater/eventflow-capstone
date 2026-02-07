@@ -64,11 +64,21 @@ Route::middleware('auth')->group(function () {
         ->name('messages.store');
     Route::post('/events/{eventId}/messages/create', [App\Http\Controllers\Client\MessageController::class, 'createThread'])
         ->name('events.messages.create');
+    // Profile routes
+    Route::get('/profile', [App\Http\Controllers\Client\ProfileController::class, 'index'])
+        ->name('profile');
+    Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'updateProfile'])
+        ->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'updatePassword'])
+        ->name('profile.password');
+
+    // Settings routes
+    Route::get('/settings', [App\Http\Controllers\Client\ProfileController::class, 'settings'])
+        ->name('settings');
+    Route::put('/settings', [App\Http\Controllers\Client\ProfileController::class, 'updateSettings'])
+        ->name('settings.update');
     
-    // Placeholder routes
     
-    Route::get('/profile', fn() => 'Profile coming soon')->name('profile');
-    Route::get('/settings', fn() => 'Settings coming soon')->name('settings');
   });
     
     // Planner Dashboard (placeholder)
