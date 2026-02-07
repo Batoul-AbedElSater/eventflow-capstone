@@ -110,6 +110,19 @@ class User extends Authenticatable
         return $this->hasMany(MessageThread::class, 'planner_id');
     }
 
+        /**
+     * Get unread messages count
+     */
+    public function unreadMessagesCount()
+    {
+        return \App\Models\Message::whereHas('thread', function($query) {
+            $query->where('client_id', $this->id);
+        })
+        ->where('sender_id', '!=', $this->id)
+        ->where('is_read', false)
+        ->count();
+    }
+
     /**
      * Get messages sent by this user.
      * One-to-Many: User -> Messages
@@ -176,3 +189,4 @@ class User extends Authenticatable
             : $this->plannerProfile;
     }
 }
+

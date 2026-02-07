@@ -412,24 +412,14 @@
         </div>
 
             <!-- MESSAGES TAB -->
-            <div class="tab-pane" id="messages">
-                <div class="messages-container">
-                    @if($event->planner)
-                        <div class="coming-soon-notice">
-                            <i class="fas fa-comments"></i>
-                            <h3>Messages</h3>
-                            <p>Chat with {{ $event->planner->name }} about your event</p>
-                            <p class="note">Full messaging feature coming in next part!</p>
-                        </div>
-                    @else
-                        <div class="empty-state">
-                            <i class="fas fa-user-slash"></i>
-                            <h3>No Planner Assigned</h3>
-                            <p>Assign a planner to start messaging</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
+           @if($event->planner)
+            <form action="{{ route('client.events.messages.create', $event->id) }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn-secondary">
+                    <i class="fas fa-comment"></i> Message Planner
+                </button>
+            </form>
+            @endif
 
         </div>
     </div>

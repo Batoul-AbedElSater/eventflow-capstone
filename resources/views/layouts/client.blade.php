@@ -64,10 +64,12 @@
                 <i class="fas fa-calendar-alt"></i>
                 <span>My Events</span>
             </a>
-            <a href="{{ route('client.messages') }}" class="nav-item">
-                <i class="fas fa-comments"></i>
+              <a href="{{ route('client.messages') }}" class="nav-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
+                <i class="fas fa-envelope"></i>
                 <span>Messages</span>
-                <span class="badge">2</span>
+                @if(Auth::user()->unreadMessagesCount() > 0)
+                    <span class="badge">{{ Auth::user()->unreadMessagesCount() }}</span>
+                @endif
             </a>
             <a href="{{ route('client.profile') }}" class="nav-item">
                 <i class="fas fa-user"></i>

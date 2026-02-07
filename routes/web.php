@@ -54,9 +54,19 @@ Route::middleware('auth')->group(function () {
     // Invitation routes
     Route::post('/events/{eventId}/invitations/send', [InvitationController::class, 'send'])
         ->name('events.invitations.send');
+
+    // Message routes
+    Route::get('/messages', [App\Http\Controllers\Client\MessageController::class, 'index'])
+        ->name('messages');
+    Route::get('/messages/{threadId}', [App\Http\Controllers\Client\MessageController::class, 'show'])
+        ->name('messages.show');
+    Route::post('/messages/{threadId}', [App\Http\Controllers\Client\MessageController::class, 'store'])
+        ->name('messages.store');
+    Route::post('/events/{eventId}/messages/create', [App\Http\Controllers\Client\MessageController::class, 'createThread'])
+        ->name('events.messages.create');
     
     // Placeholder routes
-    Route::get('/messages', fn() => 'Messages coming soon')->name('messages');
+    
     Route::get('/profile', fn() => 'Profile coming soon')->name('profile');
     Route::get('/settings', fn() => 'Settings coming soon')->name('settings');
   });
