@@ -389,26 +389,15 @@
 
             <!-- BUDGET TAB -->
             <div class="tab-pane" id="budget">
-                <div class="budget-container">
-                    <div class="budget-overview">
-                        <div class="budget-summary">
-                            <h3>Budget Overview</h3>
-                            <div class="budget-amount">
-                                <span class="label">Total Budget</span>
-                                <span class="amount">${{ number_format($event->budget_overall, 2) }}</span>
-                            </div>
-                            <p class="note">Your planner will manage budget categories and expenses</p>
-                        </div>
-                        
-                        <div class="coming-soon-notice">
-                            <i class="fas fa-chart-pie"></i>
-                            <h3>Budget Tracking</h3>
-                            <p>Your planner will create budget categories and track expenses here</p>
-                            <p class="note">Full budget features coming in next part!</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="coming-soon">
+                <i class="fas fa-wallet"></i>
+                <h3>Budget tracking is ready!</h3>
+                <p>View your event budget breakdown</p>
+                <a href="{{ route('client.events.budget.show', $event->id) }}" class="btn-primary">
+                    <i class="fas fa-chart-line"></i> View Budget
+                </a>
             </div>
+        </div>
 
             <!-- TIMELINE TAB -->
             <div class="tab-pane" id="timeline">
