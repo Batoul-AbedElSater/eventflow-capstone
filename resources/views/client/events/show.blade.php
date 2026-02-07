@@ -401,23 +401,15 @@
 
             <!-- TIMELINE TAB -->
             <div class="tab-pane" id="timeline">
-                <div class="timeline-container">
-                    @if($event->tasks->count() > 0)
-                        <div class="coming-soon-notice">
-                            <i class="fas fa-stream"></i>
-                            <h3>Event Timeline</h3>
-                            <p>Your planner has created {{ $event->tasks->count() }} tasks</p>
-                            <p class="note">Full timeline view coming in next part!</p>
-                        </div>
-                    @else
-                        <div class="empty-state">
-                            <i class="fas fa-tasks"></i>
-                            <h3>No Tasks Yet</h3>
-                            <p>Your planner will create a timeline with tasks soon</p>
-                        </div>
-                    @endif
-                </div>
+            <div class="coming-soon">
+                <i class="fas fa-tasks"></i>
+                <h3>Task tracking is ready!</h3>
+                <p>View all tasks and checklist progress</p>
+                <a href="{{ route('client.events.tasks.index', $event->id) }}" class="btn-primary">
+                    <i class="fas fa-clipboard-check"></i> View Tasks
+                </a>
             </div>
+        </div>
 
             <!-- MESSAGES TAB -->
             <div class="tab-pane" id="messages">

@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
     // Budget route (view-only for client)
     Route::get('/events/{eventId}/budget', [App\Http\Controllers\Client\BudgetController::class, 'show'])
     ->name('events.budget.show'); 
+    // Task routes (view-only for client)
+    Route::get('/events/{eventId}/tasks', [App\Http\Controllers\Client\TaskController::class, 'index'])
+    ->name('events.tasks.index');
 
     
     // Event routes
