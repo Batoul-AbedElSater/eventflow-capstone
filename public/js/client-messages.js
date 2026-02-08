@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="message-time">${timeString}</span>
                 </div>
                 <div class="message-text">
-                    ${escapeHtml(message.message_text)}
+                    ${escapeHtml(message.body)}
                 </div>
             </div>
         `;

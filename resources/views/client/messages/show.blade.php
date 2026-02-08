@@ -43,7 +43,7 @@
                             <span class="message-time">{{ $message->created_at->format('g:i A') }}</span>
                         </div>
                         <div class="message-text">
-                            {{ $message->message_text }}
+                            {{ $message->body }}
                         </div>
                     </div>
                 </div>

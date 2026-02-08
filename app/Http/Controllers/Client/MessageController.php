@@ -74,7 +74,7 @@ class MessageController extends Controller
         $message = Message::create([
             'thread_id' => $threadId,
             'sender_id' => Auth::id(),
-            'message_text' => $validated['message'],
+            'body' => $validated['message'],
             'is_read' => false,
         ]);
         

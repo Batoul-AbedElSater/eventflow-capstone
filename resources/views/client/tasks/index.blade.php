@@ -15,6 +15,10 @@
             <p class="event-name">{{ $event->name }}</p>
         </div>
     </div>
+    <div class="header-left">
+    <a href="{{ route('client.dashboard') }}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
 
     <!-- Task Summary Cards -->
     <div class="task-summary">
