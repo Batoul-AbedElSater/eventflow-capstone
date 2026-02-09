@@ -4,6 +4,10 @@
 
 @section('content')
 <div class="profile-container">
+    <!-- Back to Dashboard -->
+    <a href="{{ route('client.dashboard') }}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
     
     <!-- Header -->
     <div class="page-header">

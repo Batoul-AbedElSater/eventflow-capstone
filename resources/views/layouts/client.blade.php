@@ -12,7 +12,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/client-dashboard.css') }}">
     
-    @stack('styles') {{-- Additional page-specific styles --}}
+    @stack('styles')
 </head>
 <body>
     <!-- Header -->
@@ -56,26 +56,26 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <nav class="sidebar-nav">
-            <a href="{{ route('client.dashboard') }}" class="nav-item active">
+            <a href="{{ route('client.dashboard') }}" class="nav-item {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('client.events.index') }}" class="nav-item">
+            <a href="{{ route('client.events.index') }}" class="nav-item {{ request()->routeIs('client.events.*') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt"></i>
                 <span>My Events</span>
             </a>
-              <a href="{{ route('client.messages') }}" class="nav-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
+            <a href="{{ route('client.messages') }}" class="nav-item {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
                 <i class="fas fa-envelope"></i>
                 <span>Messages</span>
                 @if(Auth::user()->unreadMessagesCount() > 0)
                     <span class="badge">{{ Auth::user()->unreadMessagesCount() }}</span>
                 @endif
             </a>
-            <a href="{{ route('client.profile') }}" class="nav-item">
+            <a href="{{ route('client.profile') }}" class="nav-item {{ request()->routeIs('client.profile') ? 'active' : '' }}">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </a>
-            <a href="{{ route('client.settings') }}" class="nav-item">
+            <a href="{{ route('client.settings') }}" class="nav-item {{ request()->routeIs('client.settings') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </a>
@@ -89,6 +89,6 @@
 
     <!-- JavaScript -->
     <script src="{{ asset('js/client-dashboard.js') }}"></script>
-    @stack('scripts') {{-- Additional page-specific scripts --}}
+    @stack('scripts')
 </body>
 </html>
