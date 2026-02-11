@@ -5,10 +5,17 @@
 @section('content')
 <div class="settings-container">
     
-    <!-- Header -->
-    <div class="page-header">
-        <h1>Settings</h1>
-        <p class="subtitle">Manage your preferences and notifications</p>
+    <!-- Back to Dashboard -->
+    <a href="{{ route('client.dashboard') }}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Page Header -->
+    <div class="page-header-section">
+        <div class="page-header-content">
+            <h1><i class="fas fa-cog"></i> Settings</h1>
+            <p class="subtitle">Manage your preferences and notifications</p>
+        </div>
     </div>
 
     <!-- Success Message -->

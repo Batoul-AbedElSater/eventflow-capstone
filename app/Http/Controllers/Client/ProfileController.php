@@ -74,7 +74,7 @@ class ProfileController extends Controller
     public function settings()
     {
         $user = Auth::user();
-        return view('client.profile.settings', compact('user'));
+        return view('client.profile.setting', compact('user'));
     }
 
     /**
@@ -101,7 +101,7 @@ class ProfileController extends Controller
             ])
         ]);
         
-        return redirect()->route('client.settings')
+        return redirect()->route('client.setting')
             ->with('success', 'Settings updated successfully!');
     }
 }
