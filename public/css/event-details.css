@@ -1153,3 +1153,98 @@
     font-size: 14px;
     color: var(--gray);
 }
+
+/* Messages Tab Styling */
+.messages-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: 60px 20px;
+}
+
+.planner-message-card,
+.no-planner-card {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 50px;
+    text-align: center;
+    max-width: 600px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.planner-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 25px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(88,96,65,0.3);
+}
+
+.planner-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.planner-message-card h3 {
+    font-size: 28px;
+    color: #353935;
+    margin-bottom: 8px;
+}
+
+.planner-role {
+    color: #586041;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.message-prompt {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.btn-large {
+    padding: 16px 40px;
+    font-size: 16px;
+}
+
+.no-planner-card i {
+    color: #F5F5DC;
+    margin-bottom: 20px;
+}
+
+.no-planner-card h3 {
+    color: #353935;
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.no-planner-card p {
+    color: #666;
+}
+
+/* Card Icon Styling */
+.card-icon-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #586041, #353935);
+    color: #FFFFF0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    font-size: 40px;
+    box-shadow: 0 8px 25px rgba(88,96,65,0.3);
+}
+/* Planner Name Styling */
+.planner-name {
+    color: #586041;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+

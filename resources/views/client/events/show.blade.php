@@ -72,7 +72,7 @@
             </div>
             <div class="stat-info">
                 @php
-                    $daysUntil = now()->diffInDays($event->start_date, false);
+                    $daysUntil = (int) now()->diffInDays($event->start_date, false);
                 @endphp
                 @if($daysUntil > 0)
                     <h4>{{ $daysUntil }}</h4>
@@ -389,47 +389,77 @@
 
             <!-- BUDGET TAB -->
             <div class="tab-pane" id="budget">
-            <div class="coming-soon">
-                <i class="fas fa-wallet"></i>
-                <h3>Budget tracking is ready!</h3>
-                <p>View your event budget breakdown</p>
-                <a href="{{ route('client.events.budget.show', $event->id) }}" class="btn-primary">
-                    <i class="fas fa-chart-line"></i> View Budget
-                </a>
+            <div class="messages-content">
+                <div class="planner-message-card">
+                    <div class="card-icon-large">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3>Budget Tracking</h3>
+                    <p class="message-prompt">View your event budget breakdown that your planner track</p>
+                    
+                    <a href="{{ route('client.events.budget.show', $event->id) }}" class="btn-primary btn-large">
+                        <i class="fas fa-chart-line"></i> View Budget
+                    </a>
+                </div>
             </div>
         </div>
 
             <!-- TIMELINE TAB -->
             <div class="tab-pane" id="timeline">
-            <div class="coming-soon">
-                <i class="fas fa-tasks"></i>
-                <h3>Task tracking is ready!</h3>
-                <p>View all tasks and checklist progress</p>
-                <a href="{{ route('client.events.tasks.index', $event->id) }}" class="btn-primary">
-                    <i class="fas fa-clipboard-check"></i> View Tasks
-                </a>
+            <div class="messages-content">
+                <div class="planner-message-card">
+                    <div class="card-icon-large">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Task Tracking</h3>
+                    <p class="message-prompt">View all tasks and checklist progress of your planner</p>
+                    
+                    <a href="{{ route('client.events.tasks.index', $event->id) }}" class="btn-primary btn-large">
+                        <i class="fas fa-clipboard-check"></i> View Tasks
+                    </a>
+                </div>
             </div>
         </div>
 
             <!-- MESSAGES TAB -->
-           @if($event->planner)
-            <form action="{{ route('client.events.messages.create', $event->id) }}" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit" class="btn-secondary">
-                    <i class="fas fa-comment"></i> Message Planner
-                </button>
-            </form>
-            @endif
+        <div class="tab-pane" id="messages">
+                <div class="messages-content">
+                    @if($event->planner)
+                        <div class="planner-message-card">
+                            <div class="card-icon-large">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3>Message Your Planner</h3>
+                            <p class="planner-name">{{ $event->planner->name }}</p>
+                            <p class="message-prompt">Have questions? Need updates? Start a conversation!</p>
+                            
+                            <form action="{{ route('client.events.messages.create', $event->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn-primary btn-large">
+                                    <i class="fas fa-comment"></i> Start Conversation
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="planner-message-card">
+                            <div class="card-icon-large" style="background: linear-gradient(135deg, #999, #666);">
+                                <i class="fas fa-user-slash"></i>
+                            </div>
+                            <h3>No Planner Assigned Yet</h3>
+                            <p class="message-prompt">Once a planner is assigned to your event, you'll be able to message them here.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+                </div>
+            </div>
 
         </div>
-    </div>
 
-</div>
-
-<!-- ADD/EDIT GUEST MODAL -->
-<div class="modal" id="guest-modal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
+    <!-- ADD/EDIT GUEST MODAL -->
+    <div class="modal" id="guest-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
         <div class="modal-header">
             <h3 id="modal-title">Add Guest</h3>
             <button class="modal-close" id="close-modal">
