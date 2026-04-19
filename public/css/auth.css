@@ -1,10 +1,11 @@
 /* Color Palette */
 :root {
-    --onyx: #353935;
-    --ivory: #FFFFF0;
-    --beige: #F5F5DC;
-    --ebony: #586041;
+    --onyx: #C63E4E;
+    --ivory: #620607 ;
+    --beige:   #EFE7DA;
+    --ebony: #E19184;
     --white: #FFFFFF;
+
 }
 
 * {
@@ -15,7 +16,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--beige);
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -81,7 +82,7 @@ body::before {
         0 0,
         0 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
 }
 
 /* Decorative Corner Elements */
@@ -97,6 +98,18 @@ body::after {
     pointer-events: none;
     z-index: 0;
 }
+#bg-video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;       /* stretch horizontally */
+  height: auto;      /* stretch vertically */
+  object-fit: contain; /* show entire video, keep aspect ratio */
+  z-index: -1;
+  background-color: black; /* fills empty space around video */
+}
+
 
 /* Main Container - LARGER */
 .container {
@@ -244,7 +257,7 @@ p {
 .input-wrapper input {
     width: 100%;
     background-color: var(--beige);
-    border: 1px solid rgba(88, 96, 65, 0.2);
+    border: 1px solid #475B35;
     padding: 13px 45px 13px 45px;
     font-size: 14px;
     border-radius: 10px;
@@ -254,7 +267,7 @@ p {
 }
 
 .input-wrapper input:focus {
-    background-color: var(--ivory);
+    background-color: #475B35;
     border-color: var(--ebony);
     box-shadow: 0 0 10px rgba(88, 96, 65, 0.3);
 }

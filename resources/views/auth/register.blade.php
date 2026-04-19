@@ -2,7 +2,10 @@
 
 @section('content')
 
-
+<!-- Video Background -->
+<video autoplay muted loop id="bg-video">
+    <source src="{{ asset('videos/background1.mp4') }}" type="video/mp4">
+</video>
 
 <div class="container" id="container">
     
