@@ -81,10 +81,10 @@ Route::middleware('auth')->group(function () {
     
   });
     
-    // Planner Dashboard (placeholder)
-    Route::get('/planner/dashboard', function () {
-        return 'Planner Dashboard - Coming Soon!';
-    })->name('planner.dashboard');
+    // Planner Dashboard
+    Route::prefix('planner')->name('planner.')->middleware('auth')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
+    });
 });
 
 // Public RSVP routes (no authentication required)
