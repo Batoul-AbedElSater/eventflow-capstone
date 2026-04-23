@@ -81,10 +81,12 @@ Route::middleware('auth')->group(function () {
     
   });
     
-    // Planner Dashboard
-    Route::prefix('planner')->name('planner.')->middleware('auth')->group(function () {
-        Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
-    });
+        // Planner Dashboard
+        Route::prefix('planner')->name('planner.')->middleware('auth')->group(function () {
+            Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
+            Route::post('/requests/{eventId}/accept', [App\Http\Controllers\Planner\DashboardController::class, 'acceptRequest'])->name('requests.accept');
+            Route::post('/requests/{eventId}/decline', [App\Http\Controllers\Planner\DashboardController::class, 'declineRequest'])->name('requests.decline');
+        });
 });
 
 // Public RSVP routes (no authentication required)

@@ -44,6 +44,14 @@ class User extends Authenticatable
         ];
     }
 
+       /**
+     * Get events where user is the planner
+     */
+    public function EventsOfPlanner()
+    {
+        return $this->hasMany(Event::class, 'planner_id');
+    }
+
     // ========================================
     // RELATIONSHIPS
     // ========================================
