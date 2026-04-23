@@ -396,7 +396,8 @@
                 ];
             @endphp
 
-            @if($outdoorEvents->count() > 0)
+            @if(true)
+            {{--always show for testing--}}
                 <div class="card weather-card">
                     <div class="card-header">
                         <h3><i class="fas fa-cloud-sun"></i> Weather Guardian</h3>
