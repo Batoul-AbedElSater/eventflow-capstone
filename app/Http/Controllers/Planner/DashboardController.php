@@ -71,6 +71,38 @@ class DashboardController extends Controller
         
         // Simple AI: Client Happiness (hardcoded)
         $clientHappiness = $this->calculateClientHappiness($myEvents);
+
+        // Time Machine: Monthly journey data (last 12 months)
+        $timeMachineData = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $monthEvents = $myEvents->filter(function($event) use ($month) {
+                return $event->start_date->format('Y-m') === $month->format('Y-m');
+            });
+            
+            $revenue = $monthEvents->where('status', 'completed')->sum('budget_overall') * 0.15;
+            
+            $timeMachineData[] = [
+                'month' => $month->format('M'),
+                'year' => $month->format('Y'),
+                'count' => $monthEvents->count(),
+                'revenue' => $revenue,
+                'completed' => $monthEvents->where('status', 'completed')->count(),
+                'is_peak' => $monthEvents->count() >= 5, // Peak if 5+ events
+            ];
+        }
+        
+        // Find busiest month
+        $busiestMonth = collect($timeMachineData)->sortByDesc('count')->first();
+        
+        // Journey insights
+        $journeyInsights = [
+            'total_journey_events' => $myEvents->count(),
+            'best_month' => $busiestMonth['month'] . ' ' . $busiestMonth['year'],
+            'best_month_count' => $busiestMonth['count'],
+            'total_journey_revenue' => collect($timeMachineData)->sum('revenue'),
+            'avg_monthly_events' => round(collect($timeMachineData)->avg('count'), 1),
+        ];
         
         return view('planner.dashboard', compact(
             'myEvents', 
@@ -81,7 +113,9 @@ class DashboardController extends Controller
             'todayTasks',
             'eventHealth',
             'conflicts',
-            'clientHappiness'
+            'clientHappiness',
+            'timeMachineData',
+            'journeyInsights'
         ));
     }
     

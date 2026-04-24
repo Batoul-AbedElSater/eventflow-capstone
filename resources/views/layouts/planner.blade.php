@@ -100,31 +100,13 @@
                 <span>Messages</span>
                 <span class="badge">8</span>
             </a>
-            <a href="#" class="nav-item">
+         <a href="{{ route('planner.analytics') }}" class="nav-item {{ request()->routeIs('planner.analytics') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar"></i>
                 <span>Analytics</span>
             </a>
         </nav>
         
-        <!-- Sidebar Footer -->
-        <div class="sidebar-footer">
-            <div class="quick-stats">
-                <div class="quick-stat">
-                    <i class="fas fa-calendar-check"></i>
-                    <div>
-                        <strong>8</strong>
-                        <span>Active Events</span>
-                    </div>
-                </div>
-                <div class="quick-stat">
-                    <i class="fas fa-dollar-sign"></i>
-                    <div>
-                        <strong>$45K</strong>
-                        <span>This Month</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
     </aside>
 
     <!-- Main Content -->

@@ -467,5 +467,85 @@
                 </div>
             @endif
 
+            {{-- TIME MACHINE VIEW --}}
+    <div class="card time-machine-card">
+        <div class="card-header">
+            <h3><i class="fas fa-history"></i> Time Machine - Your Journey</h3>
+            <span class="badge green">{{ date('Y') }}</span>
+        </div>
+        <div class="card-body">
+            
+            {{-- Timeline Visualization --}}
+            <div class="time-machine-timeline">
+                @foreach($timeMachineData as $data)
+                    <div class="timeline-month {{ $data['is_peak'] ? 'peak-month' : '' }}">
+                        <div class="timeline-bar" style="height: {{ $data['count'] > 0 ? ($data['count'] * 20) : 5 }}px">
+                            <span class="bar-count">{{ $data['count'] }}</span>
+                        </div>
+                        <div class="timeline-label">
+                            <span class="month-name">{{ $data['month'] }}</span>
+                            @if($data['is_peak'])
+                                <span class="peak-badge">🎯</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Journey Stats --}}
+            <div class="journey-stats-grid">
+                <div class="journey-stat">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>
+                        <strong>{{ $journeyInsights['total_journey_events'] }}</strong>
+                        <span>Total Events Completed</span>
+                    </div>
+                </div>
+                <div class="journey-stat">
+                    <i class="fas fa-fire"></i>
+                    <div>
+                        <strong>{{ $journeyInsights['best_month'] }}</strong>
+                        <span>Busiest Month ({{ $journeyInsights['best_month_count'] }} events)</span>
+                    </div>
+                </div>
+                <div class="journey-stat">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div>
+                        <strong>${{ number_format($journeyInsights['total_journey_revenue'], 0) }}</strong>
+                        <span>Total Revenue Earned</span>
+                    </div>
+                </div>
+                <div class="journey-stat">
+                    <i class="fas fa-chart-line"></i>
+                    <div>
+                        <strong>{{ $journeyInsights['avg_monthly_events'] }}</strong>
+                        <span>Avg Events Per Month</span>
+                    </div>
+                </div>
+            </div>
+
+           
+            {{-- AI Insights --}}
+            <div class="journey-insights">
+                <h4><i class="fas fa-brain"></i>Journey Insights</h4>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <i class="fas fa-trending-up"></i>
+                        <p>Your busiest season is <strong>{{ $journeyInsights['best_month'] }}</strong> - plan ahead for peak months!</p>
+                    </div>
+                    <div class="insight-card">
+                        <i class="fas fa-chart-line"></i>
+                        <p>You're averaging <strong>{{ $journeyInsights['avg_monthly_events'] }} events/month</strong> - you're on track for {{ $journeyInsights['avg_monthly_events'] * 12 }} events this year!</p>
+                    </div>
+                    <div class="insight-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <p>Most profitable event type: <strong>Weddings</strong> - focus marketing here for maximum revenue!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 @endsection

@@ -86,6 +86,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
             Route::post('/requests/{eventId}/accept', [App\Http\Controllers\Planner\DashboardController::class, 'acceptRequest'])->name('requests.accept');
             Route::post('/requests/{eventId}/decline', [App\Http\Controllers\Planner\DashboardController::class, 'declineRequest'])->name('requests.decline');
+            // Analytics
+            Route::get('/analytics', [App\Http\Controllers\Planner\AnalyticsController::class, 'index'])->name('analytics');
         });
 });
 
