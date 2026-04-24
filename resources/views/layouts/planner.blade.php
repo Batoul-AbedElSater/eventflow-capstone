@@ -36,6 +36,11 @@
             <div class="quick-action-btn" title="Add Event">
                 <i class="fas fa-plus-circle"></i>
             </div>
+
+            <!-- Voice Commander Button -->
+            <div class="voice-commander-btn" id="voiceCommanderBtn" title="Voice Commander">
+                <i class="fas fa-microphone"></i>
+            </div>
             
             <!-- Notifications -->
             <div class="notifications">
@@ -117,5 +122,54 @@
     <!-- JavaScript -->
     <script src="{{ asset('js/planner-dashboard.js') }}"></script>
     @stack('scripts')
+
+    <!-- Voice Commander Modal -->
+<div class="voice-modal" id="voiceModal">
+    <div class="voice-modal-content">
+        <button class="voice-close-btn" id="voiceCloseBtn">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="voice-status" id="voiceStatus">
+            <div class="voice-animation">
+                <div class="pulse-ring"></div>
+                <div class="pulse-ring delay-1"></div>
+                <div class="pulse-ring delay-2"></div>
+                <i class="fas fa-microphone"></i>
+            </div>
+            <h3 id="voiceStatusText">Click to start listening...</h3>
+            <p id="voiceSubtext">Try: "Show today's tasks" or "What's my schedule?"</p>
+        </div>
+
+        <div class="voice-transcript" id="voiceTranscript">
+            <div class="transcript-label">You said:</div>
+            <div class="transcript-text" id="transcriptText">—</div>
+        </div>
+
+        <div class="voice-response" id="voiceResponse">
+            <div class="response-label">
+                <i class="fas fa-robot"></i> Response:
+            </div>
+            <div class="response-text" id="responseText">—</div>
+        </div>
+
+        <div class="voice-commands-help">
+            <h4>Quick Commands:</h4>
+            <div class="commands-grid">
+                <span class="command-chip">"Show today's tasks"</span>
+                <span class="command-chip">"What's my schedule?"</span>
+                <span class="command-chip">"How many events?"</span>
+                <span class="command-chip">"Show pending requests"</span>
+                <span class="command-chip">"Go to analytics"</span>
+                <span class="command-chip">"Show calendar"</span>
+            </div>
+        </div>
+
+        <button class="voice-action-btn" id="voiceActionBtn">
+            <i class="fas fa-microphone"></i>
+            <span>Start Listening</span>
+        </button>
+    </div>
+</div>
 </body>
 </html>
