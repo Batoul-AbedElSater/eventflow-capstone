@@ -55,8 +55,8 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'guest_estimate' => 'required|integer|min:1',
             'budget_overall' => 'required|numeric|min:0',
-            'rsvp_deadline' => 'required|date|before:start_date',
-            'guest_list_lock' => 'required|date|before:rsvp_deadline',
+            'rsvp_deadline' => 'nullable|date|before:start_date',
+            'guest_list_lock' => 'nullable|date|before:rsvp_deadline',
             'planner_id' => 'nullable|exists:users,id',
         ]);
 
@@ -74,6 +74,17 @@ class EventController extends Controller
             'budget_overall' => $validated['budget_overall'],
             'status' => 'draft',
         ]);
+
+        // CREATE NOTIFICATION FOR PLANNER
+            \App\Models\Notification::create([
+                'user_id' => $request->planner_id,
+                'type' => 'request',
+                'priority' => 'high',
+                'title' => 'New Event Request',
+                'message' => Auth::user()->name . ' requested: ' . $event->name,
+                'icon' => 'fas fa-inbox',
+                'action_url' => '/planner/requests',
+            ]);
 
         // TODO: Store RSVP deadline and guest list lock in event settings table (future)
 
