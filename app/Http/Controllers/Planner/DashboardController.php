@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
+use App\Models\Task;
+use App\Models\Rating;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -13,109 +15,158 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $today = Carbon::today();
         
-        // Get planner's events (using YOUR method name)
-        $myEvents = $user->eventsOfPlanner()
-            ->with(['eventType', 'client', 'guests', 'tasks'])
+        // Get planner's events (accepted/confirmed events)
+        $myEvents = Event::where('planner_id', $user->id)
+            ->with(['eventType', 'client', 'tasks'])
             ->orderBy('start_date', 'asc')
             ->get();
         
-        // Get pending event requests (events without planner)
-        $pendingRequests = Event::whereNull('planner_id')
-            ->where('status', 'draft')
-            ->with(['eventType', 'client'])
-            ->orderBy('created_at', 'desc')
+        // Active events = confirmed events (planner accepted)
+        $activeEvents = $myEvents->where('status', 'confirmed');
+        
+        // Requests today = pending events created today (with no planner)
+        $requestsToday = Event::whereNull('planner_id')
+            ->where('status', 'pending')
+            ->whereDate('created_at', $today)
+            ->count();
+        
+        // Today's tasks (tasks due today, not done)
+        $todayTasks = Task::where('assigned_planner_id', $user->id)
+            ->whereDate('due_date', '<=', $today)
+            ->where('status', '!=', 'done')
+            ->orderBy('due_date', 'asc')
             ->get();
         
-        // Calculate stats
+        // Stats for header
         $stats = [
-            'total_events' => $myEvents->count(),
-            'active_events' => $myEvents->whereIn('status', ['planned', 'in_progress'])->count(),
-            'completed_events' => $myEvents->where('status', 'completed')->count(),
-            'pending_requests' => $pendingRequests->count(),
+            'active_events' => $activeEvents->count(),
+            'pending_requests' => $requestsToday,
         ];
         
-        // Get this week's events for calendar
-        // Get week based on request (default: current week)
+        // Calendar week
         $requestedDate = request('date') ? Carbon::parse(request('date')) : Carbon::now();
         $weekStart = $requestedDate->copy()->startOfWeek();
-        $weekEnd = $requestedDate->copy()->endOfWeek();
-        
-        // Build calendar week (7 days)
         $calendarDays = [];
         for ($i = 0; $i < 7; $i++) {
             $day = $weekStart->copy()->addDays($i);
             $calendarDays[] = [
                 'date' => $day,
-                'events' => $myEvents->filter(function($event) use ($day) {
-                    return $event->start_date->isSameDay($day);
-                })
+                'events' => $myEvents->filter(fn($e) => $e->start_date->isSameDay($day))
             ];
         }
         
-        // Get today's tasks
-         $todayTasks = []; //\App\Models\Task::whereHas('event', function($q) use ($user) {
-        //         $q->where('planner_id', $user->id);
-        //     })
-        //     ->where('due_date', '<=', Carbon::now()->endOfDay())
-        //     ->where('status', '!=', 'done')
-        //     ->orderBy('due_date', 'asc')
-        //     ->take(5)
-        //     ->get();
-        
-        // Simple AI: Event Health Analysis (hardcoded logic)
-        $eventHealth = $this->calculateEventHealth($myEvents);
-        
-        // Simple AI: Conflict Detection
-        $conflicts = $this->detectConflicts($myEvents);
-        
-        // Simple AI: Client Happiness (hardcoded)
-        $clientHappiness = $this->calculateClientHappiness($myEvents);
-
-        // Time Machine: Monthly journey data (last 12 months)
+        // Time Machine: monthly data (last 12 months)
         $timeMachineData = [];
+        $totalCompletedEvents = 0;
+        $totalRevenue = 0;
+        $monthlyCounts = [];
         for ($i = 11; $i >= 0; $i--) {
             $month = Carbon::now()->subMonths($i);
-            $monthEvents = $myEvents->filter(function($event) use ($month) {
-                return $event->start_date->format('Y-m') === $month->format('Y-m');
-            });
-            
-            $revenue = $monthEvents->where('status', 'completed')->sum('budget_overall') * 0.15;
-            
+            $monthEvents = $myEvents->filter(fn($e) => $e->start_date->format('Y-m') === $month->format('Y-m'));
+            $count = $monthEvents->count();
+            $completed = $monthEvents->where('status', 'completed')->count();
+            $revenue = $monthEvents->where('status', 'completed')->sum('budget_overall');
             $timeMachineData[] = [
                 'month' => $month->format('M'),
                 'year' => $month->format('Y'),
-                'count' => $monthEvents->count(),
+                'count' => $count,
                 'revenue' => $revenue,
-                'completed' => $monthEvents->where('status', 'completed')->count(),
-                'is_peak' => $monthEvents->count() >= 5, // Peak if 5+ events
+                'completed' => $completed,
+                'is_peak' => $count >= 5,
+            ];
+            $totalCompletedEvents += $completed;
+            $totalRevenue += $revenue;
+            $monthlyCounts[] = $count;
+        }
+        $bestMonth = collect($timeMachineData)->sortByDesc('count')->first();
+        $journeyInsights = [
+            'total_journey_events' => $totalCompletedEvents,
+            'best_month' => $bestMonth['month'] . ' ' . $bestMonth['year'],
+            'best_month_count' => $bestMonth['count'],
+            'total_journey_revenue' => $totalRevenue,
+            'avg_monthly_events' => round(collect($monthlyCounts)->avg(), 1),
+        ];
+        
+        // Event Health Monitor (real data from tasks & timeline)
+        $eventHealth = [];
+        foreach ($myEvents->take(5) as $event) {
+            $totalTasks = $event->tasks->count();
+            $completedTasks = $event->tasks->where('status', 'done')->count();
+            $taskProgress = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 100;
+            $daysUntil = Carbon::now()->diffInDays($event->start_date, false);
+            $timelineHealth = $daysUntil > 30 ? 100 : ($daysUntil > 7 ? 70 : ($daysUntil > 0 ? 40 : 0));
+            $overall = round(($taskProgress + $timelineHealth) / 2);
+            $eventHealth[] = [
+                'event' => $event,
+                'overall' => $overall,
+                'tasks' => round($taskProgress),
+                'timeline' => $timelineHealth,
+                'status' => $overall >= 80 ? 'healthy' : ($overall >= 60 ? 'warning' : 'critical'),
             ];
         }
         
-        // Find busiest month
-        $busiestMonth = collect($timeMachineData)->sortByDesc('count')->first();
+        // Conflict detector (same day events)
+        $conflicts = [];
+        foreach ($myEvents as $e1) {
+            foreach ($myEvents as $e2) {
+                if ($e1->id >= $e2->id) continue;
+                if ($e1->start_date->isSameDay($e2->start_date)) {
+                    $conflicts[] = ['event1' => $e1, 'event2' => $e2];
+                }
+            }
+        }
         
-        // Journey insights
-        $journeyInsights = [
-            'total_journey_events' => $myEvents->count(),
-            'best_month' => $busiestMonth['month'] . ' ' . $busiestMonth['year'],
-            'best_month_count' => $busiestMonth['count'],
-            'total_journey_revenue' => collect($timeMachineData)->sum('revenue'),
-            'avg_monthly_events' => round(collect($timeMachineData)->avg('count'), 1),
-        ];
+        // Weather Guardian (outdoor events in next 2 weeks)
+        $outdoorEvents = $myEvents->filter(function($event) {
+            $isUpcoming = $event->start_date >= Carbon::now() && $event->start_date <= Carbon::now()->addWeeks(2);
+            $isOutdoor = stripos($event->location_text, 'outdoor') !== false ||
+                         stripos($event->location_text, 'garden') !== false ||
+                         stripos($event->location_text, 'park') !== false ||
+                         stripos($event->location_text, 'beach') !== false;
+            return $isUpcoming && $isOutdoor;
+        })->take(3);
+        
+        // Weather forecast (mock)
+        $weatherForecast = [];
+        for ($i = 0; $i < 14; $i++) {
+            $day = Carbon::now()->addDays($i);
+            $temp = rand(28, 35);
+            $rainChance = rand(0, 40);
+            $icon = $rainChance > 30 ? '🌧️' : ($rainChance > 15 ? '⛅' : '☀️');
+            $weatherForecast[] = [
+                'day' => $i === 0 ? 'Today' : ($i === 1 ? 'Tomorrow' : $day->format('D M j')),
+                'temp' => $temp,
+                'icon' => $icon,
+                'rain_chance' => $rainChance,
+            ];
+        }
+        
+        // Client Happiness (based on ratings from clients)
+        $ratings = Rating::where('planner_id', $user->id)->with('event')->get();
+        $clientHappiness = [];
+        foreach ($ratings->take(5) as $rating) {
+            $clientHappiness[] = [
+                'event' => $rating->event,
+                'score' => $rating->score,
+                'mood' => $rating->score >= 8 ? '😊' : ($rating->score >= 6 ? '🙂' : '😐'),
+                'trend' => 'up',
+            ];
+        }
+        
+        // Event requests (pending events without planner)
+        $pendingRequests = Event::whereNull('planner_id')
+            ->where('status', 'pending')
+            ->with(['eventType', 'client'])
+            ->orderBy('created_at', 'desc')
+            ->get();
         
         return view('planner.dashboard', compact(
-            'myEvents', 
-            'pendingRequests', 
-            'stats', 
-            'calendarDays',
-            'weekStart',
-            'todayTasks',
-            'eventHealth',
-            'conflicts',
-            'clientHappiness',
-            'timeMachineData',
-            'journeyInsights'
+            'stats', 'calendarDays', 'weekStart', 'todayTasks',
+            'timeMachineData', 'journeyInsights', 'eventHealth',
+            'conflicts', 'outdoorEvents', 'weatherForecast',
+            'clientHappiness', 'pendingRequests', 'myEvents'
         ));
     }
     
@@ -125,26 +176,21 @@ class DashboardController extends Controller
     private function calculateEventHealth($events)
     {
         $healthData = [];
-        
-        foreach ($events->take(3) as $event) {
+        foreach ($events->take(5) as $event) {
             $totalTasks = $event->tasks->count();
             $completedTasks = $event->tasks->where('status', 'done')->count();
-            $taskProgress = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
-            
-            $daysUntilEvent = Carbon::now()->diffInDays($event->start_date, false);
-            $timelineHealth = $daysUntilEvent > 30 ? 100 : ($daysUntilEvent > 7 ? 70 : 50);
-            
-            $overallHealth = ($taskProgress + $timelineHealth) / 2;
-            
+            $taskProgress = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 100;
+            $daysUntil = Carbon::now()->diffInDays($event->start_date, false);
+            $timelineHealth = $daysUntil > 30 ? 100 : ($daysUntil > 7 ? 70 : ($daysUntil > 0 ? 40 : 0));
+            $overall = round(($taskProgress + $timelineHealth) / 2);
             $healthData[] = [
                 'event' => $event,
-                'overall' => round($overallHealth),
+                'overall' => $overall,
                 'tasks' => round($taskProgress),
                 'timeline' => $timelineHealth,
-                'status' => $overallHealth >= 80 ? 'healthy' : ($overallHealth >= 60 ? 'warning' : 'critical')
+                'status' => $overall >= 80 ? 'healthy' : ($overall >= 60 ? 'warning' : 'critical'),
             ];
         }
-        
         return $healthData;
     }
     
@@ -154,58 +200,43 @@ class DashboardController extends Controller
     private function detectConflicts($events)
     {
         $conflicts = [];
-        
-        foreach ($events as $event1) {
-            foreach ($events as $event2) {
-                if ($event1->id >= $event2->id) continue;
-                
-                // Check if same day
-                if ($event1->start_date->isSameDay($event2->start_date)) {
-                    $conflicts[] = [
-                        'event1' => $event1,
-                        'event2' => $event2,
-                        'type' => 'same_day',
-                        'severity' => 'warning'
-                    ];
+        foreach ($events as $e1) {
+            foreach ($events as $e2) {
+                if ($e1->id >= $e2->id) continue;
+                if ($e1->start_date->isSameDay($e2->start_date)) {
+                    $conflicts[] = ['event1' => $e1, 'event2' => $e2];
                 }
             }
         }
-        
         return $conflicts;
     }
     
     /**
-     * Simple AI: Calculate client happiness
+     * Simple AI: Calculate client happiness (based on ratings, fallback to task progress)
      */
     private function calculateClientHappiness($events)
     {
         $happiness = [];
-        
         foreach ($events->take(5) as $event) {
-            $score = 7.0; // Base score
-            
-            // Boost if tasks are on track
-            $totalTasks = $event->tasks->count();
-            $completedTasks = $event->tasks->where('is_completed', true)->count();
-            if ($totalTasks > 0 && ($completedTasks / $totalTasks) > 0.7) {
-                $score += 1.5;
+            // Try to get rating first
+            $rating = Rating::where('event_id', $event->id)->first();
+            if ($rating) {
+                $score = $rating->score;
+            } else {
+                // Fallback: estimate based on task progress
+                $totalTasks = $event->tasks->count();
+                $completedTasks = $event->tasks->where('status', 'done')->count();
+                $taskProgress = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 100;
+                $score = 5 + ($taskProgress / 20); // 5 to 10 scale
+                $score = min($score, 10);
             }
-            
-            // Boost if event is not overdue
-            if ($event->start_date > Carbon::now()) {
-                $score += 0.5;
-            }
-            
-            $score = min($score, 10); // Cap at 10
-            
             $happiness[] = [
                 'event' => $event,
                 'score' => round($score, 1),
                 'mood' => $score >= 8 ? '😊' : ($score >= 6 ? '🙂' : '😐'),
-                'trend' => 'up'
+                'trend' => 'up',
             ];
         }
-        
         return $happiness;
     }
     
@@ -215,16 +246,23 @@ class DashboardController extends Controller
     public function acceptRequest($eventId)
     {
         $event = Event::findOrFail($eventId);
-        
-        // Check if event is available
         if ($event->planner_id !== null) {
             return back()->with('error', 'Event already has a planner');
         }
-        
-        // Assign planner
         $event->planner_id = Auth::id();
-        $event->status = 'planned';
+        $event->status = 'confirmed';
         $event->save();
+        
+        // Create notification for client
+        \App\Models\Notification::create([
+            'user_id' => $event->client_id,
+            'type' => 'event',
+            'priority' => 'high',
+            'title' => 'Event Request Accepted!',
+            'message' => 'Your event "' . $event->name . '" has been accepted by the planner.',
+            'icon' => 'fas fa-check-circle',
+            'action_url' => '/client/events/' . $event->id,
+        ]);
         
         return back()->with('success', 'Event accepted! You can now manage this event.');
     }
@@ -235,7 +273,50 @@ class DashboardController extends Controller
     public function declineRequest($eventId)
     {
         $event = Event::findOrFail($eventId);
+        $event->status = 'declined';
+        $event->save();
         
-        return back()->with('success', 'Event request declined');
+        // Create notification for client
+        \App\Models\Notification::create([
+            'user_id' => $event->client_id,
+            'type' => 'event',
+            'priority' => 'medium',
+            'title' => 'Event Request Declined',
+            'message' => 'Your event "' . $event->name . '" was declined. Please contact the planner for more information.',
+            'icon' => 'fas fa-times-circle',
+            'action_url' => '/client/dashboard',
+        ]);
+        
+        return back()->with('success', 'Event request declined.');
+    }
+    
+    /**
+     * Set rain alert for an event (Weather Guardian)
+     */
+    public function setRainAlert(Request $request, $eventId)
+    {
+        $event = Event::where('planner_id', Auth::id())->findOrFail($eventId);
+        $rainChance = $request->input('rain_chance', 0);
+        
+        // Store the rain alert in a session or database – here we just log it
+        // In a real implementation, you might create a notification or store in a alerts table.
+        \Log::info('Rain alert set', [
+            'event_id' => $eventId,
+            'planner_id' => Auth::id(),
+            'rain_chance' => $rainChance,
+        ]);
+        
+        // Optionally, create a notification for the planner (or client)
+        \App\Models\Notification::create([
+            'user_id' => Auth::id(),
+            'type' => 'weather',
+            'priority' => 'medium',
+            'title' => 'Rain Alert Active',
+            'message' => "You will be notified if rain chance exceeds {$rainChance}% for event '{$event->name}'.",
+            'icon' => 'fas fa-cloud-rain',
+            'action_url' => '/planner/events/' . $eventId,
+        ]);
+        
+        return response()->json(['success' => true, 'message' => 'Rain alert set successfully.']);
     }
 }

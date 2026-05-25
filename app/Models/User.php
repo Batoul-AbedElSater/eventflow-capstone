@@ -22,7 +22,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'notification_preferences',
-        'avatar_url',
+        'avatar',
     ];
 
     /**
@@ -42,6 +42,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    /**
+     * Get events where user is the client
+     */
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'client_id');
+    }
+
+    /**
+     * Get events where user is the planner
+     */
+    public function plannedEvents()
+    {
+        return $this->hasMany(Event::class, 'planner_id');
+    }
+
+    /**
+     * Get tasks for planner
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'user_id'); // Adjust if needed
     }
 
        /**
@@ -124,12 +147,13 @@ class User extends Authenticatable
      */
     public function unreadMessagesCount()
     {
-        return \App\Models\Message::whereHas('thread', function($query) {
-            $query->where('client_id', $this->id);
-        })
-        ->where('sender_id', '!=', $this->id)
-        ->where('is_read', false)
-        ->count();
+        return \App\Models\Message::whereHas('thread', function ($query) {
+                $query->where('client_id', $this->id)
+                    ->orWhere('planner_id', $this->id);
+            })
+            ->where('sender_id', '!=', $this->id)
+            ->where('is_read', false)
+            ->count();
     }
 
     /**

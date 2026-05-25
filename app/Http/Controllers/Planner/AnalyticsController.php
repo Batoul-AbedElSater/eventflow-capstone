@@ -98,7 +98,7 @@ class AnalyticsController extends Controller
             'busy_season' => 'Your busiest season is May - July',
         ];
         
-        return view('planner.analytics', compact(
+        return view('planner.events.analytics', compact(
             'stats',
             'monthlyData',
             'revenueData',

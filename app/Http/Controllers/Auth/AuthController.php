@@ -12,8 +12,14 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Show register form
-    public function showRegister()
+    // Show auth form (combined login/register)
+    public function showLoginForm()
+    {
+        return view('auth.register');
+    }
+
+    // Show register form (same as login)
+    public function showRegistrationForm()
     {
         return view('auth.register');
     }

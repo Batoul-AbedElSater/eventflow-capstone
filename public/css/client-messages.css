@@ -1,14 +1,14 @@
 /* ====================================
-   MESSAGES PAGE STYLES
+   CLIENT MESSAGES PAGE STYLES
    ==================================== */
 
 :root {
-    --onyx: #353935;
+    --onyx: #620607;
     --ivory: #FFFFF0;
-    --beige: #F5F5DC;
-    --ebony: #586041;
+    --beige: #C63E4E;
+    --ebony: #E19184;
     --white: #FFFFFF;
-    --gray: #888888;
+    --gray: #F5F9E5;
     --transition: all 0.3s ease;
 }
 
@@ -197,7 +197,7 @@
     overflow: hidden;
 }
 
-/* Chat Header */
+/* Chat Header (with delete button support) */
 .chat-header {
     padding: 20px 25px;
     background: linear-gradient(135deg, var(--ivory), var(--beige));
@@ -278,6 +278,28 @@
     background: var(--ebony);
     color: var(--white);
     border-color: var(--ebony);
+}
+
+/* Delete Chat Button (visible only in chat header) */
+.delete-chat-btn {
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: var(--onyx);
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    margin-left: auto;
+}
+
+.delete-chat-btn:hover {
+    background: #C63E4E;
+    color: white;
 }
 
 /* Messages Area */

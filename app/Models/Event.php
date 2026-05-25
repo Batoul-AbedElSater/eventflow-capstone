@@ -19,14 +19,20 @@ class Event extends Model
         'name',
         'description',
         'start_date',
+        'start_time',
         'end_date',
+        'end_time',
         'location_text',
         'guest_estimate',
         'budget_overall',
         'status',
+        'event_photo',
         'cancelled_at',
         'completed_at',
     ];
+
+     
+
 
     /**
      * Get the attributes that should be cast.
@@ -162,6 +168,27 @@ class Event extends Model
         return $this->hasMany(Attachment::class);
     }
 
+    public function invitations()
+    {
+        return $this->guests(); // Just returns the same as guests()
+    }
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+    public function isEditable()
+    {
+        return in_array($this->status, ['draft', 'pending', 'confirmed']);
+    }
+
+    /**
+     * ADD THIS: Check if event is locked
+     */
+    public function isLocked()
+    {
+        return in_array($this->status, ['pending', 'declined']);
+    }
+
     // ========================================
     // HELPER METHODS
     // ========================================
@@ -212,6 +239,11 @@ class Event extends Model
     public function getBudgetRemaining()
     {
         return $this->budget_overall - $this->getTotalSpent();
+    }
+
+    public function rating()
+    {
+        return $this->hasOne(Rating::class);
     }
 
     /**

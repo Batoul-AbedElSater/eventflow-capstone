@@ -101,7 +101,7 @@ class ProfileController extends Controller
             ])
         ]);
         
-        return redirect()->route('client.setting')
+        return redirect()->route('client.settings')
             ->with('success', 'Settings updated successfully!');
     }
 }

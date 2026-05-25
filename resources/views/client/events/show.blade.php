@@ -3,617 +3,853 @@
 @section('title', $event->name)
 
 @section('content')
-<div class="event-details-container">
+
+<style>
+    .star-rating .star {
+    font-size: 30px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
+}
+.star-rating .star.active {
+    color: #ffc107;
+}
+.rating-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 30px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+.rating-card textarea {
+    width: 100%;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+</style>
+<div class="event-show-container">
     
-    <!-- Header -->
-    <div class="event-header">
-        <div class="header-left">
-            <a href="{{ route('client.dashboard') }}" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-            <div class="title-section">
-                <h2>{{ $event->name }}</h2>
-                <div class="event-meta">
-                    <span class="meta-item">
-                        <i class="fas fa-calendar"></i>
-                        {{ $event->start_date->format('F d, Y') }}
-                        @if($event->end_date && $event->end_date != $event->start_date)
-                            - {{ $event->end_date->format('F d, Y') }}
+    {{-- Event Header with Photo --}}
+    <div class="event-show-header">
+        <div class="event-hero-section">
+            @if($event->event_photo)
+                <img src="{{ asset('storage/' . $event->event_photo) }}" alt="{{ $event->name }}" class="event-hero-image">
+            @else
+                <div class="event-hero-placeholder">
+                    <div class="hero-gradient {{ $event->eventType->name }}">
+                        <div class="hero-icon">
+                            @if($event->eventType->name === 'Wedding')
+                                💒
+                            @elseif($event->eventType->name === 'Birthday')
+                                🎂
+                            @elseif($event->eventType->name === 'Corporate')
+                                💼
+                            @else
+                                🎉
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+            <div class="hero-overlay"></div>
+            
+            <div class="hero-content">
+                <div class="breadcrumb">
+                    <a href="{{ route('client.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="{{ route('client.events.index') }}">My Events</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>{{ $event->name }}</span>
+                </div>
+                
+                <h1 class="event-hero-title">{{ $event->name }}</h1>
+                
+                <div class="event-meta-badges">
+                    <span class="meta-badge type">
+                        <i class="fas fa-tag"></i> {{ $event->eventType->name }}
+                    </span>
+                    <span class="meta-badge status {{ $event->status }}">
+                        @if($event->status === 'pending')
+                            <i class="fas fa-clock"></i> Pending Approval
+                        @elseif($event->status === 'confirmed')
+                            <i class="fas fa-check-circle"></i> Confirmed
+                        @elseif($event->status === 'declined')
+                            <i class="fas fa-times-circle"></i> Declined
+                        @elseif($event->status === 'in_progress')
+                            <i class="fas fa-spinner"></i> In Progress
+                        @elseif($event->status === 'completed')
+                            <i class="fas fa-flag-checkered"></i> Completed
+                        @else
+                            <i class="fas fa-file"></i> Draft
                         @endif
                     </span>
-                    <span class="meta-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        {{ Str::limit($event->location_text, 40) }}
-                    </span>
+                </div>
+
+                <div class="event-hero-actions">
+                    <a href="{{ route('client.events.edit', $event->id) }}" class="btn-hero-action edit">
+                        <i class="fas fa-edit"></i> Edit Event
+                    </a>
+                    <a href="#" onclick="document.querySelector('.event-tab[data-tab=\'messages\']').click(); return false;" class="btn-hero-action messages">
+                        <i class="fas fa-comments"></i> Messages
+                    </a>
+                    <form method="POST" action="{{ route('client.events.destroy', $event->id) }}" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-hero-action delete" onclick="return confirm('Delete this event permanently?')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        
-        <div class="header-right">
-            <!-- Status Badge -->
-            @if($event->status === 'draft')
-                <span class="status-badge draft">
-                    <i class="fas fa-file-alt"></i> Draft
-                </span>
-            @elseif($event->status === 'planned')
-                <span class="status-badge planned">
-                    <i class="fas fa-check-circle"></i> Planned
-                </span>
-            @elseif($event->status === 'in_progress')
-                <span class="status-badge in-progress">
-                    <i class="fas fa-spinner"></i> In Progress
-                </span>
-            @elseif($event->status === 'completed')
-                <span class="status-badge completed">
-                    <i class="fas fa-check-double"></i> Completed
-                </span>
-            @else
-                <span class="status-badge cancelled">
-                    <i class="fas fa-times-circle"></i> Cancelled
-                </span>
-            @endif
-        </div>
     </div>
 
-    <!-- Success Message -->
-    @if(session('success'))
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-
-    <!-- Quick Stats Bar -->
-    <div class="stats-bar">
-        <!-- Countdown -->
+    {{-- Event Stats Bar --}}
+    <div class="event-stats-bar">
         <div class="stat-item">
-            <div class="stat-icon countdown">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Event Date</span>
+                <strong>{{ $event->start_date->format('M d, Y') }}</strong>
+            </div>
+        </div>
+
+        <div class="stat-item">
+            <div class="stat-icon">
                 <i class="fas fa-clock"></i>
             </div>
             <div class="stat-info">
-                @php
-                    $daysUntil = (int) now()->diffInDays($event->start_date, false);
-                @endphp
-                @if($daysUntil > 0)
-                    <h4>{{ $daysUntil }}</h4>
-                    <p>Days Until Event</p>
-                @elseif($daysUntil === 0)
-                    <h4>Today!</h4>
-                    <p>Event is Today</p>
-                @else
-                    <h4>{{ abs($daysUntil) }}</h4>
-                    <p>Days Ago</p>
-                @endif
+                <span class="stat-label">Days Until</span>
+                <strong>{{ (int) max(0, now()->diffInDays($event->start_date, false)) }} days</strong>
             </div>
         </div>
 
-        <!-- Budget -->
         <div class="stat-item">
-            <div class="stat-icon budget">
-                <i class="fas fa-dollar-sign"></i>
-            </div>
-            <div class="stat-info">
-                <h4>${{ number_format($event->budget_overall) }}</h4>
-                <p>Total Budget</p>
-            </div>
-        </div>
-
-        <!-- Guests -->
-        <div class="stat-item">
-            <div class="stat-icon guests">
+            <div class="stat-icon">
                 <i class="fas fa-users"></i>
             </div>
             <div class="stat-info">
-                @php
-                    $totalGuests = $event->guests->count();
-                    $rsvpCount = $event->guests->whereIn('rsvp_status', ['accepted'])->count();
-                @endphp
-                <h4>{{ $totalGuests > 0 ? $rsvpCount : $event->guest_estimate }}</h4>
-                <p>{{ $totalGuests > 0 ? 'Guests RSVP\'d' : 'Expected Guests' }}</p>
+                <span class="stat-label">Total Guests</span>
+                <strong>{{ $event->guest_estimate }} people</strong>
             </div>
         </div>
 
-        <!-- Tasks Progress -->
         <div class="stat-item">
-            <div class="stat-icon tasks">
-                <i class="fas fa-tasks"></i>
+            <div class="stat-icon">
+                <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="stat-info">
-                @php
-                    $totalTasks = $event->tasks->count();
-                    $completedTasks = $event->tasks->where('status', 'done')->count();
-                    $progress = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
-                @endphp
-                <h4>{{ $progress }}%</h4>
-                <p>Tasks Complete</p>
+                <span class="stat-label">Location</span>
+                <strong>{{ Str::limit($event->location_text, 30) }}</strong>
             </div>
         </div>
     </div>
 
-    <!-- Tabs Navigation -->
-    <div class="tabs-container">
-        <div class="tabs-nav">
-            <button class="tab-btn active" data-tab="overview">
+    {{-- Main Content Tabs --}}
+    <div class="event-tabs-container">
+        <div class="event-tabs">
+            <button class="event-tab active" data-tab="overview">
                 <i class="fas fa-info-circle"></i> Overview
             </button>
-            <button class="tab-btn" data-tab="guests">
-                <i class="fas fa-users"></i> Guests
-                @if($event->guests->count() > 0)
-                    <span class="tab-badge">{{ $event->guests->count() }}</span>
-                @endif
+            <button class="event-tab" data-tab="guests">
+                <i class="fas fa-users"></i> Guests ({{ $event->invitations->count() }})
             </button>
-            <button class="tab-btn" data-tab="budget">
-                <i class="fas fa-wallet"></i> Budget
-            </button>
-            <button class="tab-btn" data-tab="timeline">
-                <i class="fas fa-stream"></i> Timeline
-            </button>
-            <button class="tab-btn" data-tab="messages">
+            <button class="event-tab" data-tab="messages">
                 <i class="fas fa-comments"></i> Messages
-                @if($event->planner)
-                    <span class="tab-badge">0</span>
-                @endif
             </button>
         </div>
 
-        <!-- Tab Content -->
-        <div class="tabs-content">
-            
-            <!-- OVERVIEW TAB -->
-            <div class="tab-pane active" id="overview">
-                <div class="overview-grid">
-                    
-                    <!-- Event Information Card -->
-                    <div class="info-card">
-                        <h3><i class="fas fa-info-circle"></i> Event Information</h3>
-                        <div class="info-list">
-                            <div class="info-item">
-                                <label><i class="fas fa-tag"></i> Event Type</label>
-                                <span>{{ $event->eventType->name }}</span>
+        {{-- Tab Content --}}
+        <div class="tab-content active" id="overview-tab">
+            <div class="overview-grid">
+                {{-- Event Details Card --}}
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3>Event Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="detail-row">
+                            <span class="detail-label">Event Name</span>
+                            <strong>{{ $event->name }}</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Event Type</span>
+                            <strong>{{ $event->eventType->name }}</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Start Date</span>
+                            <strong>{{ $event->start_date->format('l, F j, Y') }}</strong>
+                        </div>
+                        @if($event->end_date)
+                        <div class="detail-row">
+                            <span class="detail-label">End Date</span>
+                            <strong>{{ $event->end_date->format('l, F j, Y') }}</strong>
+                        </div>
+                        @endif
+                        <div class="detail-row">
+                            <span class="detail-label">Location</span>
+                            <strong>{{ $event->location_text }}</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Guest Estimate</span>
+                            <strong>{{ $event->guest_estimate }} people</strong>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Description Card --}}
+                @if($event->description)
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-align-left"></i>
+                        </div>
+                        <h3>Description</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="event-description">{{ $event->description }}</p>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Budget Card --}}
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3>Budget Overview</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="budget-summary">
+                            <div class="budget-item total">
+                                <span class="budget-label">Total Budget</span>
+                                <strong>{{ number_format($event->budget_overall, 2) }} SAR</strong>
                             </div>
-                            <div class="info-item">
-                                <label><i class="fas fa-calendar-alt"></i> Start Date</label>
-                                <span>{{ $event->start_date->format('F d, Y') }}</span>
+                            <div class="budget-item spent">
+                                <span class="budget-label">Amount Spent</span>
+                                <strong>{{ number_format($event->getTotalSpent(), 2) }} SAR</strong>
                             </div>
-                            @if($event->end_date && $event->end_date != $event->start_date)
-                                <div class="info-item">
-                                    <label><i class="fas fa-calendar-check"></i> End Date</label>
-                                    <span>{{ $event->end_date->format('F d, Y') }}</span>
-                                </div>
-                            @endif
-                            <div class="info-item">
-                                <label><i class="fas fa-map-marker-alt"></i> Location</label>
-                                <span>{{ $event->location_text }}</span>
+                            <div class="budget-item remaining">
+                                <span class="budget-label">Remaining</span>
+                                <strong>{{ number_format($event->budget_overall - $event->getTotalSpent(), 2) }} SAR</strong>
                             </div>
-                            <div class="info-item">
-                                <label><i class="fas fa-users"></i> Expected Guests</label>
-                                <span>{{ $event->guest_estimate }}</span>
+                        </div>
+                        <div class="budget-progress-bar">
+                            @php
+                                $budgetPercent = $event->budget_overall > 0 ? min(100, ($event->getTotalSpent() / $event->budget_overall) * 100) : 0;
+                            @endphp
+                            <div class="budget-progress-fill" style="width: {{ $budgetPercent }}%"></div>
+                        </div>
+                        <p class="budget-percentage">{{ round($budgetPercent) }}% of budget used</p>
+                    </div>
+                </div>
+
+                {{-- Planner Info --}}
+                @if($event->planner)
+                <div class="overview-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3>Event Planner</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="planner-info">
+                            <div class="planner-avatar">
+                                {{ strtoupper(substr($event->planner->name, 0, 1)) }}
                             </div>
-                            @if($event->description)
-                                <div class="info-item full-width">
-                                    <label><i class="fas fa-align-left"></i> Description</label>
-                                    <span class="description">{{ $event->description }}</span>
-                                </div>
-                            @endif
+                            <div class="planner-details">
+                                <h4>{{ $event->planner->name }}</h4>
+                                <p>{{ $event->planner->email }}</p>
+                                <a href="{{ route('client.events.messages.index', $event->id) }}" class="btn-message-planner">
+                                    <i class="fas fa-comment"></i> Send Message
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- Guests Tab --}}
+                <div class="tab-content" id="guests-tab">
+                    <div class="guests-header-luxury">
+                        <div class="guests-header-left">
+                            <h3>Guest List ({{ $event->guests->count() }})</h3>
+                            <div class="guest-stats-mini">
+                                <span class="stat-badge accepted">
+                                    <i class="fas fa-check"></i> {{ $event->guests->where('rsvp_status', 'accepted')->count() }} Accepted
+                                </span>
+                                <span class="stat-badge pending">
+                                    <i class="fas fa-clock"></i> {{ $event->guests->where('rsvp_status', 'pending')->count() }} Pending
+                                </span>
+                                <span class="stat-badge declined">
+                                    <i class="fas fa-times"></i> {{ $event->guests->where('rsvp_status', 'declined')->count() }} Declined
+                                </span>
+                            </div>
+                        </div>
+                        <div class="guests-actions">
+                            <button onclick="exportGuestsToPDF()" class="btn-export-pdf">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </button>
+                            <button onclick="exportGuestsToExcel()" class="btn-export-excel">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </button>
+                            <a href="{{ route('client.guests.create', $event->id) }}" class="btn-add-guest">
+                                <i class="fas fa-user-plus"></i> Add Guest
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Planner Information Card -->
-                    <div class="info-card">
-                        <h3><i class="fas fa-user-tie"></i> Event Planner</h3>
-                        @if($event->planner)
-                            <div class="planner-info">
-                                <div class="planner-avatar">
-                                    <img src="{{ $event->planner->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($event->planner->name) }}" 
-                                         alt="{{ $event->planner->name }}">
-                                </div>
-                                <div class="planner-details">
-                                    <h4>{{ $event->planner->name }}</h4>
-                                    @if($event->planner->plannerProfile)
-                                        <p class="planner-specialty">{{ $event->planner->plannerProfile->specialties }}</p>
-                                        <div class="planner-rating">
-                                            <i class="fas fa-star"></i>
-                                            <span>{{ $event->planner->rating_avg ?? '5.0' }}</span>
-                                            <small>({{ $event->planner->review_count ?? 0 }} reviews)</small>
-                                        </div>
-                                    @endif
-                                    <a href="{{ route('client.messages') }}" class="btn-message">
-                                        <i class="fas fa-comments"></i> Message Planner
-                                    </a>
-                                </div>
-                            </div>
-                        @else
-                            <div class="no-planner">
-                                <i class="fas fa-user-slash"></i>
-                                <p>No planner assigned yet</p>
-                                <small>You can assign a planner later</small>
-                            </div>
-                        @endif
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- GUESTS TAB -->
-     <div class="tab-pane" id="guests">
-        <div class="guests-container">
-        
-        <!-- Guest Stats -->
-        <div class="guest-stats-bar">
-            <div class="stat-box">
-                <i class="fas fa-users"></i>
-                <div>
-                    <h4 id="total-guests">{{ $event->guests->count() }}</h4>
-                    <p>Total Invited</p>
-                </div>
-            </div>
-            <div class="stat-box">
-                <i class="fas fa-check-circle"></i>
-                <div>
-                    <h4 id="accepted-guests">{{ $event->guests->where('rsvp_status', 'accepted')->count() }}</h4>
-                    <p>Accepted</p>
-                </div>
-            </div>
-            <div class="stat-box">
-                <i class="fas fa-times-circle"></i>
-                <div>
-                    <h4 id="declined-guests">{{ $event->guests->where('rsvp_status', 'declined')->count() }}</h4>
-                    <p>Declined</p>
-                </div>
-            </div>
-            <div class="stat-box">
-                <i class="fas fa-clock"></i>
-                <div>
-                    <h4 id="pending-guests">{{ $event->guests->where('rsvp_status', 'pending')->count() }}</h4>
-                    <p>Pending</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Actions Bar -->
-        <div class="guest-actions-bar">
-    <button class="btn-primary" id="add-guest-btn">
-        <i class="fas fa-plus"></i> Add Guest
-    </button>
-    
-    <!-- NEW: Send Invitations Button -->
-    @if($event->guests->count() > 0)
-        <button class="btn-success" id="send-invitations-btn">
-            <i class="fas fa-envelope"></i> Send Invitations
-        </button>
-    @endif
-    
-    <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" id="search-guests" placeholder="Search guests...">
-    </div>
-    <select id="filter-rsvp" class="filter-select">
-        <option value="all">All Guests</option>
-        <option value="pending">Pending</option>
-        <option value="accepted">Accepted</option>
-        <option value="declined">Declined</option>
-    </select>
-    </div>
-
-        <!-- Guest List -->
-        @if($event->guests->count() > 0)
-            <div class="guest-table-container">
-                <table class="guest-table" id="guest-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Dietary</th>
-                            <th>Plus One</th>
-                            <th>RSVP Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($event->guests as $guest)
-                            <tr data-guest-id="{{ $guest->id }}" data-rsvp="{{ $guest->rsvp_status }}">
-                                <td class="guest-name">
-                                    <div class="name-cell">
-                                        <div class="avatar">{{ strtoupper(substr($guest->name, 0, 1)) }}</div>
-                                        <span>{{ $guest->name }}</span>
-                                    </div>
-                                </td>
-                                <td>{{ $guest->email }}</td>
-                                <td>{{ $guest->phone ?? '-' }}</td>
-                                <td>{{ $guest->dietary_restrictions ?? 'None' }}</td>
-                                <td>
-                                    @if($guest->plus_one_allowed)
-                                        <span class="plus-one-badge">
-                                            <i class="fas fa-check"></i> {{ $guest->plus_one_name ?? 'Yes' }}
-                                        </span>
-                                    @else
-                                        <span class="text-muted">No</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($guest->rsvp_status === 'accepted')
-                                        <span class="rsvp-badge accepted">
-                                            <i class="fas fa-check-circle"></i> Accepted
-                                        </span>
-                                    @elseif($guest->rsvp_status === 'declined')
-                                        <span class="rsvp-badge declined">
-                                            <i class="fas fa-times-circle"></i> Declined
-                                        </span>
-                                    @else
-                                        <span class="rsvp-badge pending">
-                                            <i class="fas fa-clock"></i> Pending
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-icon edit-guest" 
-                                                data-guest-id="{{ $guest->id }}"
-                                                data-guest-name="{{ $guest->name }}"
-                                                data-guest-email="{{ $guest->email }}"
-                                                data-guest-phone="{{ $guest->phone }}"
-                                                data-guest-dietary="{{ $guest->dietary_restrictions }}"
-                                                data-guest-plus-one="{{ $guest->plus_one_allowed ? 'true' : 'false' }}"
-                                                data-guest-plus-one-name="{{ $guest->plus_one_name }}"
-                                                data-guest-notes="{{ $guest->notes }}"
-                                                title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn-icon delete-guest" 
-                                                data-guest-id="{{ $guest->id }}"
-                                                data-guest-name="{{ $guest->name }}"
-                                                title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <div class="empty-state" id="empty-state">
-                <i class="fas fa-user-plus"></i>
-                <h3>No Guests Yet</h3>
-                <p>Start adding guests to your event</p>
-                <button class="btn-primary" id="add-first-guest-btn">
-                    <i class="fas fa-plus"></i> Add Your First Guest
-                </button>
-            </div>
-        @endif
-
-    </div>
-</div>
-
-            <!-- BUDGET TAB -->
-            <div class="tab-pane" id="budget">
-            <div class="messages-content">
-                <div class="planner-message-card">
-                    <div class="card-icon-large">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h3>Budget Tracking</h3>
-                    <p class="message-prompt">View your event budget breakdown that your planner track</p>
-                    
-                    <a href="{{ route('client.events.budget.show', $event->id) }}" class="btn-primary btn-large">
-                        <i class="fas fa-chart-line"></i> View Budget
-                    </a>
-                </div>
-            </div>
-        </div>
-
-            <!-- TIMELINE TAB -->
-            <div class="tab-pane" id="timeline">
-            <div class="messages-content">
-                <div class="planner-message-card">
-                    <div class="card-icon-large">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3>Task Tracking</h3>
-                    <p class="message-prompt">View all tasks and checklist progress of your planner</p>
-                    
-                    <a href="{{ route('client.events.tasks.index', $event->id) }}" class="btn-primary btn-large">
-                        <i class="fas fa-clipboard-check"></i> View Tasks
-                    </a>
-                </div>
-            </div>
-        </div>
-
-            <!-- MESSAGES TAB -->
-        <div class="tab-pane" id="messages">
-                <div class="messages-content">
-                    @if($event->planner)
-                        <div class="planner-message-card">
-                            <div class="card-icon-large">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <h3>Message Your Planner</h3>
-                            <p class="planner-name">{{ $event->planner->name }}</p>
-                            <p class="message-prompt">Have questions? Need updates? Start a conversation!</p>
-                            
-                            <form action="{{ route('client.events.messages.create', $event->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn-primary btn-large">
-                                    <i class="fas fa-comment"></i> Start Conversation
-                                </button>
-                            </form>
+                    @if($event->guests->count() > 0)
+                        <div class="guests-table-container">
+                            <table class="guests-table-luxury" id="guestsTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>RSVP Status</th>
+                                        <th>Plus One</th>
+                                        <th>Dietary</th>
+                                        <th>Invitation</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($event->guests as $index => $guest)
+                                        <tr class="guest-row {{ $guest->rsvp_status }}">
+                                            <td class="guest-number">{{ $index + 1 }}</td>
+                                            <td class="guest-name">
+                                                <div class="name-with-avatar">
+                                                    <div class="guest-avatar-small">
+                                                        {{ strtoupper(substr($guest->name, 0, 1)) }}
+                                                    </div>
+                                                    <strong>{{ $guest->name }}</strong>
+                                                </div>
+                                            </td>
+                                            <td class="guest-email">{{ $guest->email }}</td>
+                                            <td class="guest-phone">{{ $guest->phone ?? 'N/A' }}</td>
+                                            <td class="guest-status">
+                                                <span class="status-pill {{ $guest->rsvp_status }}">
+                                                    @if($guest->rsvp_status === 'accepted')
+                                                        <i class="fas fa-check-circle"></i> Accepted
+                                                    @elseif($guest->rsvp_status === 'declined')
+                                                        <i class="fas fa-times-circle"></i> Declined
+                                                    @else
+                                                        <i class="fas fa-clock"></i> Pending
+                                                    @endif
+                                                </span>
+                                            </td>
+                                            <td class="guest-plus-one">
+                                                @if($guest->plus_one_allowed)
+                                                    <span class="plus-one-badge">
+                                                        <i class="fas fa-user-plus"></i> Allowed
+                                                    </span>
+                                                @else
+                                                    <span class="no-plus-one">—</span>
+                                                @endif
+                                            </td>
+                                            <td class="guest-dietary">
+                                                {{ $guest->dietary_restrictions ?? '—' }}
+                                            </td>
+                                            <td class="guest-invitation">
+                                                @if($guest->invitation_sent)
+                                                    <span class="invitation-sent">
+                                                        <i class="fas fa-check"></i> Sent
+                                                    </span>
+                                                    <small class="sent-date">{{ $guest->invitation_sent_at->format('M d') }}</small>
+                                                @else
+                                                    <span class="invitation-not-sent">Not sent</span>
+                                                @endif
+                                            </td>
+                                            <td class="guest-actions">
+                                                <div class="action-buttons">
+                                                    @if(!$guest->invitation_sent)
+                                                        <button onclick="resendInvitation({{ $guest->id }})" class="btn-action send" title="Send Invitation">
+                                                            <i class="fas fa-paper-plane"></i>
+                                                        </button>
+                                                    @else
+                                                        <button onclick="resendInvitation({{ $guest->id }})" class="btn-action resend" title="Resend">
+                                                            <i class="fas fa-redo"></i>
+                                                        </button>
+                                                    @endif
+                                                    <form method="POST" action="{{ route('client.guests.destroy', $guest->id) }}" style="display: inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn-action delete" onclick="return confirm('Remove this guest?')" title="Delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @else
-                        <div class="planner-message-card">
-                            <div class="card-icon-large" style="background: linear-gradient(135deg, #999, #666);">
-                                <i class="fas fa-user-slash"></i>
-                            </div>
-                            <h3>No Planner Assigned Yet</h3>
-                            <p class="message-prompt">Once a planner is assigned to your event, you'll be able to message them here.</p>
+                        <div class="empty-state-small">
+                            <i class="fas fa-users"></i>
+                            <p>No guests added yet</p>
+                            <a href="{{ route('client.guests.create', $event->id) }}" class="btn-primary-gradient">
+                                <i class="fas fa-user-plus"></i> Add Your First Guest
+                            </a>
                         </div>
                     @endif
                 </div>
-            </div>
+
+        {{-- Messages Tab --}}
+        <div class="tab-content" id="messages-tab">
+            <div class="messages-container">
+                <div class="messages-header">
+                    <h3>Event Messages</h3>
+                    <p>Chat with your planner about this event</p>
+                </div>
+                
+                <div class="messages-box" id="messagesBox">
+                    {{-- Messages will load here --}}
+                </div>
+
+                <div class="message-input-container">
+                    <form id="messageForm" class="message-form">
+                        @csrf
+                        <input type="hidden" name="event_id" value="{{ $event->id }}">
+                        <textarea name="message" id="messageInput" placeholder="Type your message..." rows="2"></textarea>
+                        <button type="submit" class="btn-send-message">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </form>
                 </div>
             </div>
-
-        </div>
-
-    <!-- ADD/EDIT GUEST MODAL -->
-    <div class="modal" id="guest-modal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modal-title">Add Guest</h3>
-            <button class="modal-close" id="close-modal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <form id="guest-form">
-            <input type="hidden" id="guest-id">
-            <input type="hidden" id="form-method" value="POST">
-            
-            <div class="form-grid">
-                <!-- Name -->
-                <div class="form-group">
-                    <label for="guest-name">
-                        Name <span class="required">*</span>
-                    </label>
-                    <input type="text" id="guest-name" required>
-                    <span class="form-error" id="error-name"></span>
-                </div>
-
-                <!-- Email -->
-                <div class="form-group">
-                    <label for="guest-email">
-                        Email <span class="required">*</span>
-                    </label>
-                    <input type="email" id="guest-email" required>
-                    <span class="form-error" id="error-email"></span>
-                </div>
-
-                <!-- Phone -->
-                <div class="form-group">
-                    <label for="guest-phone">Phone (Optional)</label>
-                    <input type="text" id="guest-phone">
-                </div>
-
-                <!-- Dietary Restrictions -->
-                <div class="form-group">
-                    <label for="guest-dietary">Dietary Restrictions</label>
-                    <select id="guest-dietary">
-                        <option value="">None</option>
-                        <option value="Vegan">Vegan</option>
-                        <option value="Vegetarian">Vegetarian</option>
-                        <option value="Gluten-Free">Gluten-Free</option>
-                        <option value="Halal">Halal</option>
-                        <option value="Kosher">Kosher</option>
-                        <option value="Allergies">Allergies (specify in notes)</option>
-                    </select>
-                </div>
-
-                <!-- Plus One Allowed -->
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="guest-plus-one">
-                        <span>Allow Plus One</span>
-                    </label>
-                </div>
-
-                <!-- Plus One Name -->
-                <div class="form-group" id="plus-one-name-group" style="display: none;">
-                    <label for="guest-plus-one-name">Plus One Name</label>
-                    <input type="text" id="guest-plus-one-name" placeholder="Guest's plus one">
-                </div>
-
-                <!-- Notes -->
-                <div class="form-group full-width">
-                    <label for="guest-notes">Notes (Optional)</label>
-                    <textarea id="guest-notes" rows="3" placeholder="Any special notes about this guest..."></textarea>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
-                <button type="submit" class="btn-primary" id="submit-btn">
-                    <i class="fas fa-save"></i> Save Guest
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- DELETE CONFIRMATION MODAL -->
-<div class="modal" id="delete-modal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content modal-small">
-        <div class="modal-header">
-            <h3>Delete Guest</h3>
-            <button class="modal-close" id="close-delete-modal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="delete-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Are you sure you want to remove <strong id="delete-guest-name"></strong>?</p>
-                <p class="note">This action cannot be undone.</p>
-            </div>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn-secondary" id="cancel-delete-btn">Cancel</button>
-            <button type="button" class="btn-danger" id="confirm-delete-btn">
-                <i class="fas fa-trash"></i> Delete Guest
-            </button>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    // Pass event ID to JavaScript
-    const EVENT_ID = {{ $event->id }};
-    const CSRF_TOKEN = '{{ csrf_token() }}';
-</script>
-
-
-<!-- SEND INVITATIONS MODAL -->
-<div class="modal" id="invitation-modal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content modal-small">
-        <div class="modal-header">
-            <h3>Send Invitations</h3>
-            <button class="modal-close" id="close-invitation-modal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="invitation-info">
-                <i class="fas fa-envelope"></i>
-                <p>Send email invitations to your guests</p>
-                <div class="invitation-stats">
-                    <div class="stat-item">
-                        <strong id="total-not-sent">{{ $event->guests->where('invitation_sent', false)->count() }}</strong>
-                        <span>Not sent yet</span>
-                    </div>
-                    <div class="stat-item">
-                        <strong id="total-sent">{{ $event->guests->where('invitation_sent', true)->count() }}</strong>
-                        <span>Already sent</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn-secondary" id="cancel-invitation-btn">Cancel</button>
-            <button type="button" class="btn-primary" id="confirm-send-invitations-btn">
-                <i class="fas fa-paper-plane"></i> Send to All Pending
-            </button>
         </div>
     </div>
 </div>
+    @if($event->status === 'completed' && !$event->rating)
+<div class="rating-container">
+    <div class="rating-card-luxury">
+        <div class="rating-header">
+            <div class="rating-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div>
+                <h3>Rate Your Experience</h3>
+                <p>How was your event with the planner?</p>
+            </div>
+        </div>
+        <div class="rating-stars-container">
+            <div class="stars-group" id="starsGroup">
+                @for($i = 1; $i <= 10; $i++)
+                    <span class="star-rating-item" data-value="{{ $i }}">★</span>
+                @endfor
+            </div>
+            <div class="rating-feedback" id="ratingFeedback">Click a star to rate</div>
+        </div>
+        <button id="submitRatingBtn" class="btn-submit-rating">Submit Rating</button>
+    </div>
+</div>
+@endif
+
+
+
+
+   
+
+
 @endsection
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/event-details.css') }}">
-@endpush
+<style>
+.rating-container {
+    margin-top: 40px;
+}
+.rating-card-luxury {
+    background: white;
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    border: 1px solid var(--cream, #EFE7DA);
+    transition: 0.3s;
+}
+.rating-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+.rating-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--coral, #E19184), var(--berry, #C63E4E));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+}
+.rating-header h3 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--green, #475B35);
+    margin-bottom: 4px;
+}
+.rating-header p {
+    font-size: 14px;
+    color: #7F8C8D;
+    margin: 0;
+}
+.rating-stars-container {
+    text-align: center;
+    padding: 20px 0;
+}
+.stars-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.star-rating-item {
+    font-size: 36px;
+    cursor: pointer;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+.star-rating-item:hover,
+.star-rating-item.active {
+    color: #FFD700;
+    text-shadow: 0 0 8px rgba(255,215,0,0.5);
+    transform: scale(1.1);
+}
+.rating-feedback {
+    font-size: 14px;
+    color: #7F8C8D;
+    margin-top: 10px;
+}
+.btn-submit-rating {
+    background: linear-gradient(135deg, var(--coral, #E19184), var(--berry, #C63E4E));
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+}
+.btn-submit-rating:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(225,145,132,0.4);
+}
+</style>
 
 @push('scripts')
-<script src="{{ asset('js/event-details.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+// ============================================
+// TAB SWITCHING
+// ============================================
+
+document.querySelectorAll('.event-tab').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.event-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        this.classList.add('active');
+        const tabId = this.dataset.tab;
+        document.getElementById(tabId + '-tab').classList.add('active');
+        
+        // Load messages if messages tab
+        if (tabId === 'messages') {
+            loadMessages();
+            startMessagePolling();
+        } else {
+            stopMessagePolling();
+        }
+    });
+});
+
+// ============================================
+// MESSAGES FUNCTIONALITY
+// ============================================
+
+let messagePollingInterval = null;
+
+async function loadMessages() {
+    try {
+        const response = await fetch('/client/events/{{ $event->id }}/messages', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to load messages');
+        }
+        
+        const data = await response.json();
+        displayMessages(data.messages);
+        
+    } catch (error) {
+        console.error('Error loading messages:', error);
+        document.getElementById('messagesContainer').innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load messages. Please refresh the page.</p>
+            </div>
+        `;
+    }
+}
+
+function displayMessages(messages) {
+    const container = document.getElementById('messagesContainer');
+    container.innerHTML = '';
+    
+    if (messages.length === 0) {
+        container.innerHTML = `
+            <div class="empty-messages">
+                <i class="fas fa-comments"></i>
+                <p>No messages yet. Start the conversation!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    messages.forEach(message => {
+        const messageEl = createMessageElement(message);
+        container.appendChild(messageEl);
+    });
+    
+    // Scroll to bottom
+    container.scrollTop = container.scrollHeight;
+}
+
+function createMessageElement(message) {
+    const isSent = message.sender_id === {{ Auth::id() }};
+    const div = document.createElement('div');
+    div.className = `message-item ${isSent ? 'sent' : 'received'}`;
+    
+    const initial = message.sender_name.charAt(0).toUpperCase();
+    const time = new Date(message.created_at).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    });
+    
+    div.innerHTML = `
+        <div class="message-avatar">${initial}</div>
+        <div class="message-content">
+            <div class="message-text">${escapeHtml(message.message)}</div>
+            <div class="message-time">${time}</div>
+        </div>
+    `;
+    
+    return div;
+}
+
+async function sendMessage(e) {
+    e.preventDefault();
+    
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    try {
+        const response = await fetch('/client/events/{{ $event->id }}/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ message })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to send message');
+        }
+        
+        input.value = '';
+        input.style.height = 'auto';
+        
+        await loadMessages();
+        
+    } catch (error) {
+        console.error('Error sending message:', error);
+        alert('Failed to send message: ' + error.message);
+    }
+}
+
+function startMessagePolling() {
+    if (messagePollingInterval) {
+        clearInterval(messagePollingInterval);
+    }
+    messagePollingInterval = setInterval(loadMessages, 5000);
+}
+
+function stopMessagePolling() {
+    if (messagePollingInterval) {
+        clearInterval(messagePollingInterval);
+        messagePollingInterval = null;
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Message form
+document.getElementById('messageForm')?.addEventListener('submit', sendMessage);
+
+// Auto-resize textarea
+document.getElementById('messageInput')?.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+});
+
+// ============================================
+// GUEST EXPORT FUNCTIONS
+// ============================================
+
+function exportGuestsToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.setTextColor(71, 91, 53);
+    doc.text('{{ $event->name }} - Guest List', 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 28);
+    
+    const tableData = [];
+    const rows = document.querySelectorAll('.guests-table-luxury tbody tr');
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        tableData.push([
+            cells[0].textContent.trim(),
+            cells[1].textContent.trim(),
+            cells[2].textContent.trim(),
+            cells[3].textContent.trim(),
+            cells[4].textContent.trim(),
+            cells[5].textContent.trim(),
+            cells[6].textContent.trim(),
+        ]);
+    });
+    
+    doc.autoTable({
+        startY: 35,
+        head: [['#', 'Name', 'Email', 'Phone', 'Status', 'Plus One', 'Dietary']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [71, 91, 53],
+            textColor: 255,
+            fontStyle: 'bold'
+        },
+        styles: {
+            fontSize: 9,
+            cellPadding: 4
+        },
+        alternateRowStyles: {
+            fillColor: [239, 231, 218]
+        }
+    });
+    
+    doc.save('{{ Str::slug($event->name) }}-guests.pdf');
+}
+
+function exportGuestsToExcel() {
+    const table = document.getElementById('guestsTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: 'Guests'});
+    XLSX.writeFile(wb, '{{ Str::slug($event->name) }}-guests.xlsx');
+}
+
+async function resendInvitation(guestId) {
+    if (!confirm('Resend invitation email to this guest?')) return;
+    
+    try {
+        const response = await fetch(`/client/guests/${guestId}/resend`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Invitation sent successfully!');
+            location.reload();
+        } else {
+            alert('Failed to send invitation.');
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    }
+}
+
+
+let selectedRating = 0;
+document.querySelectorAll('.star-rating-item').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = parseInt(this.getAttribute('data-value'));
+        document.querySelectorAll('.star-rating-item').forEach(s => s.classList.remove('active'));
+        for(let i=0; i<selectedRating; i++) {
+            document.querySelectorAll('.star-rating-item')[i].classList.add('active');
+        }
+        document.getElementById('ratingFeedback').innerHTML = `You selected ${selectedRating} out of 10 stars`;
+    });
+});
+document.getElementById('submitRatingBtn')?.addEventListener('click', function() {
+    if(selectedRating === 0) {
+        alert('Please select a rating (1-10 stars).');
+        return;
+    }
+    fetch('{{ route("client.rating.store", $event->id) }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ score: selectedRating, review: '' })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            alert('Thank you for rating!');
+            location.reload();
+        } else {
+            alert(data.message || 'Error submitting rating');
+        }
+    })
+    .catch(err => alert('Error: ' + err.message));
+});
+
+console.log('✅ Event show page scripts loaded');
+</script>
 @endpush

@@ -171,37 +171,6 @@
                     @enderror
                 </div>
 
-                <!-- Guest List Lock Date -->
-                <div class="form-group">
-                    <label for="guest_list_lock">
-                        Guest List Lock Date <span class="required">*</span>
-                    </label>
-                    <input type="date" 
-                           name="guest_list_lock" 
-                           id="guest_list_lock" 
-                           value="{{ old('guest_list_lock') }}" 
-                           required>
-                    <small>After this date, you cannot add/remove guests</small>
-                    @error('guest_list_lock')
-                        <span class="error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <!-- RSVP Deadline -->
-                <div class="form-group">
-                    <label for="rsvp_deadline">
-                        RSVP Deadline <span class="required">*</span>
-                    </label>
-                    <input type="date" 
-                           name="rsvp_deadline" 
-                           id="rsvp_deadline" 
-                           value="{{ old('rsvp_deadline') }}" 
-                           required>
-                    <small>Guests must respond by this date</small>
-                    @error('rsvp_deadline')
-                        <span class="error">{{ $message }}</span>
-                    @enderror
-                </div>
             </div>
         </div>
 

@@ -3,131 +3,169 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Guest;
 use App\Models\Event;
+use App\Models\Guest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str; // <--- Added this line
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\GuestInvitation;
 
 class GuestController extends Controller
 {
     /**
-     * Store new guest
+     * Show form to create guest
+     */
+    public function create($eventId)
+    {
+        $event = Event::where('client_id', Auth::id())->findOrFail($eventId);
+        
+        return view('client.guests.create', compact('event'));
+    }
+
+    /**
+     * Store a new guest and send invitation email
      */
     public function store(Request $request, $eventId)
-    {
-        // Get event and verify ownership
-        $event = Event::findOrFail($eventId);
-        
-        if ($event->client_id !== Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access'
-            ], 403);
+        {
+            $event = Event::where('client_id', Auth::id())->findOrFail($eventId);
+
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'nullable|string|max:20',
+                'plus_one_allowed' => 'nullable|boolean',
+                'dietary_restrictions' => 'nullable|string|max:255',
+                'notes' => 'nullable|string',
+            ]);
+
+            // Set defaults
+            $validated['event_id'] = $event->id;
+            $validated['rsvp_status'] = 'pending';
+            $validated['rsvp_token'] = Str::random(32);
+            $validated['plus_one_allowed'] = $request->has('plus_one_allowed') ? true : false;
+            
+            $guest = Guest::create($validated);
+
+            // Send invitation email
+            try {
+                // Log email attempt
+                \Log::info('Attempting to send email to: ' . $guest->email);
+                
+                Mail::to($guest->email)->send(new GuestInvitation($guest, $event));
+                
+                // Log success
+                \Log::info('Email sent successfully to: ' . $guest->email);
+                
+                // Mark invitation as sent
+                $guest->update([
+                    'invitation_sent' => true,
+                    'invitation_sent_at' => now(),
+                ]);
+                
+                $successMessage = 'Guest added and invitation sent successfully!';
+            } catch (\Exception $e) {
+                // Log detailed error
+                \Log::error('Email send failed: ' . $e->getMessage());
+                \Log::error('Stack trace: ' . $e->getTraceAsString());
+                
+                $successMessage = 'Guest added, but invitation email failed: ' . $e->getMessage();
+            }
+
+            return redirect()->route('client.events.show', $event->id)
+                ->with('success', $successMessage);
         }
+    
+   
 
-        // Validate input
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'dietary_restrictions' => 'nullable|string|max:255',
-            'plus_one_allowed' => 'nullable|boolean',
-            'plus_one_name' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-        ]);
+    /**
+     * Show single guest
+     */
+    public function show($id)
+    {
+        $guest = Guest::whereHas('event', function($query) {
+            $query->where('client_id', Auth::id());
+        })->findOrFail($id);
 
-        // Create guest
-        $guest = Guest::create([
-            'event_id' => $eventId,
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'dietary_restrictions' => $validated['dietary_restrictions'] ?? null,
-            'plus_one_allowed' => $validated['plus_one_allowed'] ?? false,
-            'plus_one_name' => $validated['plus_one_name'] ?? null,
-            'notes' => $validated['notes'] ?? null,
-            'rsvp_status' => 'pending',
-            'invitation_sent' => false,
-            'rsvp_token' => Str::random(32), // <--- Added this line
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Guest added successfully!',
-            'guest' => $guest
-        ], 201);
+        return view('client.guests.show', compact('guest'));
     }
 
     /**
      * Update guest
      */
-    public function update(Request $request, $eventId, $guestId)
+    public function update(Request $request, $id)
     {
-        // Get event and verify ownership
-        $event = Event::findOrFail($eventId);
-        
-        if ($event->client_id !== Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access'
-            ], 403);
-        }
+        $guest = Guest::whereHas('event', function($query) {
+            $query->where('client_id', Auth::id());
+        })->findOrFail($id);
 
-        // Get guest
-        $guest = Guest::where('event_id', $eventId)->findOrFail($guestId);
-
-        // Validate input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
-            'dietary_restrictions' => 'nullable|string|max:255',
             'plus_one_allowed' => 'nullable|boolean',
-            'plus_one_name' => 'nullable|string|max:255',
+            'dietary_restrictions' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
-        // Update guest
-        $guest->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'dietary_restrictions' => $validated['dietary_restrictions'] ?? null,
-            'plus_one_allowed' => $validated['plus_one_allowed'] ?? false,
-            'plus_one_name' => $validated['plus_one_name'] ?? null,
-            'notes' => $validated['notes'] ?? null,
-        ]);
+        $validated['plus_one_allowed'] = $request->has('plus_one_allowed') ? true : false;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Guest updated successfully!',
-            'guest' => $guest
-        ]);
+        $guest->update($validated);
+
+        return redirect()->route('client.events.show', $guest->event_id)
+            ->with('success', 'Guest updated successfully!');
     }
 
     /**
      * Delete guest
      */
-    public function destroy($eventId, $guestId)
+    public function destroy($id)
     {
-        // Get event and verify ownership
-        $event = Event::findOrFail($eventId);
-        
-        if ($event->client_id !== Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access'
-            ], 403);
-        }
+        $guest = Guest::whereHas('event', function($query) {
+            $query->where('client_id', Auth::id());
+        })->findOrFail($id);
 
-        // Get and delete guest
-        $guest = Guest::where('event_id', $eventId)->findOrFail($guestId);
+        $eventId = $guest->event_id;
         $guest->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Guest removed successfully!'
-        ]);
+        return redirect()->route('client.events.show', $eventId)
+            ->with('success', 'Guest removed successfully!');
     }
+
+    /**
+     * List all guests for client
+     */
+    public function index()
+    {
+        $guests = Guest::whereHas('event', function($query) {
+            $query->where('client_id', Auth::id());
+        })->with('event')->get();
+
+        return view('client.guests.index', compact('guests'));
+    }
+
+   
+    /**
+ * Resend invitation email
+ */
+        public function resendInvitation($id)
+        {
+            $guest = Guest::whereHas('event', function($query) {
+                $query->where('client_id', Auth::id());
+            })->findOrFail($id);
+
+            try {
+                Mail::to($guest->email)->send(new GuestInvitation($guest, $guest->event));
+                
+                $guest->update([
+                    'invitation_sent' => true,
+                    'invitation_sent_at' => now(),
+                ]);
+                
+                return response()->json(['success' => true, 'message' => 'Invitation sent successfully!']);
+            } catch (\Exception $e) {
+                \Log::error('Email send failed: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Failed to send email: ' . $e->getMessage()], 500);
+            }
+        }
 }

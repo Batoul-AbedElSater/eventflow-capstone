@@ -9,69 +9,87 @@ class Notification extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
-        'user_id',      // Who receives this notification
-        'event_id',     // Which event it's about
-        'type',         // Type of notification (rsvp_update, task_due, etc.)
-        'data_json',    // Additional data as JSON
-        'is_read',      // Has user read it?
+        'user_id',
+        'type',
+        'priority',
+        'title',
+        'message',
+        'icon',
+        'action_url',
+        'is_read',
+        'is_archived',
+        'read_at',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     */
-    protected function casts(): array
-    {
-        return [
-            'data_json' => 'array',  // Cast JSON to array automatically
-            'is_read' => 'boolean',  // Cast to true/false
-            'created_at' => 'datetime', // Laravel's timestamp
-            'updated_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'is_read' => 'boolean',
+        'is_archived' => 'boolean',
+        'read_at' => 'datetime',
+    ];
 
-    // ========================================
-    // RELATIONSHIPS
-    // ========================================
-
-    /**
-     * Get the user who receives this notification.
-     * Many-to-One: Notification -> User
-     */
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the event this notification is about.
-     * Many-to-One: Notification -> Event
-     */
-    public function event()
+    // Scopes
+    public function scopeUnread($query)
     {
-        return $this->belongsTo(Event::class);
+        return $query->where('is_read', false);
     }
 
-    // ========================================
-    // HELPER METHODS
-    // ========================================
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
 
-    /**
-     * Mark notification as read
-     */
+    public function scopePriority($query, $priority)
+    {
+        return $query->where('priority', $priority);
+    }
+
+    // Helpers
     public function markAsRead()
     {
-        $this->update(['is_read' => true]);
+        $this->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
     }
 
-    /**
-     * Check if notification is unread
-     */
-    public function isUnread(): bool
+    public function archive()
     {
-        return !$this->is_read;
+        $this->update(['is_archived' => true]);
+    }
+
+    public function getColorClass()
+    {
+        return match($this->priority) {
+            'low' => 'notification-blue',
+            'medium' => 'notification-yellow',
+            'high' => 'notification-orange',
+            'urgent' => 'notification-red',
+            default => 'notification-blue'
+        };
+    }
+
+    public function getIconClass()
+    {
+        if ($this->icon) {
+            return $this->icon;
+        }
+
+        return match($this->type) {
+            'task' => 'fas fa-tasks',
+            'event' => 'fas fa-calendar',
+            'request' => 'fas fa-inbox',
+            'message' => 'fas fa-envelope',
+            'weather' => 'fas fa-cloud-sun',
+            'conflict' => 'fas fa-exclamation-triangle',
+            'health' => 'fas fa-heartbeat',
+            default => 'fas fa-bell'
+        };
     }
 }

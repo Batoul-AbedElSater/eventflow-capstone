@@ -1,0 +1,206 @@
+@extends('layouts.planner')
+
+@section('title', 'Tasks Command Center')
+
+@section('content')
+<div class="tasks-page-epic">
+    
+    <!-- Hero Header -->
+    <div class="tasks-header-epic">
+        <div class="header-content-epic">
+            <div class="header-icon-power">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="header-text-epic">
+                <h1>Tasks Command Center</h1>
+                <p>Level {{ $gamification['level'] }} • {{ $gamification['current_xp'] }}/{{ $gamification['next_level_xp'] }} XP</p>
+            </div>
+        </div>
+        
+        <div class="header-actions-epic">
+            <button class="action-btn-epic power-mode-btn" id="powerModeBtn" type="button">
+                <i class="fas fa-bolt"></i> Power Mode
+            </button>
+            <button class="action-btn-epic timer-btn" id="focusTimerBtn" type="button">
+                <i class="fas fa-clock"></i> Focus Timer
+            </button>
+            <button class="action-btn-epic create-btn" id="createTaskBtn" type="button">
+                <i class="fas fa-plus"></i> New Task
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-wave-cards">
+        <div class="wave-card todo">
+            <div class="wave-card-icon"><i class="fas fa-list"></i></div>
+            <div class="wave-card-content">
+                <span class="wave-card-number">{{ $stats['todo'] }}</span>
+                <span class="wave-card-label">To Do</span>
+            </div>
+        </div>
+        <div class="wave-card progress">
+            <div class="wave-card-icon"><i class="fas fa-spinner"></i></div>
+            <div class="wave-card-content">
+                <span class="wave-card-number">{{ $stats['in_progress'] }}</span>
+                <span class="wave-card-label">In Progress</span>
+            </div>
+        </div>
+        <div class="wave-card completed">
+            <div class="wave-card-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="wave-card-content">
+                <span class="wave-card-number">{{ $stats['completed_today'] }}</span>
+                <span class="wave-card-label">Completed Today</span>
+            </div>
+        </div>
+        <div class="wave-card productivity">
+            <div class="wave-card-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="wave-card-content">
+                <span class="wave-card-number">{{ $stats['productivity_score'] }}%</span>
+                <span class="wave-card-label">Productivity</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="kanban-board-epic">
+        <!-- Pending Column -->
+        <div class="task-column" data-status="pending">
+            <div class="column-header pending-header">
+                <div class="column-title"><i class="fas fa-clock"></i><span>To Do</span></div>
+                <span class="task-count">{{ $tasks->where('status', 'pending')->count() }}</span>
+            </div>
+            <div class="tasks-drop-zone" data-status="pending" id="pendingTasks">
+                @foreach($tasks->where('status', 'pending') as $task)
+                    @include('planner.tasks.partials.task-card', ['task' => $task])
+                @endforeach
+            </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="task-column" data-status="in_progress">
+            <div class="column-header progress-header">
+                <div class="column-title"><i class="fas fa-spinner"></i><span>In Progress</span></div>
+                <span class="task-count">{{ $tasks->where('status', 'in_progress')->count() }}</span>
+            </div>
+            <div class="tasks-drop-zone" data-status="in_progress" id="inProgressTasks">
+                @foreach($tasks->where('status', 'in_progress') as $task)
+                    @include('planner.tasks.partials.task-card', ['task' => $task])
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Done Column -->
+        <div class="task-column" data-status="done">
+            <div class="column-header done-header">
+                <div class="column-title"><i class="fas fa-check-circle"></i><span>Completed</span></div>
+                <span class="task-count">{{ $tasks->where('status', 'done')->count() }}</span>
+            </div>
+            <div class="tasks-drop-zone" data-status="done" id="doneTasks">
+                @foreach($tasks->where('status', 'done') as $task)
+                    @include('planner.tasks.partials.task-card', ['task' => $task])
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Modal (existing) -->
+<div class="task-modal-epic" id="taskModal">
+    <div class="task-modal-overlay" onclick="closeTaskModal()"></div>
+    <div class="task-modal-content">
+        <div class="task-modal-header">
+            <h2 id="modalTitle">Create New Task</h2>
+            <button class="modal-close-btn" id="closeTaskModalBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="taskForm" class="task-form-epic">
+            <input type="hidden" id="taskId" name="task_id">
+            <div class="form-group-epic">
+                <label for="taskTitle">Task Title *</label>
+                <input type="text" id="taskTitle" required placeholder="Enter task title...">
+            </div>
+            <div class="form-group-epic">
+                <label for="taskDescription">Description</label>
+                <textarea id="taskDescription" rows="3" placeholder="Add details..."></textarea>
+            </div>
+            <div class="form-row-epic">
+                <div class="form-group-epic">
+                    <label for="taskPriority">Priority</label>
+                    <select id="taskPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group-epic">
+                    <label for="taskEvent">Event</label>
+                    <select id="taskEvent">
+                        <option value="">No Event</option>
+                        @foreach($events as $event)
+                            <option value="{{ $event->id }}">{{ $event->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-epic">
+                <div class="form-group-epic">
+                    <label for="taskDueDate">Due Date</label>
+                    <input type="datetime-local" id="taskDueDate">
+                </div>
+                <div class="form-group-epic">
+                    <label>Progress <span class="progress-value" id="progressValue">0%</span></label>
+                    <input type="range" id="taskProgress" min="0" max="100" value="0">
+                </div>
+            </div>
+            <div class="form-actions-epic">
+                <button type="button" class="btn-secondary-epic" id="cancelTaskBtn">Cancel</button>
+                <button type="submit" class="btn-primary-epic"><i class="fas fa-save"></i> Save Task</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Achievement Popup -->
+<div class="achievement-popup" id="achievementPopup">
+    <div class="achievement-content">
+        <div class="achievement-icon"><i class="fas fa-trophy"></i></div>
+        <div class="achievement-text">
+            <h3 id="achievementTitle">Achievement Unlocked!</h3>
+            <p id="achievementDescription">You're awesome!</p>
+        </div>
+    </div>
+</div>
+
+<!-- FOCUS TIMER MODAL (new) -->
+<div class="focus-timer-modal" id="focusTimerModal">
+    <div class="focus-modal-overlay"></div>
+    <div class="focus-modal-content">
+        <button class="focus-modal-close" id="closeFocusModal"><i class="fas fa-times"></i></button>
+        <div class="focus-modal-header">
+            <div class="focus-modal-icon"><i class="fas fa-hourglass-half"></i></div>
+            <h2>Set Focus Session</h2>
+            <p>Customize your timer</p>
+        </div>
+        <div class="focus-modal-body">
+            <div class="focus-field">
+                <label>Session Title</label>
+                <input type="text" id="focusTitle" placeholder="e.g., Work on Task #123" class="focus-input">
+            </div>
+            <div class="focus-field">
+                <label>Duration (minutes)</label>
+                <input type="number" id="focusMinutesPopup" value="25" min="1" max="180" step="1" class="focus-input">
+            </div>
+        </div>
+        <div class="focus-modal-actions">
+            <button class="focus-cancel-btn" id="cancelFocusModal">Cancel</button>
+            <button class="focus-start-btn" id="startFocusBtn">Start Timer</button>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{{ asset('css/planner-tasks.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="{{ asset('js/planner-tasks.js') }}"></script>
+@endsection
