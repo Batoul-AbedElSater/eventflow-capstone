@@ -78,17 +78,19 @@ class EventController extends Controller
         $event = Event::create($validated);
 
         // Notify planner if assigned
-        if ($request->planner_id) {
-            Notification::create([
-                'user_id' => $request->planner_id,
-                'type' => 'request',
-                'priority' => 'high',
-                'title' => 'New Event Request',
-                'message' => Auth::user()->name . ' has requested you to plan: ' . $event->name,
-                'icon' => 'fas fa-calendar-plus',
-                'action_url' => '/planner/requests',
-            ]);
-        }
+      if ($request->planner_id) {
+    try {
+        Notification::create([
+            'user_id' => $request->planner_id,
+            'type' => 'request',
+            'priority' => 'high',
+            'title' => 'New Event Request',
+            'message' => Auth::user()->name . ' has requested you to plan: ' . $event->name,
+            'icon' => 'fas fa-calendar-plus',
+            'action_url' => '/planner/requests',
+        ]);
+    } catch (\Exception $e) {}
+}
 
         return redirect()->route('client.events.show', $event->id)
             ->with('success', 'Event created successfully!');
@@ -184,17 +186,21 @@ class EventController extends Controller
         $event = Event::where('client_id', Auth::id())->findOrFail($id);
 
         // Notify planner if assigned
-        if ($event->planner_id) {
-            Notification::create([
-                'user_id' => $event->planner_id,
-                'type' => 'event',
-                'priority' => 'medium',
-                'title' => 'Event Deleted',
-                'message' => Auth::user()->name . ' deleted the event: ' . $event->name,
-                'icon' => 'fas fa-trash',
-                'action_url' => '/planner/dashboard',
-            ]);
-        }
+      if ($event->planner_id) {
+    try {
+        Notification::create([
+            'user_id' => $event->planner_id,
+            'type' => 'event',
+            'priority' => 'medium',
+            'title' => 'Event Deleted',
+            'message' => Auth::user()->name . ' deleted the event: ' . $event->name,
+            'icon' => 'fas fa-trash',
+            'action_url' => '/planner/dashboard',
+        ]);
+    } catch (\Exception $e) {
+        // notifications table not ready yet
+    }
+}
 
         // Delete photo if exists
         if ($event->event_photo) {

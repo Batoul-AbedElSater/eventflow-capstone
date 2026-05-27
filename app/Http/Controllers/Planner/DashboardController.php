@@ -144,7 +144,11 @@ class DashboardController extends Controller
         }
         
         // Client Happiness (based on ratings from clients)
-        $ratings = Rating::where('planner_id', $user->id)->with('event')->get();
+       try {
+    $ratings = Rating::where('planner_id', $user->id)->with('event')->get();
+} catch (\Exception $e) {
+    $ratings = collect();
+}
         $clientHappiness = [];
         foreach ($ratings->take(5) as $rating) {
             $clientHappiness[] = [
