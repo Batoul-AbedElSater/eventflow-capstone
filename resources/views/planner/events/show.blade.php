@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="event-show-magic">
-    
+
     <!-- Epic Hero Section -->
     <div class="event-hero-magic">
         <div class="hero-left">
@@ -14,7 +14,7 @@
             </div>
             <h1 class="event-title-magic">{{ $event->name }}</h1>
             <p class="event-subtitle">{{ \Carbon\Carbon::parse($event->start_date)->format('l, F d, Y') }} at {{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }}</p>
-            
+
             <div class="quick-actions-magic">
                 <a href="{{ route('planner.events.edit', $event->id) }}" class="action-btn-magic edit">
                     <i class="fas fa-edit"></i> Edit Event
@@ -25,9 +25,12 @@
                 <button class="action-btn-magic status" onclick="openStatusModal()">
                     <i class="fas fa-sync"></i> Update Status
                 </button>
+                <a href="/planner/events/{{ $event->id }}/vendors" class="action-btn-magic vendors">
+    <i class="fas fa-store"></i> Vendors
+</a>
             </div>
         </div>
-        
+
         <div class="hero-right">
             <div class="status-mega-card {{ $event->status }}">
                 <div class="status-icon">
@@ -43,7 +46,7 @@
                 </div>
                 <span class="status-text">{{ ucfirst(str_replace('_', ' ', $event->status)) }}</span>
             </div>
-            
+
             <div class="budget-mega-card">
                 <div class="budget-label">Total Budget</div>
                 <div class="budget-amount">${{ number_format($event->budget_overall ?? 0, 2) }}</div>
@@ -53,10 +56,10 @@
 
     <!-- Main Content Grid -->
     <div class="event-content-grid">
-        
+
         <!-- Left Column -->
         <div class="left-column">
-            
+
             <!-- Client Information Card -->
             <div class="info-card-magic">
                 <div class="card-header-magic">
@@ -102,7 +105,7 @@
                         <div class="detail-label"><i class="fas fa-users"></i> Guests</div>
                         <div class="detail-value">{{ $event->guest_estimate ?? 'TBD' }}</div>
                     </div>
-                    
+
                     @if($event->description)
                     <div class="description-section">
                         <h4>Description</h4>
@@ -143,7 +146,7 @@
 
         <!-- Right Column -->
         <div class="right-column">
-            
+
             <!-- Progress Overview -->
             <div class="info-card-magic">
                 <div class="card-header-magic">
@@ -156,13 +159,13 @@
                         $completedTasks = $tasks->where('status', 'done')->count();
                         $progressPercent = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
                     @endphp
-                    
+
                     <div class="progress-circle-container">
                         <div class="progress-circle" data-progress="{{ $progressPercent }}">
                             <svg width="200" height="200">
                                 <circle cx="100" cy="100" r="90" fill="none" stroke="#EFE7DA" stroke-width="12"/>
-                                <circle cx="100" cy="100" r="90" fill="none" stroke="#E19184" stroke-width="12" 
-                                        stroke-dasharray="565.48" 
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="#E19184" stroke-width="12"
+                                        stroke-dasharray="565.48"
                                         stroke-dashoffset="{{ 565.48 - (565.48 * $progressPercent / 100) }}"
                                         transform="rotate(-90 100 100)"/>
                             </svg>
@@ -172,7 +175,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="progress-stats-grid">
                         <div class="progress-stat">
                             <div class="stat-number">{{ $totalTasks }}</div>
@@ -729,6 +732,18 @@
         grid-template-columns: 1fr;
     }
 }
+// vendor button just for now
+.action-btn-magic.vendors {
+    background: rgba(225, 145, 132, 0.25);
+    border-color: #E19184;
+    color: white;
+}
+
+.action-btn-magic.vendors:hover {
+    background: #E19184;
+    border-color: #E19184;
+    color: white;
+}
 </style>
 
 
@@ -736,7 +751,7 @@
 <div id="statusModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
     <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%;">
         <h3 style="font-size: 24px; font-weight: 900; color: #475B35; margin: 0 0 20px 0;">Update Event Status</h3>
-        
+
         <form id="statusForm">
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-weight: 700; color: #475B35; margin-bottom: 10px;">Select Status</label>
@@ -748,7 +763,7 @@
                     <option value="cancelled" {{ $event->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                 </select>
             </div>
-            
+
             <div style="display: flex; gap: 15px; justify-content: flex-end;">
                 <button type="button" onclick="closeStatusModal()" style="padding: 14px 28px; background: #EFE7DA; color: #475B35; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
                     Cancel
@@ -772,9 +787,9 @@ function closeStatusModal() {
 
 document.getElementById('statusForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
+
     const status = document.getElementById('statusSelect').value;
-    
+
     try {
         const response = await fetch('/planner/events/{{ $event->id }}/status', {
             method: 'PUT',
@@ -784,7 +799,7 @@ document.getElementById('statusForm').addEventListener('submit', async function(
             },
             body: JSON.stringify({ status })
         });
-        
+
         if (response.ok) {
             alert('Status updated successfully!');
             location.reload();

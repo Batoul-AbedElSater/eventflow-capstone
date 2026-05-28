@@ -34,15 +34,12 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
     /**
      * Get events where user is the client
      */
@@ -121,7 +118,7 @@ class User extends Authenticatable
      */
     public function assignedTasks()
     {
-        return $this->hasMany(Task::class, 'assigned_planner_id');
+        return $this->hasMany(Task::class, 'user_id');
     }
 
     /**
@@ -217,8 +214,8 @@ class User extends Authenticatable
      */
     public function profile()
     {
-        return $this->isClient() 
-            ? $this->clientProfile 
+        return $this->isClient()
+            ? $this->clientProfile
             : $this->plannerProfile;
     }
 }

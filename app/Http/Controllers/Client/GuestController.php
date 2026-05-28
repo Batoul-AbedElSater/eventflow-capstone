@@ -19,7 +19,7 @@ class GuestController extends Controller
     public function create($eventId)
     {
         $event = Event::where('client_id', Auth::id())->findOrFail($eventId);
-        
+
         return view('client.guests.create', compact('event'));
     }
 
@@ -44,39 +44,39 @@ class GuestController extends Controller
             $validated['rsvp_status'] = 'pending';
             $validated['rsvp_token'] = Str::random(32);
             $validated['plus_one_allowed'] = $request->has('plus_one_allowed') ? true : false;
-            
+
             $guest = Guest::create($validated);
 
             // Send invitation email
             try {
                 // Log email attempt
                 \Log::info('Attempting to send email to: ' . $guest->email);
-                
+
                 Mail::to($guest->email)->send(new GuestInvitation($guest, $event));
-                
+
                 // Log success
                 \Log::info('Email sent successfully to: ' . $guest->email);
-                
+
                 // Mark invitation as sent
                 $guest->update([
                     'invitation_sent' => true,
                     'invitation_sent_at' => now(),
                 ]);
-                
+
                 $successMessage = 'Guest added and invitation sent successfully!';
             } catch (\Exception $e) {
                 // Log detailed error
                 \Log::error('Email send failed: ' . $e->getMessage());
                 \Log::error('Stack trace: ' . $e->getTraceAsString());
-                
+
                 $successMessage = 'Guest added, but invitation email failed: ' . $e->getMessage();
             }
 
             return redirect()->route('client.events.show', $event->id)
                 ->with('success', $successMessage);
         }
-    
-   
+
+
 
     /**
      * Show single guest
@@ -144,7 +144,7 @@ class GuestController extends Controller
         return view('client.guests.index', compact('guests'));
     }
 
-   
+
     /**
  * Resend invitation email
  */
@@ -156,12 +156,12 @@ class GuestController extends Controller
 
             try {
                 Mail::to($guest->email)->send(new GuestInvitation($guest, $guest->event));
-                
+
                 $guest->update([
                     'invitation_sent' => true,
                     'invitation_sent_at' => now(),
                 ]);
-                
+
                 return response()->json(['success' => true, 'message' => 'Invitation sent successfully!']);
             } catch (\Exception $e) {
                 \Log::error('Email send failed: ' . $e->getMessage());

@@ -31,22 +31,19 @@ class Event extends Model
         'completed_at',
     ];
 
-     
+
 
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      */
-    protected function casts(): array
-    {
-        return [
-            'start_date' => 'datetime',
-            'end_date' => 'datetime',
-            'budget_overall' => 'decimal:2',
-            'cancelled_at' => 'datetime',
-            'completed_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'budget_overall' => 'decimal:2',
+        'cancelled_at' => 'datetime',
+        'completed_at' => 'datetime',
+    ];
 
     // ========================================
     // RELATIONSHIPS

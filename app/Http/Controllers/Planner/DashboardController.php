@@ -16,35 +16,35 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today();
-        
+
         // Get planner's events (accepted/confirmed events)
         $myEvents = Event::where('planner_id', $user->id)
             ->with(['eventType', 'client', 'tasks'])
             ->orderBy('start_date', 'asc')
             ->get();
-        
+
         // Active events = confirmed events (planner accepted)
         $activeEvents = $myEvents->where('status', 'confirmed');
-        
+
         // Requests today = pending events created today (with no planner)
         $requestsToday = Event::whereNull('planner_id')
             ->where('status', 'pending')
             ->whereDate('created_at', $today)
             ->count();
-        
+
         // Today's tasks (tasks due today, not done)
-        $todayTasks = Task::where('assigned_planner_id', $user->id)
+        $todayTasks = Task::where('user_id', $user->id)
             ->whereDate('due_date', '<=', $today)
             ->where('status', '!=', 'done')
             ->orderBy('due_date', 'asc')
             ->get();
-        
+
         // Stats for header
         $stats = [
             'active_events' => $activeEvents->count(),
             'pending_requests' => $requestsToday,
         ];
-        
+
         // Calendar week
         $requestedDate = request('date') ? Carbon::parse(request('date')) : Carbon::now();
         $weekStart = $requestedDate->copy()->startOfWeek();
@@ -56,7 +56,7 @@ class DashboardController extends Controller
                 'events' => $myEvents->filter(fn($e) => $e->start_date->isSameDay($day))
             ];
         }
-        
+
         // Time Machine: monthly data (last 12 months)
         $timeMachineData = [];
         $totalCompletedEvents = 0;
@@ -88,7 +88,7 @@ class DashboardController extends Controller
             'total_journey_revenue' => $totalRevenue,
             'avg_monthly_events' => round(collect($monthlyCounts)->avg(), 1),
         ];
-        
+
         // Event Health Monitor (real data from tasks & timeline)
         $eventHealth = [];
         foreach ($myEvents->take(5) as $event) {
@@ -106,7 +106,7 @@ class DashboardController extends Controller
                 'status' => $overall >= 80 ? 'healthy' : ($overall >= 60 ? 'warning' : 'critical'),
             ];
         }
-        
+
         // Conflict detector (same day events)
         $conflicts = [];
         foreach ($myEvents as $e1) {
@@ -117,7 +117,7 @@ class DashboardController extends Controller
                 }
             }
         }
-        
+
         // Weather Guardian (outdoor events in next 2 weeks)
         $outdoorEvents = $myEvents->filter(function($event) {
             $isUpcoming = $event->start_date >= Carbon::now() && $event->start_date <= Carbon::now()->addWeeks(2);
@@ -127,7 +127,7 @@ class DashboardController extends Controller
                          stripos($event->location_text, 'beach') !== false;
             return $isUpcoming && $isOutdoor;
         })->take(3);
-        
+
         // Weather forecast (mock)
         $weatherForecast = [];
         for ($i = 0; $i < 14; $i++) {
@@ -142,7 +142,7 @@ class DashboardController extends Controller
                 'rain_chance' => $rainChance,
             ];
         }
-        
+
         // Client Happiness (based on ratings from clients)
        try {
     $ratings = Rating::where('planner_id', $user->id)->with('event')->get();
@@ -158,14 +158,14 @@ class DashboardController extends Controller
                 'trend' => 'up',
             ];
         }
-        
+
         // Event requests (pending events without planner)
         $pendingRequests = Event::whereNull('planner_id')
             ->where('status', 'pending')
             ->with(['eventType', 'client'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         return view('planner.dashboard', compact(
             'stats', 'calendarDays', 'weekStart', 'todayTasks',
             'timeMachineData', 'journeyInsights', 'eventHealth',
@@ -173,7 +173,7 @@ class DashboardController extends Controller
             'clientHappiness', 'pendingRequests', 'myEvents'
         ));
     }
-    
+
     /**
      * Simple AI: Calculate event health
      */
@@ -197,7 +197,7 @@ class DashboardController extends Controller
         }
         return $healthData;
     }
-    
+
     /**
      * Simple AI: Detect scheduling conflicts
      */
@@ -214,7 +214,7 @@ class DashboardController extends Controller
         }
         return $conflicts;
     }
-    
+
     /**
      * Simple AI: Calculate client happiness (based on ratings, fallback to task progress)
      */
@@ -243,7 +243,7 @@ class DashboardController extends Controller
         }
         return $happiness;
     }
-    
+
     /**
      * Accept event request
      */
@@ -256,7 +256,7 @@ class DashboardController extends Controller
         $event->planner_id = Auth::id();
         $event->status = 'confirmed';
         $event->save();
-        
+
         // Create notification for client
         \App\Models\Notification::create([
             'user_id' => $event->client_id,
@@ -267,10 +267,10 @@ class DashboardController extends Controller
             'icon' => 'fas fa-check-circle',
             'action_url' => '/client/events/' . $event->id,
         ]);
-        
+
         return back()->with('success', 'Event accepted! You can now manage this event.');
     }
-    
+
     /**
      * Decline event request
      */
@@ -279,7 +279,7 @@ class DashboardController extends Controller
         $event = Event::findOrFail($eventId);
         $event->status = 'declined';
         $event->save();
-        
+
         // Create notification for client
         \App\Models\Notification::create([
             'user_id' => $event->client_id,
@@ -290,10 +290,10 @@ class DashboardController extends Controller
             'icon' => 'fas fa-times-circle',
             'action_url' => '/client/dashboard',
         ]);
-        
+
         return back()->with('success', 'Event request declined.');
     }
-    
+
     /**
      * Set rain alert for an event (Weather Guardian)
      */
@@ -301,7 +301,7 @@ class DashboardController extends Controller
     {
         $event = Event::where('planner_id', Auth::id())->findOrFail($eventId);
         $rainChance = $request->input('rain_chance', 0);
-        
+
         // Store the rain alert in a session or database – here we just log it
         // In a real implementation, you might create a notification or store in a alerts table.
         \Log::info('Rain alert set', [
@@ -309,7 +309,7 @@ class DashboardController extends Controller
             'planner_id' => Auth::id(),
             'rain_chance' => $rainChance,
         ]);
-        
+
         // Optionally, create a notification for the planner (or client)
         \App\Models\Notification::create([
             'user_id' => Auth::id(),
@@ -320,7 +320,7 @@ class DashboardController extends Controller
             'icon' => 'fas fa-cloud-rain',
             'action_url' => '/planner/events/' . $eventId,
         ]);
-        
+
         return response()->json(['success' => true, 'message' => 'Rain alert set successfully.']);
     }
 }

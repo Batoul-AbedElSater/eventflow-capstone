@@ -11,7 +11,7 @@ class Task extends Model
 
    protected $fillable = [
         'user_id',
-        'assigned_planner_id',
+        'user_id',
         'event_id',
         'title',
         'description',
@@ -42,7 +42,7 @@ class Task extends Model
 
     public function planner()
     {
-        return $this->belongsTo(User::class, 'assigned_planner_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

@@ -14,10 +14,9 @@ class TaskController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        
-        $tasks = Task::where('assigned_planner_id', $userId)
+
+        $tasks = Task::where('user_id', $userId)
             ->with('event:id,name')
-            ->orderBy('deadline', 'desc')
             ->orderBy('due_date', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -64,10 +63,10 @@ class TaskController extends Controller
             ]);
 
             $userId = Auth::id();
-            
+
             $taskData = [
                 'user_id' => $userId,
-                'assigned_planner_id' => $userId,
+                'user_id' => $userId,
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'priority' => $validated['priority'],
@@ -86,7 +85,7 @@ class TaskController extends Controller
                 'message' => 'Task created successfully!',
                 'task' => $task
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Task creation error: ' . $e->getMessage());
             return response()->json([
@@ -98,7 +97,7 @@ class TaskController extends Controller
 
     public function show($id)
     {
-        $task = Task::where('assigned_planner_id', Auth::id())
+        $task = Task::where('user_id', Auth::id())
             ->with('event:id,name')
             ->findOrFail($id);
 
@@ -108,7 +107,7 @@ class TaskController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $task = Task::where('assigned_planner_id', Auth::id())->findOrFail($id);
+            $task = Task::where('user_id', Auth::id())->findOrFail($id);
 
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
@@ -142,7 +141,7 @@ class TaskController extends Controller
                 'message' => 'Task updated successfully!',
                 'task' => $task
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Task update error: ' . $e->getMessage());
             return response()->json([
@@ -155,7 +154,7 @@ class TaskController extends Controller
    public function updateStatus(Request $request, $id)
 {
     try {
-        $task = Task::where('assigned_planner_id', Auth::id())->findOrFail($id);
+        $task = Task::where('user_id', Auth::id())->findOrFail($id);
         $validated = $request->validate(['status' => 'required|in:pending,in_progress,done']);
         $task->update(['status' => $validated['status']]);
         return response()->json(['success' => true]);
@@ -167,14 +166,14 @@ class TaskController extends Controller
     public function destroy($id)
     {
         try {
-            $task = Task::where('assigned_planner_id', Auth::id())->findOrFail($id);
+            $task = Task::where('user_id', Auth::id())->findOrFail($id);
             $task->delete();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Task deleted successfully!'
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Task delete error: ' . $e->getMessage());
             return response()->json([
@@ -187,8 +186,8 @@ class TaskController extends Controller
     public function duplicate($id)
     {
         try {
-            $task = Task::where('assigned_planner_id', Auth::id())->findOrFail($id);
-            
+            $task = Task::where('user_id', Auth::id())->findOrFail($id);
+
             $newTask = $task->replicate();
             $newTask->status = 'pending';
             $newTask->progress = 0;
@@ -203,7 +202,7 @@ class TaskController extends Controller
                 'task' => $newTask,
                 'message' => 'Task duplicated successfully!'
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Task duplicate error: ' . $e->getMessage());
             return response()->json([
