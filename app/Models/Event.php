@@ -118,24 +118,7 @@ class Event extends Model
      */
     public function vendors()
     {
-        return $this->belongsToMany(Vendor::class, 'event_vendors')
-                    ->withPivot([
-                        'status',
-                        'agreed_amount',
-                        'payment_status',
-                        'contract_url',
-                        'notes'
-                    ])
-                    ->withTimestamps();
-    }
-
-    /**
-     * Get event-vendor pivot records directly.
-     * One-to-Many: Event -> EventVendors
-     */
-    public function eventVendors()
-    {
-        return $this->hasMany(EventVendor::class);
+        return $this->belongsToMany(Vendor::class, 'event_vendors');
     }
 
     /**

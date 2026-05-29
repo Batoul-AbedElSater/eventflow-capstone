@@ -43,7 +43,6 @@ Route::get('/events/{event}/vendors', function($event) {
     return view('planner.events.vendor.vendor', ['event' => \App\Models\Event::findOrFail($event)]);
 });
 
-
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Vendor;
 
 class User extends Authenticatable
 {
@@ -181,19 +182,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Get vendor reviews written by this user (client).
-     * One-to-Many: User (client) -> VendorReviews
-     */
-    public function vendorReviews()
-    {
-        return $this->hasMany(VendorReview::class, 'client_id');
-    }
-
-    // ========================================
-    // HELPER METHODS
-    // ========================================
-
-    /**
      * Check if user is a client.
      */
     public function isClient(): bool
@@ -217,6 +205,10 @@ class User extends Authenticatable
         return $this->isClient()
             ? $this->clientProfile
             : $this->plannerProfile;
+    }
+
+    public function favoriteVendors(){
+        return $this->belongsToMany(Vendor::class,'user_vendor_favorites');
     }
 }
 

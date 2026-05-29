@@ -108,11 +108,11 @@ class EventController extends Controller
     public function destroy($id)
     {
         $event = Event::where('client_id', Auth::id())->findOrFail($id);
-        
+
         if ($event->event_photo) {
             Storage::disk('public')->delete($event->event_photo);
         }
-        
+
         $event->delete();
 
         return response()->json([
