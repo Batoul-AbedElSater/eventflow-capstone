@@ -42,33 +42,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
     /**
-     * Get events where user is the client
-     */
-    public function events()
-    {
-        return $this->hasMany(Event::class, 'client_id');
-    }
-
-    /**
      * Get events where user is the planner
      */
     public function plannedEvents()
-    {
-        return $this->hasMany(Event::class, 'planner_id');
-    }
-
-    /**
-     * Get tasks for planner
-     */
-    public function tasks()
-    {
-        return $this->hasMany(Task::class, 'user_id'); // Adjust if needed
-    }
-
-       /**
-     * Get events where user is the planner
-     */
-    public function EventsOfPlanner()
     {
         return $this->hasMany(Event::class, 'planner_id');
     }

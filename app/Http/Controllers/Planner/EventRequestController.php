@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\log;
 use Carbon\Carbon;
 
 class EventRequestController extends Controller
@@ -89,7 +90,7 @@ class EventRequestController extends Controller
     $event->refresh();
 
     // Log to verify
-    \Log::info('Event accepted (direct update)', [
+    Log::info('Event accepted (direct update)', [
         'id' => $event->id,
         'new_status' => $event->status,
     ]);

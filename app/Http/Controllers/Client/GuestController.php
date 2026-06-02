@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GuestInvitation;
+use Illuminate\Support\Facades\Log;
 
 class GuestController extends Controller
 {
@@ -50,12 +51,12 @@ class GuestController extends Controller
             // Send invitation email
             try {
                 // Log email attempt
-                \Log::info('Attempting to send email to: ' . $guest->email);
+                Log::info('Attempting to send email to: ' . $guest->email);
 
                 Mail::to($guest->email)->send(new GuestInvitation($guest, $event));
 
                 // Log success
-                \Log::info('Email sent successfully to: ' . $guest->email);
+                Log::info('Email sent successfully to: ' . $guest->email);
 
                 // Mark invitation as sent
                 $guest->update([
@@ -66,8 +67,8 @@ class GuestController extends Controller
                 $successMessage = 'Guest added and invitation sent successfully!';
             } catch (\Exception $e) {
                 // Log detailed error
-                \Log::error('Email send failed: ' . $e->getMessage());
-                \Log::error('Stack trace: ' . $e->getTraceAsString());
+                Log::error('Email send failed: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
 
                 $successMessage = 'Guest added, but invitation email failed: ' . $e->getMessage();
             }
@@ -164,7 +165,7 @@ class GuestController extends Controller
 
                 return response()->json(['success' => true, 'message' => 'Invitation sent successfully!']);
             } catch (\Exception $e) {
-                \Log::error('Email send failed: ' . $e->getMessage());
+                Log::error('Email send failed: ' . $e->getMessage());
                 return response()->json(['success' => false, 'message' => 'Failed to send email: ' . $e->getMessage()], 500);
             }
         }

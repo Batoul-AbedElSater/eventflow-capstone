@@ -24,20 +24,21 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request)
     {
+    /** @var \App\Models\User $user */
         $user = Auth::user();
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
         ]);
-        
+
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
         ]);
-        
+
         return redirect()->route('client.profile')
             ->with('success', 'Profile updated successfully!');
     }
@@ -51,19 +52,20 @@ class ProfileController extends Controller
             'current_password' => 'required',
             'new_password' => ['required', 'confirmed', Password::min(8)],
         ]);
-        
+
+    /** @var \App\Models\User $user */
         $user = Auth::user();
-        
+
         // Check current password
         if (!Hash::check($validated['current_password'], $user->password)) {
             return back()->withErrors(['current_password' => 'Current password is incorrect']);
         }
-        
+
         // Update password
         $user->update([
             'password' => Hash::make($validated['new_password'])
         ]);
-        
+
         return redirect()->route('client.profile')
             ->with('success', 'Password changed successfully!');
     }
@@ -73,6 +75,7 @@ class ProfileController extends Controller
      */
     public function settings()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         return view('client.profile.setting', compact('user'));
     }
@@ -82,15 +85,16 @@ class ProfileController extends Controller
      */
     public function updateSettings(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        
+
         $validated = $request->validate([
             'email_notifications' => 'nullable|boolean',
             'sms_notifications' => 'nullable|boolean',
             'task_reminders' => 'nullable|boolean',
             'budget_alerts' => 'nullable|boolean',
         ]);
-        
+
         // Store preferences in user settings (you can add a settings column or separate table)
         $user->update([
             'notification_preferences' => json_encode([
@@ -100,7 +104,7 @@ class ProfileController extends Controller
                 'budget_alerts' => $validated['budget_alerts'] ?? false,
             ])
         ]);
-        
+
         return redirect()->route('client.settings')
             ->with('success', 'Settings updated successfully!');
     }

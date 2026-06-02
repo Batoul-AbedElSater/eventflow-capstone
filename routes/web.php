@@ -38,10 +38,6 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])->group(function () {
 
-//vendor routes
-Route::get('/events/{event}/vendors', function($event) {
-    return view('planner.events.vendor.vendor', ['event' => \App\Models\Event::findOrFail($event)]);
-});
 
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
@@ -57,10 +53,16 @@ Route::get('/events/{event}/vendors', function($event) {
     Route::post('/requests/{id}/accept', [App\Http\Controllers\Planner\EventRequestController::class, 'accept'])->name('requests.accept');
     Route::post('/requests/{id}/decline', [App\Http\Controllers\Planner\EventRequestController::class, 'decline'])->name('requests.decline');
 
+
+//vendor routes
+Route::get('/events/{event}/vendors', [App\Http\Controllers\Planner\VendorController::class, 'index'])
+    ->name('events.vendors');
+
     // Events
     Route::resource('events', App\Http\Controllers\Planner\EventController::class);
     Route::get('/events/analytics', [App\Http\Controllers\Planner\EventController::class, 'analytics'])->name('events.analytics');
     Route::put('/events/{event}/status', [App\Http\Controllers\Planner\EventController::class, 'updateStatus'])->name('events.status');
+
 
     // TASKS - ADD THESE ROUTES
     Route::prefix('tasks')->name('tasks.')->group(function () {
@@ -87,20 +89,13 @@ Route::get('/events/{event}/vendors', function($event) {
         Route::put('/tasks/{task}/status', [App\Http\Controllers\Planner\TaskController::class, 'updateStatus'])->name('planner.tasks.status');
     });
 
-    // Budget
-    Route::prefix('events/{event}/budget')->name('events.budget.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Planner\BudgetController::class, 'index'])->name('index');
-        Route::post('/items', [App\Http\Controllers\Planner\BudgetController::class, 'storeItem'])->name('items.store');
-        Route::put('/items/{item}', [App\Http\Controllers\Planner\BudgetController::class, 'updateItem'])->name('items.update');
-        Route::delete('/items/{item}', [App\Http\Controllers\Planner\BudgetController::class, 'destroyItem'])->name('items.destroy');
-    });
 
     // Guests
     Route::prefix('events/{event}/guests')->name('events.guests.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Planner\GuestController::class, 'index'])->name('index');
-        Route::post('/', [App\Http\Controllers\Planner\GuestController::class, 'store'])->name('store');
-        Route::put('/{guest}', [App\Http\Controllers\Planner\GuestController::class, 'update'])->name('update');
-        Route::delete('/{guest}', [App\Http\Controllers\Planner\GuestController::class, 'destroy'])->name('destroy');
+        Route::get('/', [App\Http\Controllers\Client\GuestController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\client\GuestController::class, 'store'])->name('store');
+        Route::put('/{guest}', [App\Http\Controllers\client\GuestController::class, 'update'])->name('update');
+        Route::delete('/{guest}', [App\Http\Controllers\client\GuestController::class, 'destroy'])->name('destroy');
     });
 
 
@@ -123,10 +118,8 @@ Route::get('/events/{event}/vendors', function($event) {
     });
 
     // Profile & Settings
-    Route::get('/profile', [App\Http\Controllers\Planner\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [App\Http\Controllers\Planner\ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/settings', [App\Http\Controllers\Planner\SettingsController::class, 'index'])->name('settings.index');
-    Route::put('/settings', [App\Http\Controllers\Planner\SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/profile', [App\Http\Controllers\client\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
 
 
 });
@@ -214,14 +207,7 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
     Route::post('/{token}', [App\Http\Controllers\RsvpController::class, 'update'])->name('update');
 });
 
-// ============================================
-// ADMIN ROUTES (If you have admin panel)
-// ============================================
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    // Add more admin routes as needed
-});
 
 // ============================================
 // FALLBACK ROUTE

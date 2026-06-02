@@ -6,19 +6,19 @@
     <meta name="user-id" content="{{ Auth::id() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - EventFlow Planner</title>
-    
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/planner-dashboard.css') }}">
-    
+
     <style>
     /* ===== COLOR PALETTE ===== */
     :root {
@@ -142,7 +142,7 @@
     left: 0;
     right: 0;
     height: 75px;
-   
+
     border-bottom: 3px solid transparent;
     border-image: linear-gradient(90deg, var(--coral), var(--berry), var(--vampire)) 1;
     display: flex;
@@ -530,7 +530,7 @@
     <!-- Header -->
     <header class="header">
          <div class="header-left">
-            
+
              <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s;">
                 <span style="color: #E19184;">E</span>
                 <span style="color: #C63E4E;">v</span>
@@ -542,9 +542,9 @@
                 <span style="color: #620607;">o</span>
                 <span style="color: #E19184;">w</span>
             </h1>
-           
+
         </div>
-        
+
         <div class="header-right">
             <!-- Sidebar (balloons) -->
             <aside class="planner-sidebar">
@@ -623,14 +623,6 @@
         </div>
     </div>
 
-    <!-- Notification River & Modal (original, fully intact) -->
-    <div class="notification-river" id="notificationRiver">
-        <div class="river-container" id="riverContainer"></div>
-    </div>
-    <button class="river-toggle-btn" id="riverToggleBtn" title="Hide River">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-
     <div class="notification-modal" id="notificationModal">
         <div class="notification-modal-overlay"></div>
         <div class="notification-modal-content">
@@ -661,7 +653,6 @@
     </div>
     <!-- JavaScript -->
     <script src="{{ asset('js/planner-dashboard.js') }}"></script>
-    <script src="{{ asset('js/planner-notification.js') }}"></script>
     <script src="{{ asset('js/mood-voice-common.js') }}"></script>
 
     <!-- Dropdown chevron rotation (click toggle) -->
@@ -688,7 +679,7 @@
         });
 
 
-       
+
     </script>
     @stack('scripts')
 <script>

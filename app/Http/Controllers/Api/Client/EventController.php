@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+
 class EventController extends Controller
 {
     /**
@@ -37,7 +38,7 @@ class EventController extends Controller
             'event_type_id' => 'required|exists:event_types,id',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
-            'start_time' => 'required',
+            'start_time' => 'nullable',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'end_time' => 'nullable',
             'location_text' => 'required|string',
@@ -85,7 +86,7 @@ class EventController extends Controller
             'event_type_id' => 'required|exists:event_types,id',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
-            'start_time' => 'required',
+           'start_time' => 'nullable',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'end_time' => 'nullable',
             'location_text' => 'required|string',
@@ -164,4 +165,21 @@ class EventController extends Controller
             'message' => 'Photo deleted successfully'
         ]);
     }
+
+
+    public function createData()
+{
+    $eventTypes = \App\Models\EventType::select('id', 'name')->get();
+    $planners = \App\Models\User::where('role', 'planner')
+                    ->select('id', 'name')
+                    ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'event_types' => $eventTypes,
+            'planners'    => $planners,
+        ]
+    ]);
+}
 }

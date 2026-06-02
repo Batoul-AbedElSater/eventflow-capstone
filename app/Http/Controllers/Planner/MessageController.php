@@ -55,7 +55,7 @@ public function index($eventId)
                 ];
             })
         ]);
-        
+
     } catch (\Exception $e) {
         Log::error('Planner messages index error: ' . $e->getMessage());
         return response()->json(['success' => false], 500);
@@ -99,7 +99,7 @@ public function index($eventId)
                     'message' => [ /* same as above */ ]
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Planner message store error: ' . $e->getMessage());
+                Log::error('Planner message store error: ' . $e->getMessage());
                 return response()->json(['success' => false, 'message' => 'Failed to send message'], 500);
             }
         }
@@ -110,11 +110,11 @@ public function index($eventId)
             $message = Message::where('event_id', $eventId)
                 ->where('sender_id', Auth::id())
                 ->findOrFail($messageId);
-            
+
             $message->delete();
-            
+
             return response()->json(['success' => true]);
-            
+
         } catch (\Exception $e) {
             Log::error('Delete message error: ' . $e->getMessage());
             return response()->json(['success' => false], 500);
@@ -131,12 +131,12 @@ public function index($eventId)
                 Message::where('event_id', $eventId)
                     ->where('sender_id', $userId)
                     ->update(['deleted_by_sender' => true]);
-                
+
                 // Messages received by this planner
                 Message::where('event_id', $eventId)
                     ->where('receiver_id', $userId)
                     ->update(['deleted_by_receiver' => true]);
-                
+
                 return response()->json(['success' => true, 'message' => 'Chat cleared for you']);
             } catch (\Exception $e) {
                 Log::error('Delete all messages error: ' . $e->getMessage());

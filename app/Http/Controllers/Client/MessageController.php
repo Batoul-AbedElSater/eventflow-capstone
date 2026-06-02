@@ -55,7 +55,7 @@ public function index($eventId)
                 ];
             })
         ]);
-        
+
     } catch (\Exception $e) {
         Log::error('Client messages index error: ' . $e->getMessage());
         return response()->json(['success' => false], 500);
@@ -117,7 +117,7 @@ public function index($eventId)
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
                 return response()->json(['success' => false, 'message' => 'Event not found'], 404);
             } catch (\Exception $e) {
-                \Log::error('Client message store error: ' . $e->getMessage(), [
+                Log::error('Client message store error: ' . $e->getMessage(), [
                     'event_id' => $eventId,
                     'trace'    => $e->getTraceAsString()
                 ]);
@@ -131,11 +131,11 @@ public function index($eventId)
             $message = Message::where('event_id', $eventId)
                 ->where('sender_id', Auth::id())
                 ->findOrFail($messageId);
-            
+
             $message->delete();
-            
+
             return response()->json(['success' => true]);
-            
+
         } catch (\Exception $e) {
             Log::error('Delete message error: ' . $e->getMessage());
             return response()->json(['success' => false], 500);
@@ -152,17 +152,17 @@ public function index($eventId)
         // For simplicity: client is always the "sender" in messages they sent,
         // and "receiver" for messages the planner sent.
         // We'll mark both cases:
-        
+
         // Messages sent by this client → mark deleted_by_sender = true
         Message::where('event_id', $eventId)
             ->where('sender_id', $userId)
             ->update(['deleted_by_sender' => true]);
-        
+
         // Messages received by this client (planner sent) → mark deleted_by_receiver = true
         Message::where('event_id', $eventId)
             ->where('receiver_id', $userId)
             ->update(['deleted_by_receiver' => true]);
-        
+
         return response()->json(['success' => true, 'message' => 'Chat cleared for you']);
     } catch (\Exception $e) {
         Log::error('Delete all messages error: ' . $e->getMessage());

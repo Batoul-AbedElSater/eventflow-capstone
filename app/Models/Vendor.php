@@ -22,6 +22,11 @@ class Vendor extends Model
         'locations',
         'instagram',
     ];
+
+    protected $casts=[
+     'locations'=>'array',
+     'rating'=>'decimal:2',
+    ];
     public function events()
     {
         return $this->belongsToMany(Event::class, 'event_vendors');

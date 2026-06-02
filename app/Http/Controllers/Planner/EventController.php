@@ -16,7 +16,7 @@ class EventController extends Controller
 {
     try {
         $plannerId = Auth::id();
-        
+
         $events = Event::where('planner_id', $plannerId)
             ->with(['client:id,name,email', 'eventType:id,name'])
             ->orderBy('start_date', 'desc')
@@ -37,7 +37,7 @@ class EventController extends Controller
             'pending_revenue' => $events->where('status', 'pending')->sum('budget_overall'),
             'completed_revenue' => $events->where('status', 'completed')->sum('budget_overall'),
         ];
-        
+
         $summary = [
             'total_events' => $events->count(),
             'total_revenue' => $totalRevenue,
@@ -47,10 +47,10 @@ class EventController extends Controller
 
         // Top clients
         $topClients = User::where('role', 'client')
-            ->whereHas('events', function($query) use ($plannerId) {
+            ->whereHas('clientEvents', function($query) use ($plannerId) {
                 $query->where('planner_id', $plannerId);
             })
-            ->withCount(['events' => function($query) use ($plannerId) {
+            ->withCount(['clientEvents as events_count' => function($query) use ($plannerId) {
                 $query->where('planner_id', $plannerId);
             }])
             ->orderBy('events_count', 'desc')
@@ -72,7 +72,7 @@ class EventController extends Controller
             'acceptance_rate' => $totalEvents > 0 ? round(($acceptedEvents / $totalEvents) * 100) : 0,
             'completion_rate' => $acceptedEvents > 0 ? round(($completedEvents / $acceptedEvents) * 100) : 0,
             'avg_event_value' => $totalEvents > 0 ? round($events->sum('budget_overall') / $totalEvents, 2) : 0,
-            'total_clients' => User::where('role', 'client')->whereHas('events', function($q) use ($plannerId) {
+            'total_clients' => User::where('role', 'client')->whereHas('clientEvents', function($q) use ($plannerId) {
                 $q->where('planner_id', $plannerId);
             })->count(),
             'avg_response_time' => '2.5', // ADD THIS
@@ -80,7 +80,7 @@ class EventController extends Controller
         ];
 
         return view('planner.events.index', compact('events', 'stats', 'summary', 'topClients', 'metrics'));
-        
+
     } catch (\Exception $e) {
         Log::error('Events index error: ' . $e->getMessage());
         return back()->with('error', 'Failed to load events');
@@ -105,10 +105,10 @@ class EventController extends Controller
 
             // Top clients
             $topClients = User::where('role', 'client')
-                ->whereHas('events', function($query) use ($plannerId) {
+                ->whereHas('clientEvents', function($query) use ($plannerId) {
                     $query->where('planner_id', $plannerId);
                 })
-                ->withCount(['events' => function($query) use ($plannerId) {
+                ->withCount([' clientEvents as events_count' => function($query) use ($plannerId) {
                     $query->where('planner_id', $plannerId);
                 }])
                 ->orderBy('events_count', 'desc')
@@ -131,7 +131,7 @@ class EventController extends Controller
             ];
 
             return view('planner.events.analytics', compact('revenueData', 'eventTypes', 'topClients', 'metrics', 'period'));
-            
+
         } catch (\Exception $e) {
             Log::error('Analytics error: ' . $e->getMessage());
             return back()->with('error', 'Failed to load analytics');
@@ -143,7 +143,7 @@ class EventController extends Controller
         if ($event->planner_id !== Auth::id()) {
             abort(403);
         }
-        
+
         return view('planner.events.show', compact('event'));
     }
 
@@ -162,7 +162,7 @@ class EventController extends Controller
         if ($event->planner_id !== Auth::id()) {
             abort(403);
         }
-        
+
         return view('planner.events.edit', compact('event'));
     }
 
@@ -176,7 +176,7 @@ class EventController extends Controller
         if ($event->planner_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $event->delete();
         return redirect()->route('planner.events.index')->with('success', 'Event deleted successfully');
     }
@@ -199,7 +199,7 @@ class EventController extends Controller
                 'message' => 'Event status updated successfully',
                 'event' => $event
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Event status update error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to update status'], 500);

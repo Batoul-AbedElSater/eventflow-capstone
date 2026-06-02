@@ -9,20 +9,22 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('vendors', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('category');
-            $table->string('email')->nullable();
-            $table->string('phoneNumber');
-            $table->string('website')->nullable();
-            $table->decimal('rating',3,2)->default(0);
-            $table->string('imageIcon');
-            $table->text('description')->nullable();
-            $table->string('locations');
-            $table->string('instagram');
-            $table->timestamps();
-        });
+       if (!Schema::hasTable('vendors')) {
+            Schema::create('vendors', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('category');
+                $table->string('email')->nullable();
+                $table->string('phoneNumber');
+                $table->string('website')->nullable();
+                $table->decimal('rating',3,2)->default(0);
+                $table->string('imageIcon');
+                $table->text('description')->nullable();
+                $table->json('locations');
+                $table->string('instagram');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

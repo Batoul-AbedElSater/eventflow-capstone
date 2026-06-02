@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_vendor_favorites', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
-            $table->unique(['user_id','vendor_id']);
-            $table->timestamps();
-        });
+       if (!Schema::hasTable('user_vendor_favorites')) {
+            Schema::create('user_vendor_favorites', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
+                $table->unique(['user_id','vendor_id']);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

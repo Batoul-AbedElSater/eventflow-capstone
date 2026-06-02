@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Planner;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\log;
 use App\Models\Event;
 use App\Models\Task;
 use App\Models\Rating;
@@ -14,6 +15,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $today = Carbon::today();
 
@@ -304,7 +306,7 @@ class DashboardController extends Controller
 
         // Store the rain alert in a session or database – here we just log it
         // In a real implementation, you might create a notification or store in a alerts table.
-        \Log::info('Rain alert set', [
+        Log::info('Rain alert set', [
             'event_id' => $eventId,
             'planner_id' => Auth::id(),
             'rain_chance' => $rainChance,

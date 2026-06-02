@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_vendors', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('event_id')->constrained()->onDelete('cascade');
-            $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
-            $table->unique(['event_id','vendor_id']);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('event_vendors')) {
+            Schema::create('event_vendors', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('event_id')->constrained()->onDelete('cascade');
+                $table->foreignId('vendor_id')->constrained()->onDelete('cascade');
+                $table->unique(['event_id','vendor_id']);
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -27,4 +29,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('event_vendors');
     }
+
+
 };
