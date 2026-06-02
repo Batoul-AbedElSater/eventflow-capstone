@@ -15,7 +15,7 @@ class AnalyticsController extends Controller
         $user = Auth::user();
 
         // Get all planner events
-        $allEvents = $user->eventsOfPlanner()
+       $allEvents = $user->plannerEvents()
             ->with(['eventType', 'client', 'tasks'])
             ->get();
 
