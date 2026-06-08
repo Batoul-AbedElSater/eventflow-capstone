@@ -6,20 +6,27 @@
 <link rel="stylesheet"  href="{{ asset('css/vendor.css')}}">
 @endpush
 
+@php
+    $favoriteIds = $event->vendors()
+        ->wherePivot('is_favorite', true)
+        ->pluck('vendors.id')
+        ->toArray();
+@endphp
+
 @section("content")
 
 <div class="vendors_page">
+ <h1 class="header_title">Vendors</h1>
 
-    <div class="vendors_headr">
-    <h1 class="header_title">Vendors</h1>
-<button class=" header_heart_btn">
-    <i class="fas fa-heart"></i>
-</button>
-    </div>
+ <div class="vendors_headr">
 
-    <div class="search_bar">
+     <div class="search_bar">
         <i class="fas fa-search"></i>
         <input class="search_input"  id="search_bar" placeholder="Search vendors....">
+    </div>
+ <button class="header_heart_btn" onclick="window.location='{{ route('planner.events.vendors.favorites', $event->id) }}'">
+   Favorite Vendors <i class="fas fa-heart"></i>
+</button>
     </div>
 
 <div class="category_btn">
@@ -50,11 +57,17 @@
     </div>
     </div>
     <div class="vendor_card_actions">
-        <button class="card_heart_btn">
-    <i class="far fa-heart"></i>
-</button>
-        <button class="btn_view">View Details</button>
-         <button class="btn_book">Book Vendor</button>
+
+        <form method="POST" action="{{ route('planner.events.vendors.toggleFavorite', [$event->id, $vendor->id]) }}">
+                    @csrf
+                    <button type="submit" class="card_heart_btn {{ in_array($vendor->id, $favoriteIds) ? 'favorited' : '' }}">
+                        <i class="{{ in_array($vendor->id, $favoriteIds) ? 'fas' : 'far' }} fa-heart"></i>
+                    </button>
+                </form>
+<button class="btn_view" onclick="window.location='{{ route('planner.events.vendors.show', [$event->id, $vendor->id]) }}'">View Details</button>
+        <a href="https://wa.me/{{ preg_replace('/\D/', '', $vendor->phoneNumber) }}" target="_blank" class="book_link">
+    <button class="btn_book">Book Vendor</button>
+</a>
     </div>
 </div>
 

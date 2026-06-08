@@ -19,4 +19,53 @@ class VendorController extends Controller
 
         return view('planner.events.vendor.vendor', compact('event', 'vendors'));
     }
+
+    public function show(Event $event, Vendor $vendor)
+{
+    if ($event->planner_id !== Auth::id()) {
+        abort(403);
+    }
+
+    return view('planner.events.vendor.vendor_details', compact('event', 'vendor'));
+}
+
+public function favorites(int $eventId)
+{
+    $event = Event::findOrFail($eventId);
+    $vendors = $event->vendors()->wherePivot('is_favorite', true)->get();
+
+    return view('planner.events.vendor.vendor_favorites', compact('event', 'vendors'));
+}
+
+public function toggleFavorite(Event $event, Vendor $vendor)
+{
+    if ($event->planner_id !== Auth::id()) {
+        abort(403);
+    }
+
+    $existing = $event->vendors()->where('vendor_id', $vendor->id)->first();
+
+    if ($existing) {
+        $currentStatus = $existing->pivot->is_favorite;
+        $event->vendors()->updateExistingPivot($vendor->id, [
+            'is_favorite' => !$currentStatus,
+        ]);
+    } else {
+        $event->vendors()->attach($vendor->id, ['is_favorite' => true]);
+    }
+
+    return redirect()->back();
+}
+
+
+public function removeFavorite(Event $event, Vendor $vendor)
+{
+    if ($event->planner_id !== Auth::id()) {
+        abort(403);
+    }
+
+    $event->vendors()->detach($vendor->id);
+
+    return redirect()->route('planner.events.vendors.favorites', $event->id);
+}
 }

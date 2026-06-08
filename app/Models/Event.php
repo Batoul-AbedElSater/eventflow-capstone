@@ -118,7 +118,7 @@ class Event extends Model
      */
     public function vendors()
     {
-        return $this->belongsToMany(Vendor::class, 'event_vendors');
+        return $this->belongsToMany(Vendor::class, 'event_vendors')->withPivot('is_favorite');
     }
 
     /**

@@ -1,9 +1,3 @@
-/* ============================================
-   COLOR PALETTE - EASY TO CHANGE
-   ============================================ */
-/* ============================================
-   COLOR PALETTE - BUTTERFLY LUXURY
-   ============================================ */
 :root {
     /* Main Palette */
     --garden-green: #475B35;      /* Accent & nature elements */
@@ -11,19 +5,19 @@
     --coral-haze: #E19184;        /* Primary actions & warmth */
     --calypso-berry: #C63E4E;     /* Secondary accent & energy */
     --vampire-hunter: #620607;    /* Spotlight/emphasis only */
-    
+
     /* Neutral Colors */
     --white: #FFFFFF;
     --black: #000000;
     --gray-light: #F5F5F5;
     --gray: #999999;
     --gray-dark: #666666;
-    
+
     /* Shadows with warmth */
     --shadow-sm: 0 2px 8px rgba(225, 145, 132, 0.12);
     --shadow-md: 0 4px 16px rgba(225, 145, 132, 0.18);
     --shadow-lg: 0 10px 40px rgba(225, 145, 132, 0.25);
-    
+
     /* Transitions */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease;
@@ -51,7 +45,7 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 30%, rgba(225, 145, 132, 0.03) 0%, transparent 50%),
         radial-gradient(circle at 80% 70%, rgba(71, 91, 53, 0.02) 0%, transparent 50%);
     pointer-events: none;
@@ -82,7 +76,7 @@ body::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
         repeating-linear-gradient(
             45deg,
             transparent,
@@ -367,129 +361,6 @@ body::before {
 
 .logout-btn i {
     color: var(--calypso-berry) !important;
-}
-
-/* ============================================
-   SIDEBAR - ELEGANT DARK
-   ============================================ */
-.planner-sidebar {
-    position: fixed;
-    top: 75px;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    background: linear-gradient(180deg, 
-        var(--garden-green) 0%, 
-        #5A7344 30%,
-        var(--coral-haze) 70%,
-        var(--calypso-berry) 100%
-    );
-    box-shadow: var(--shadow-md);
-    padding: 35px 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
-}
-
-/* Sidebar overlay for depth */
-.planner-sidebar::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 20%, rgba(239, 231, 218, 0.1), transparent 60%);
-    pointer-events: none;
-}
-
-.sidebar-nav {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 0 18px;
-}
-
-
-
-.nav-item i {
-    font-size: 19px;
-    width: 22px;
-    text-align: center;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 16px 20px;
-    text-decoration: none;
-    color: rgba(239, 231, 218, 0.9);
-    font-size: 15px;
-    font-weight: 500;
-    border-radius: 14px;
-    transition: var(--transition);
-    position: relative;
-    z-index: 1;
-}
-
-.nav-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: var(--white);
-    transform: translateX(5px);
-}
-
-.nav-item.active {
-    background: linear-gradient(135deg, var(--white), var(--peach-cream));
-    color: var(--vampire-hunter);
-    font-weight: 700;
-    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
-}
-
-.nav-item .badge {
-    margin-left: auto;
-    background: var(--calypso-berry);
-    color: var(--white);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(198, 62, 78, 0.4);
-}
-
-.nav-item.active .badge {
-    background: rgba(255, 255, 255, 0.25);
-}
-
-.planner-sidebar .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-}
-
-.planner-sidebar .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 25px;
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    transition: all 0.3s;
-    font-weight: 600;
-}
-
-.planner-sidebar .nav-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.planner-sidebar .nav-item.active {
-    background: linear-gradient(90deg, rgba(225, 145, 132, 0.3), transparent);
-    color: white;
-    border-left: 4px solid #E19184;
-}
-
-.planner-sidebar .nav-item i {
-    width: 20px;
-    font-size: 18px;
 }
 
 /* Main content adjustment */
@@ -1597,8 +1468,8 @@ body::before {
    WEATHER GUARDIAN
    ============================================ */
 .weather-card {
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.95), 
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.95),
         rgba(239, 231, 218, 0.8)
     );
     border: 2px solid var(--coral-haze);
@@ -2193,7 +2064,7 @@ body::before {
     .predictions-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .analytics-header {
         flex-direction: column;
         gap: 25px;
@@ -2500,7 +2371,7 @@ body::before {
     .insights-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .time-machine-timeline {
         overflow-x: auto;
         padding: 20px 10px;
@@ -2551,7 +2422,7 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-   
+
     backdrop-filter: blur(10px);
     z-index: 10000;
     align-items: center;
@@ -2810,7 +2681,7 @@ body::before {
     .voice-modal-content {
         padding: 30px 25px;
     }
-    
+
     .commands-grid {
         grid-template-columns: 1fr;
     }
@@ -2985,7 +2856,7 @@ body::before {
     .calendar-grid {
         grid-template-columns: repeat(7, 1fr);
     }
-    
+
     .three-column-grid {
         grid-template-columns: 1fr;
     }
@@ -2995,20 +2866,20 @@ body::before {
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
     .calendar-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .command-header {
         flex-direction: column;
         gap: 25px;
     }
-    
+
     .command-stats {
         width: 100%;
         justify-content: space-around;
@@ -3019,15 +2890,15 @@ body::before {
     .header {
         padding: 0 20px;
     }
-    
+
     .header-center {
         display: none;
     }
-    
+
     .main-content {
         padding: 25px;
     }
-    
+
     .requests-grid,
     .health-grid,
     .happiness-grid {
@@ -3369,17 +3240,17 @@ body::before {
 
 
 /* River Hidden State */
-//.notification-river.hidden .river-container {
- //   animation-play-state: paused;
- //   opacity: 0.3;
-//}
+.notification-river.hidden .river-container {
+   animation-play-state: paused;
+    opacity: 0.3;
+}
 
 /* Responsive */
 @media (max-width: 992px) {
     .notification-river {
         left: 0;
     }
-    
+
     .notification-bubble {
         min-width: 280px;
     }
@@ -3429,16 +3300,16 @@ body::before {
         gap: 25px;
         align-items: flex-start;
     }
-    
+
     .header-stats {
         flex-direction: column;
         width: 100%;
     }
-    
+
     .request-detail-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .request-full-actions {
         flex-direction: column;
     }
@@ -3564,7 +3435,7 @@ body::before {
 .mood-modal-overlay {
     position: absolute;
     inset: 0;
-    
+
     backdrop-filter: blur(15px);
     animation: fadeIn 0.3s;
 }
@@ -3832,11 +3703,11 @@ body::before {
     .mood-options-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .mood-modal-content {
         padding: 30px 25px;
     }
-    
+
     .mood-modal-header h2 {
         font-size: 32px;
     }
@@ -4589,16 +4460,16 @@ body.mood-sleepy .voice-modal-content {
     .requests-creative-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .request-detail-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .requests-page-header {
         flex-direction: column;
         gap: 25px;
     }
-    
+
     .header-stats {
         flex-direction: column;
         width: 100%;
@@ -5039,7 +4910,7 @@ body.mood-sleepy .voice-modal-content {
 .welcome-background-pattern {
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 50%, rgba(225, 145, 132, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(239, 231, 218, 0.1) 0%, transparent 50%);
     pointer-events: none;
@@ -5163,77 +5034,23 @@ body.mood-sleepy .voice-modal-content {
     .welcome-section-luxury {
         padding: 30px 25px;
     }
-    
+
     .welcome-content-luxury {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .welcome-title {
         font-size: 32px;
     }
-    
+
     .welcome-stats-row {
         justify-content: center;
         gap: 30px;
     }
 }
 
-/* ============================================
-   MOOD VARIATIONS FOR SIDEBAR
-   ============================================ */
 
-/* Productive (Default) */
-.planner-sidebar.mood-productive {
-    background: linear-gradient(180deg, #475B35 0%, #2C3821 100%);
-}
-
-/* Energized */
-.planner-sidebar.mood-energized {
-    background: linear-gradient(180deg, #FF6B00 0%, #FF0080 100%);
-}
-
-.planner-sidebar.mood-energized .nav-item.active {
-    border-left-color: #FFC857;
-}
-
-/* Calm */
-.planner-sidebar.mood-calm {
-    background: linear-gradient(180deg, #6FBADC 0%, #4A90A4 100%);
-}
-
-.planner-sidebar.mood-calm .nav-item.active {
-    border-left-color: #B4E7F8;
-}
-
-/* Creative */
-.planner-sidebar.mood-creative {
-    background: linear-gradient(180deg, #9B59B6 0%, #8E44AD 100%);
-}
-
-.planner-sidebar.mood-creative .nav-item.active {
-    border-left-color: #E91E63;
-}
-
-/* Stressed */
-.planner-sidebar.mood-stressed {
-    background: linear-gradient(180deg, #7ED321 0%, #5FA318 100%);
-}
-
-.planner-sidebar.mood-stressed .nav-item.active {
-    border-left-color: #B4E7F8;
-}
-
-/* Sleepy */
-.planner-sidebar.mood-sleepy {
-    background: linear-gradient(180deg, #34495E 0%, #2C3E50 100%);
-}
-
-.planner-sidebar.mood-sleepy .nav-item.active {
-    border-left-color: #95A5A6;
-}
-
-/* Mood Modal */
 .mood-modal {
     display: none;
     position: fixed;

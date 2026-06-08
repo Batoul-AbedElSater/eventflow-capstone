@@ -19,14 +19,15 @@ class DashboardController extends Controller
         $user = Auth::user();
         $today = Carbon::today();
 
-        // Get planner's events (accepted/confirmed events)
-        $myEvents = Event::where('planner_id', $user->id)
-            ->with(['eventType', 'client', 'tasks'])
-            ->orderBy('start_date', 'asc')
-            ->get();
+       // Get planner's events (only confirmed/accepted events)
+$myEvents = Event::where('planner_id', $user->id)
+    ->where('status', 'confirmed')  // ← ADD THIS LINE
+    ->with(['eventType', 'client', 'tasks'])
+    ->orderBy('start_date', 'asc')
+    ->get();
 
-        // Active events = confirmed events (planner accepted)
-        $activeEvents = $myEvents->where('status', 'confirmed');
+// Active events = confirmed events (now redundant, but keep for clarity)
+$activeEvents = $myEvents;
 
         // Requests today = pending events created today (with no planner)
         $requestsToday = Event::whereNull('planner_id')
