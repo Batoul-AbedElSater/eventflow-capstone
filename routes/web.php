@@ -55,9 +55,19 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
 
 
 //vendor routes
-Route::get('/events/{event}/vendors', [App\Http\Controllers\Planner\VendorController::class, 'index'])
-    ->name('events.vendors');
-
+// Vendor Routes
+Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Planner\VendorController::class, 'index'])
+        ->name('index');
+    Route::get('/favorites', [App\Http\Controllers\Planner\VendorController::class, 'favorites'])
+        ->name('favorites');
+    Route::get('/{vendor}', [App\Http\Controllers\Planner\VendorController::class, 'show'])
+        ->name('show');
+    Route::post('/{vendor}/favorite', [App\Http\Controllers\Planner\VendorController::class, 'toggleFavorite'])
+        ->name('toggleFavorite');
+    Route::post('/{vendor}/unfavorite', [App\Http\Controllers\Planner\VendorController::class, 'removeFavorite'])
+        ->name('removeFavorite');
+});
     // Events
     Route::resource('events', App\Http\Controllers\Planner\EventController::class);
     Route::get('/events/analytics', [App\Http\Controllers\Planner\EventController::class, 'analytics'])->name('events.analytics');

@@ -30,110 +30,62 @@
         --amnesiac: #F5F9E5;
         --green: #475B35;
         --green-dark: #2C3821;
-    }
 
-    /* ==================== BALLOON SIDEBAR ==================== */
+    }
+    /* sidebar */
     aside.planner-sidebar {
-        position: fixed;
-        left: 0;
-        top: 75px;
-        width: 280px;
-        height: calc(100vh - 70px);
-        z-index: 100;
-        background: url('/images/sidebar.jpeg') no-repeat center center !important;
-        background-size: cover !important;
-        background-position: top center;
-        pointer-events: none;
-        overflow: visible;
-    }
-    .balloon-sidebar {
-        position: relative;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        padding: 30px 0 20px 0;
-        overflow-y: auto;
-        pointer-events: auto;
-        gap: 30px;
-        background: transparent;
-    }
-    .balloon-item {
-        position: relative;
-        display: flex;
-        justify-content: center;
-    }
-    .balloon-string {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 2px;
-        height: 80px;
-        background: linear-gradient(to top, #E19184, #C63E4E, #620607);
-        transform-origin: bottom;
-        transition: transform 0.2s ease;
-    }
-    .balloon-link {
-        display: block;
-        text-decoration: none;
-        z-index: 2;
-        transition: transform 0.2s;
-    }
-    .balloon {
-        position: relative;
-        width: 130px;
-        height: 130px;
-        background: #E19184;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        transition: transform 0.3s ease;
-        cursor: pointer;
-        font-family: 'Poppins', 'Inter', sans-serif;
-    }
-    .balloon i {
-        font-size: 32px;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-    .balloon span {
-        font-size: 13px;
-        font-weight: 700;
-        color: white;
-        letter-spacing: 0.3px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-    .balloon::after {
-        content: '';
-        position: absolute;
-        bottom: -12px;
-        left: 50%;
-        width: 10px;
-        height: 12px;
-        background: rgba(0,0,0,0.15);
-        border-radius: 0 0 50% 50%;
-        transform: translateX(-50%);
-    }
-    .balloon-link:hover .balloon {
-        transform: translateY(-10px) scale(1.03);
-    }
-    .balloon-link:hover .balloon-string {
-        transform: skewX(-2deg);
-    }
-    .balloon-link.active .balloon {
-        box-shadow: 0 0 0 3px rgba(255,255,255,0.7), 0 10px 20px rgba(0,0,0,0.2);
-        transform: scale(1.01);
-    }
-    .balloon-coral { background: #E19184; }
-    .balloon-berry { background: #C63E4E; }
-    .balloon-green { background: #475B35; }
-    .balloon-vampire { background: #620607; }
-    .balloon-cream { background: #EFE7DA; }
-    .balloon-cream i, .balloon-cream span { color: #620607; }
+    position: fixed;
+    left: 0;
+    top: 75px;
+    width: 270px;
+    height: calc(100vh - 75px);
+    z-index: 100;
+    background: var(--cream);
+    box-shadow: 4px 0 18px rgba(98, 6, 7, 0.06);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    gap: 6px;
+    color: var(--cream);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 28px;
+    text-decoration: none;
+    color: var(--vampire);
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 0 50px 50px 0;
+    margin-right: 20px;
+    transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+
+.sidebar-link i {
+    width: 22px;
+    font-size: 1.1rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.sidebar-link:hover {
+    background: rgba(198, 62, 78, 0.08);
+    color: var(--berry);
+    transform: translateX(4px);
+}
+
+.sidebar-link.active {
+    background: var(--coral);
+    color: white;
+    box-shadow: var(--coral);
+}
+
+.sidebar-link.active i {
+    color: white;
+}
 
     /* ==================== HEADER (NAVBAR) – CLIENT STYLE, NO MOOD, NO SEARCH ==================== */
     .header {
@@ -377,10 +329,15 @@
 
     /* ==================== MAIN CONTENT ==================== */
     .main-content {
-        margin-left: 280px;
+      /*  margin-left: 280px;
         margin-top: 75px;
         min-height: calc(100vh - 70px);
-        padding: 30px;
+        padding: 30px;*/
+
+          margin-left: 240px;
+    margin-top: 75px;
+    min-height: calc(100vh - 75px);
+    padding: 30px;
     }
 
     /* ==================== MODALS (unchanged) ==================== */
@@ -546,18 +503,27 @@
         </div>
 
         <div class="header-right">
-            <!-- Sidebar (balloons) -->
-            <aside class="planner-sidebar">
-                <div class="balloon-sidebar">
-                    <div class="balloon-item"><div class="balloon-string"></div><a href="{{ route('planner.dashboard') }}" class="balloon-link {{ request()->routeIs('planner.dashboard') ? 'active' : '' }}"><div class="balloon balloon-coral"><i class="fas fa-home"></i><span>Dashboard</span></div></a></div>
-                    <div class="balloon-item"><div class="balloon-string"></div><a href="{{ route('planner.events.index') }}" class="balloon-link {{ request()->routeIs('planner.events.*') ? 'active' : '' }}"><div class="balloon balloon-berry"><i class="fas fa-calendar-alt"></i><span>Events</span></div></a></div>
-                    <div class="balloon-item"><div class="balloon-string"></div><a href="{{ route('planner.requests') }}" class="balloon-link {{ request()->routeIs('requests') ? 'active' : '' }}"><div class="balloon balloon-green"><i class="fas fa-clipboard-list"></i><span>Requests</span></div></a></div>
-                    <div class="balloon-item"><div class="balloon-string"></div><a href="{{ route('planner.events.analytics') }}" class="balloon-link {{ request()->routeIs('planner.events.analytics') ? 'active' : '' }}"><div class="balloon balloon-coral"><i class="fas fa-chart-line"></i><span>Analytics</span></div></a></div>
-                    <div class="balloon-item"><div class="balloon-string"></div><a href="{{ route('planner.tasks.index') }}" class="balloon-link {{ request()->routeIs('planner.tasks.*') ? 'active' : '' }}"><div class="balloon balloon-vampire"><i class="fas fa-tasks"></i><span>Tasks</span></div></a></div>
-                    <div class="balloon-item"><div class="balloon-string"></div><a href="{{ route('planner.messages') }}" class="balloon-link {{ request()->routeIs('planner.messages') ? 'active' : '' }}"><div class="balloon balloon-cream"><i class="fas fa-envelope"></i><span>Messages</span></div></a></div>
-                </div>
-            </aside>
-
+      <aside class="planner-sidebar">
+    <a href="{{ route('planner.dashboard') }}" class="sidebar-link {{ request()->routeIs('planner.dashboard') ? 'active' : '' }}">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+   <a href="{{ route('planner.events.index') }}"
+   class="sidebar-link {{ request()->routeIs('planner.events*') && !request()->routeIs('planner.events.analytics') ? 'active' : '' }}">
+    <i class="fas fa-calendar-alt"></i> Events
+</a>
+    <a href="{{ route('planner.requests') }}" class="sidebar-link {{ request()->routeIs('planner.requests*') ? 'active' : '' }}">
+        <i class="fas fa-clipboard-list"></i> Requests
+    </a>
+    <a href="{{ route('planner.events.analytics') }}" class="sidebar-link {{ request()->routeIs('planner.events.analytics') ? 'active' : '' }}">
+        <i class="fas fa-chart-line"></i> Analytics
+    </a>
+    <a href="{{ route('planner.tasks.index') }}" class="sidebar-link {{ request()->routeIs('planner.tasks*') ? 'active' : '' }}">
+        <i class="fas fa-tasks"></i> Tasks
+    </a>
+    <a href="{{ route('planner.messages') }}" class="sidebar-link {{ request()->routeIs('planner.messages*') ? 'active' : '' }}">
+        <i class="fas fa-envelope"></i> Messages
+    </a>
+</aside>
             <!-- Voice Commander Button -->
             <button class="voice-commander-btn" id="voiceCommanderBtn"><i class="fas fa-microphone"></i></button>
 

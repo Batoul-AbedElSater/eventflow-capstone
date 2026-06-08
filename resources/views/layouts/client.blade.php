@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - EventFlow Client</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/client-event-show.css') }}">
     <link rel="stylesheet" href="{{ asset('css/client-forms.css') }}">
     <link rel="stylesheet" href="{{ asset('css/client-dashboard.css') }}">
-    
+
     <style>
     /* ===== COLOR PALETTE ===== */
     :root {
@@ -28,105 +28,59 @@
         --green-dark: #2C3821;
     }
 
-    /* ==================== BALLOON SIDEBAR ==================== */
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 75px;
-        width: 280px;
-        height: calc(100vh - 70px);
-        z-index: 100;
-        background: url('/images/sidebar.jpeg') no-repeat top center;
-        background-size: cover;
-        background-position: top center;
-        pointer-events: none;
-        overflow: visible;
-    }
-    .balloon-sidebar {
-        position: relative;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding-bottom: 30px;
-        pointer-events: auto;
-        gap: 30px;
-        background: transparent;
-    }
-    .balloon-item {
-        position: relative;
-        display: flex;
-        justify-content: center;
-    }
-    .balloon-string {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 2px;
-        height: 80px;
-        background: linear-gradient(to top, #E19184, #C63E4E, #620607);
-        transform-origin: bottom;
-        transition: transform 0.2s ease;
-    }
-    .balloon-link {
-        display: block;
-        text-decoration: none;
-        z-index: 2;
-        transition: transform 0.2s;
-    }
-    .balloon {
-        position: relative;
-        width: 130px;
-        height: 130px;
-        background: #E19184;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        transition: transform 0.3s ease;
-        cursor: pointer;
-        font-family: 'Poppins', 'Inter', sans-serif;
-    }
-    .balloon i {
-        font-size: 32px;
-        color: white;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .balloon span {
-        font-size: 14px;
-        font-weight: 700;
-        color: white;
-        letter-spacing: 0.5px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-    .balloon::after {
-        content: '';
-        position: absolute;
-        bottom: -12px;
-        left: 50%;
-        width: 12px;
-        height: 14px;
-        background: rgba(0,0,0,0.15);
-        border-radius: 0 0 50% 50%;
-        transform: translateX(-50%);
-    }
-    .balloon-link:hover .balloon {
-        transform: translateY(-15px) scale(1.05);
-    }
-    .balloon-link:hover .balloon-string {
-        transform: skewX(-2deg);
-    }
-    .balloon-link.active .balloon {
-        box-shadow: 0 0 0 4px rgba(255,255,255,0.6), 0 12px 24px rgba(0,0,0,0.2);
-        transform: scale(1.02);
-    }
-    .balloon-coral { background: #E19184; }
-    .balloon-berry { background: #C63E4E; }
-    .balloon-green { background: #475B35; }
-    .balloon-vampire { background: #620607; }
+ aside.client-sidebar {
+    position: fixed;
+    left: 0;
+    top: 75px;
+    width: 270px;
+    height: calc(100vh - 75px);
+    z-index: 100;
+    background: var(--cream);
+    box-shadow: 4px 0 18px rgba(98, 6, 7, 0.06);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    gap: 6px;
+    color: var(--cream);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 28px;
+    text-decoration: none;
+    color: var(--vampire);
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 0 50px 50px 0;
+    margin-right: 20px;
+    transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+
+.sidebar-link i {
+    width: 22px;
+    font-size: 1.1rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.sidebar-link:hover {
+    background: rgba(198, 62, 78, 0.08);
+    color: var(--berry);
+    transform: translateX(4px);
+}
+
+.sidebar-link.active {
+    background: var(--coral);
+    color: white;
+    box-shadow: var(--coral);
+}
+
+.sidebar-link.active i {
+    color: white;
+}
 
     /* ==================== HEADER (NAVBAR) – NO SEARCH, NO MOOD ==================== */
    /* ===== LUXURY FONTS ===== */
@@ -139,7 +93,7 @@
     left: 0;
     right: 0;
     height: 75px;
-   
+
     border-bottom: 3px solid transparent;
     border-image: linear-gradient(90deg, var(--coral), var(--berry), var(--vampire)) 1;
     display: flex;
@@ -162,7 +116,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
         repeating-linear-gradient(
             45deg,
             transparent,
@@ -353,7 +307,7 @@
 }
 .profile-dropdown:hover i {
     color: var(--berry);
-    
+
 }
 
 /* ===== DROPDOWN MENU BORDER (berry) ===== */
@@ -433,7 +387,7 @@
     }
 
     /* ==================== MODALS (unchanged – full HTML) ==================== */
-   
+
     .voice-commander-modal {
         display: none;
         position: fixed;
@@ -476,7 +430,7 @@
 
     <header class="header">
         <div class="header-left">
-            
+
              <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s;">
                 <span style="color: #E19184;">E</span>
                 <span style="color: #C63E4E;">v</span>
@@ -488,39 +442,28 @@
                 <span style="color: #620607;">o</span>
                 <span style="color: #E19184;">w</span>
             </h1>
-           
+
         </div>
-       
+
         <div class="header-right">
-            <!-- Sidebar (balloons) – placed inside header-right for positioning -->
-            <aside class="sidebar">
-                <div class="balloon-sidebar">
-                    <div class="balloon-item">
-                        <div class="balloon-string"></div>
-                        <a href="{{ route('client.dashboard') }}" class="balloon-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
-                            <div class="balloon balloon-coral"><i class="fas fa-home"></i><span>Dashboard</span></div>
-                        </a>
-                    </div>
-                    <div class="balloon-item">
-                        <div class="balloon-string"></div>
-                        <a href="{{ route('client.events.index') }}" class="balloon-link {{ request()->is('client/events*') ? 'active' : '' }}">
-                            <div class="balloon balloon-berry"><i class="fas fa-calendar-alt"></i><span>My Events</span></div>
-                        </a>
-                    </div>
-                    <div class="balloon-item">
-                        <div class="balloon-string"></div>
-                        <a href="{{ route('client.messages') }}" class="balloon-link {{ request()->routeIs('client.messages') ? 'active' : '' }}">
-                            <div class="balloon balloon-green"><i class="fas fa-comments"></i><span>Messages</span></div>
-                        </a>
-                    </div>
-                    <div class="balloon-item">
-                        <div class="balloon-string"></div>
-                        <a href="{{ route('client.profile') }}" class="balloon-link {{ request()->routeIs('client.profile') ? 'active' : '' }}">
-                            <div class="balloon balloon-vampire"><i class="fas fa-user"></i><span>Profile</span></div>
-                        </a>
-                    </div>
-                </div>
-            </aside>
+            <aside class="client-sidebar">
+    <a href="{{ route('client.dashboard') }}"
+       class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+    <a href="{{ route('client.events.index') }}"
+       class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i> My Events
+    </a>
+    <a href="{{ route('client.messages') }}"
+       class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
+        <i class="fas fa-comments"></i> Messages
+    </a>
+    <a href="{{ route('client.profile') }}"
+       class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
+        <i class="fas fa-user"></i> Profile
+    </a>
+</aside>
 
             <!-- Voice Commander Button -->
              <button class="voice-commander-btn" id="voiceCommanderBtn">
@@ -555,13 +498,6 @@
     <script src="{{ asset('js/client-notification.js') }}"></script>
     @stack('scripts')
 
-    <!-- ==================== FULL NOTIFICATION RIVER & MODAL (restored) ==================== -->
-    <div class="notification-river" id="notificationRiver">
-        <div class="river-container" id="riverContainer"></div>
-    </div>
-    <button class="river-toggle-btn" id="riverToggleBtn" title="Hide River">
-        <i class="fas fa-chevron-up"></i>
-    </button>
 
     <div class="notification-modal" id="notificationModal">
         <div class="notification-modal-overlay"></div>
