@@ -6,11 +6,12 @@ use App\Http\Controllers\Api\Client\DashboardController;
 use App\Http\Controllers\Api\Client\EventController;
 use App\Http\Controllers\Api\Client\GuestController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\RsvpController; 
+use App\Http\Controllers\Api\RsvpController;
 use App\Http\Controllers\Api\Client\MessageController;
 use App\Http\Controllers\Api\Client\NotificationController;
 use App\Http\Controllers\Api\Planner\DashboardController as PlannerDashboardController;
 use App\Http\Controllers\Api\Planner\EventRequestController;
+use App\Http\Controllers\Api\Planner\VendorController as VendorController;
 
 
 /*
@@ -86,22 +87,30 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
     });
 
-  
+
     // PLANNER API ROUTES - CORRECTED
-   
+
 
     Route::prefix('planner')->name('api.planner.')->group(function () {
-        
+
         // Dashboard - Weekly Calendar
         Route::get('/dashboard', [PlannerDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/events/{date}', [PlannerDashboardController::class, 'getDayEvents'])->name('dashboard.events');
-        
+
         // Event Requests
         Route::get('/requests', [EventRequestController::class, 'index'])->name('requests.index');
         Route::get('/requests/stats', [EventRequestController::class, 'stats'])->name('requests.stats');
         Route::post('/requests/{event}/accept', [EventRequestController::class, 'accept'])->name('requests.accept');
         Route::post('/requests/{event}/decline', [EventRequestController::class, 'decline'])->name('requests.decline');
 
-       
+        // vendors
+    Route::middleware('auth:sanctum')->prefix('planner')->group(function () {
+    Route::get('events/{event}/vendors',                    [VendorController::class, 'index']);
+    Route::get('events/{event}/vendors/{vendor}',           [VendorController::class, 'show']);
+    Route::get('events/{eventId}/vendors/favorites',        [VendorController::class, 'favorites']);
+    Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
+    Route::delete('events/{event}/vendors/{vendor}/favorite',[VendorController::class, 'removeFavorite']);
+});
     });
+
 });
