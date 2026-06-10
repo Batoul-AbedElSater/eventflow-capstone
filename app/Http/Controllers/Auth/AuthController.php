@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\ClientProfile;
 use App\Models\PlannerProfile;
+use App\Models\StaffProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email', // Must be unique
             'password' => 'required|min:8|confirmed', // Must match password_confirmation
-            'role' => 'required|in:client,planner', // Only client or planner
+            'role' => 'required|in:client,planner,assistant', // Required role
             'phone' => 'required|string|max:20',
         ]);
 
@@ -48,17 +49,22 @@ class AuthController extends Controller
         // Create profile based on role
         if ($user->role === 'client') {
             ClientProfile::create(['user_id' => $user->id]); // Empty client profile
-        } else {
+        } elseif ($user->role === 'planner') {
             PlannerProfile::create(['user_id' => $user->id]); // Empty planner profile
+        } else {
+            StaffProfile::create(['user_id' => $user->id]); // Empty staff profile
         }
 
         // Log user in automatically
         Auth::login($user);
 
         // Redirect to dashboard based on role
-        return $user->isClient() 
-            ? redirect()->route('client.dashboard')
-            : redirect()->route('planner.dashboard');
+        return match ($user->role) {
+            'client' => redirect()->route('client.dashboard'),
+            'planner' => redirect()->route('planner.dashboard'),
+            'assistant' => redirect()->route('assistant.dashboard'),
+            default => redirect()->route('login'),
+        };
     }
 
     // Show login form
@@ -83,9 +89,12 @@ class AuthController extends Controller
             $user = Auth::user();
             
             // Redirect based on role
-            return $user->isClient()
-                ? redirect()->route('client.dashboard')
-                : redirect()->route('planner.dashboard');
+            return match ($user->role) {
+                'client' => redirect()->route('client.dashboard'),
+                'planner' => redirect()->route('planner.dashboard'),
+                'assistant' => redirect()->route('assistant.dashboard'),
+                default => redirect()->route('login'),
+            };
         }
 
         // Login failed - return with error
@@ -104,3 +113,6 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 }
+
+
+
