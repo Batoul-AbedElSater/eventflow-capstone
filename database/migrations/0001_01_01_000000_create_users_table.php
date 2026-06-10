@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['client', 'planner'])->default('client');
+            $table->enum('role', ['client', 'planner', 'assistant'])->default('client');
             $table->string('phone')->nullable(); // Added: Required phone
             
             // Optional fields
