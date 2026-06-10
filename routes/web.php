@@ -14,6 +14,7 @@ Route::get('/', function () {
         return match($role) {
             'planner' => redirect()->route('planner.dashboard'),
             'client'  => redirect()->route('client.dashboard'),
+            'assistant' => redirect()->route('assistant.dashboard'),
             default   => redirect()->route('login'),
         };
     }
@@ -134,6 +135,10 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
 
 });
 
+Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assistant'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Assistant\DashboardController::class, 'index'])->name('dashboard');
+});
+
 // ============================================
 // CLIENT ROUTES
 // ============================================
@@ -226,6 +231,7 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
 });
+
 
 
 

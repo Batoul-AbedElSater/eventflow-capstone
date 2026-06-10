@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\StaffProfile;
 use App\Models\Vendor;
 
 class User extends Authenticatable
@@ -69,6 +70,11 @@ class User extends Authenticatable
     public function plannerProfile()
     {
         return $this->hasOne(PlannerProfile::class);
+    }
+
+    public function staffProfile()
+    {
+        return $this->hasOne(StaffProfile::class, 'user_id');
     }
 
     /**
@@ -173,18 +179,25 @@ class User extends Authenticatable
         return $this->role === 'planner';
     }
 
+    public function isAssistant(): bool
+    {
+        return $this->role === 'assistant';
+    }
+
     /**
-     * Get user's full profile (client or planner).
+     * Get user's full profile (client, planner, or assistant).
      */
     public function profile()
     {
         return $this->isClient()
             ? $this->clientProfile
-            : $this->plannerProfile;
+            : ($this->isPlanner() ? $this->plannerProfile : $this->staffProfile);
     }
 
     public function favoriteVendors(){
         return $this->belongsToMany(Vendor::class,'user_vendor_favorites');
     }
 }
+
+
 

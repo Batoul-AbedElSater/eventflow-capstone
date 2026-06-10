@@ -54,14 +54,15 @@
             
             {{-- Role Selection --}}
             <div class="role-wrapper">
-                <label class="role-btn">
-                    <input type="radio" name="role" value="client" required>
-                    <span><i class="fas fa-user-circle"></i> Client</span>
-                </label>
-                <label class="role-btn">
-                    <input type="radio" name="role" value="planner">
-                    <span><i class="fas fa-calendar-check"></i> Planner</span>
-                </label>
+                <label>Register as:</label>
+                <div style="position: relative; display: inline-block; width: 100%;">
+                    <select name="role" id="role-select" required style="width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; background: white; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill=%22%23667eea%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/></svg>'); background-repeat: no-repeat; background-position: right 8px center; background-size: 24px; padding-right: 40px;">
+                        <option value="">Choose your role...</option>
+                        <option value="client"><i class="fas fa-user-circle"></i> Client</option>
+                        <option value="planner"><i class="fas fa-calendar-check"></i> Planner</option>
+                        <option value="assistant"><i class="fas fa-person-hiking"></i> Assistant</option>
+                    </select>
+                </div>
             </div>
             @error('role')<span class="error-msg">{{ $message }}</span>@enderror
             
