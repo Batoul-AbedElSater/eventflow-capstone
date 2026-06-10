@@ -12,46 +12,42 @@ use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
-    public function index()
+public function index()
 {
     try {
         $plannerId = Auth::id();
 
         $events = Event::where('planner_id', $plannerId)
+            ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
             ->with(['client:id,name,email', 'eventType:id,name'])
             ->orderBy('start_date', 'desc')
             ->get();
 
-        // Calculate total revenue
-        $totalRevenue = $events->whereIn('status', ['confirmed', 'in_progress', 'completed'])->sum('budget_overall');
+        $totalRevenue = $events->sum('budget_overall');
 
-        // Summary statistics - FIXED VARIABLE NAME
         $stats = [
-            'total' => $events->count(),
-            'pending' => $events->where('status', 'pending')->count(),
-            'confirmed' => $events->where('status', 'confirmed')->count(),
-            'in_progress' => $events->where('status', 'in_progress')->count(),
-            'completed' => $events->where('status', 'completed')->count(),
-            'cancelled' => $events->where('status', 'cancelled')->count(),
-            'total_revenue' => $totalRevenue, // ADDED THIS
-            'pending_revenue' => $events->where('status', 'pending')->sum('budget_overall'),
+            'total'             => $events->count(),
+            'confirmed'         => $events->where('status', 'confirmed')->count(),
+            'in_progress'       => $events->where('status', 'in_progress')->count(),
+            'completed'         => $events->where('status', 'completed')->count(),
+            'total_revenue'     => $totalRevenue,
             'completed_revenue' => $events->where('status', 'completed')->sum('budget_overall'),
         ];
 
         $summary = [
-            'total_events' => $events->count(),
-            'total_revenue' => $totalRevenue,
-            'pending_revenue' => $events->where('status', 'pending')->sum('budget_overall'),
+            'total_events'      => $events->count(),
+            'total_revenue'     => $totalRevenue,
             'completed_revenue' => $events->where('status', 'completed')->sum('budget_overall'),
         ];
 
-        // Top clients
         $topClients = User::where('role', 'client')
             ->whereHas('clientEvents', function($query) use ($plannerId) {
-                $query->where('planner_id', $plannerId);
+                $query->where('planner_id', $plannerId)
+                      ->whereIn('status', ['confirmed', 'in_progress', 'completed']);
             })
             ->withCount(['clientEvents as events_count' => function($query) use ($plannerId) {
-                $query->where('planner_id', $plannerId);
+                $query->where('planner_id', $plannerId)
+                      ->whereIn('status', ['confirmed', 'in_progress', 'completed']);
             }])
             ->orderBy('events_count', 'desc')
             ->take(5)
@@ -59,24 +55,25 @@ class EventController extends Controller
             ->map(function($client) use ($plannerId) {
                 $client->total_revenue = Event::where('planner_id', $plannerId)
                     ->where('client_id', $client->id)
-                    ->sum('budget_overall') ?? 0;
+                    ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
+                    ->sum('budget_overall');
                 return $client;
             });
 
-        // Performance metrics
-        $totalEvents = $events->count();
-        $acceptedEvents = $events->whereIn('status', ['confirmed', 'in_progress', 'completed'])->count();
+        $totalEvents    = $events->count();
         $completedEvents = $events->where('status', 'completed')->count();
 
         $metrics = [
-            'acceptance_rate' => $totalEvents > 0 ? round(($acceptedEvents / $totalEvents) * 100) : 0,
-            'completion_rate' => $acceptedEvents > 0 ? round(($completedEvents / $acceptedEvents) * 100) : 0,
-            'avg_event_value' => $totalEvents > 0 ? round($events->sum('budget_overall') / $totalEvents, 2) : 0,
-            'total_clients' => User::where('role', 'client')->whereHas('clientEvents', function($q) use ($plannerId) {
-                $q->where('planner_id', $plannerId);
-            })->count(),
-            'avg_response_time' => '2.5', // ADD THIS
-            'satisfaction_score' => 4.8,  // ADD THIS
+            'acceptance_rate'   => 100, // all events here are already accepted
+            'completion_rate'   => $totalEvents > 0 ? round(($completedEvents / $totalEvents) * 100) : 0,
+            'avg_event_value'   => $totalEvents > 0 ? round($totalRevenue / $totalEvents, 2) : 0,
+            'total_clients'     => User::where('role', 'client')
+                                    ->whereHas('clientEvents', function($q) use ($plannerId) {
+                                        $q->where('planner_id', $plannerId)
+                                          ->whereIn('status', ['confirmed', 'in_progress', 'completed']);
+                                    })->count(),
+            'avg_response_time' => '2.5',
+            'satisfaction_score'=> 4.8,
         ];
 
         return view('planner.events.index', compact('events', 'stats', 'summary', 'topClients', 'metrics'));
@@ -189,7 +186,7 @@ class EventController extends Controller
             }
 
             $validated = $request->validate([
-                'status' => 'required|in:pending,confirmed,in_progress,completed,cancelled'
+              'status' => 'required|in:confirmed,in_progress,completed,cancelled'
             ]);
 
             $event->update($validated);
