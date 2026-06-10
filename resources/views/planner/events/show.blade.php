@@ -16,9 +16,7 @@
             <p class="event-subtitle">{{ \Carbon\Carbon::parse($event->start_date)->format('l, F d, Y') }} at {{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }}</p>
 
             <div class="quick-actions-magic">
-                <a href="{{ route('planner.events.edit', $event->id) }}" class="action-btn-magic edit">
-                    <i class="fas fa-edit"></i> Edit Event
-                </a>
+               
                 <a href="{{ route('planner.messages') }}" class="action-btn-magic message">
                     <i class="fas fa-comments"></i> Message Client
                 </a>
@@ -756,7 +754,6 @@
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-weight: 700; color: #475B35; margin-bottom: 10px;">Select Status</label>
                 <select id="statusSelect" style="width: 100%; padding: 14px; border: 2px solid #EFE7DA; border-radius: 12px; font-size: 15px;">
-                    <option value="pending" {{ $event->status === 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="confirmed" {{ $event->status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
                     <option value="in_progress" {{ $event->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     <option value="completed" {{ $event->status === 'completed' ? 'selected' : '' }}>Completed</option>
