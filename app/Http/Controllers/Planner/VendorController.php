@@ -26,6 +26,14 @@ class VendorController extends Controller
         abort(403);
     }
 
+     
+       $vendor->load(['orders' => function($query) use ($event) {
+        $query->whereHas('task', function($q) use ($event) {
+            $q->where('event_id', $event->id);
+        })->with(['task', 'assistant']);
+    }]);
+
+
     return view('planner.events.vendor.vendor_details', compact('event', 'vendor'));
 }
 
@@ -68,4 +76,5 @@ public function removeFavorite(Event $event, Vendor $vendor)
 
     return redirect()->route('planner.events.vendors.favorites', $event->id);
 }
+
 }

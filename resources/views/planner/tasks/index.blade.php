@@ -142,6 +142,39 @@
                         @endforeach
                     </select>
                 </div>
+
+              <div class="form-group-epic">
+    <label for="taskAssistant">Assign Assistant</label>
+    <select id="taskAssistant">
+        <option value="">No Assistant</option>
+        @foreach($assistants as $assistant)
+            <option value="{{ $assistant->id }}">{{ $assistant->name }}</option>
+        @endforeach
+    </select>
+</div>
+
+<div class="form-group-epic">
+    <label>Select Vendors</label>
+    
+    {{-- Custom Select Box --}}
+    <div class="vendor-select-box" id="vendorSelectBox" style="border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; min-height: 42px; padding: 8px 12px; position: relative;" onclick="event.stopPropagation(); toggleVendorDropdown()">
+        <span id="vendorSelectText" style="color: #999; font-size: 14px;">No vendors selected</span>
+        <span style="position: absolute; right: 12px; top: 12px; color: #999;">▼</span>
+    </div>
+    
+    {{-- Dropdown List --}}
+    <div id="vendorDropdown" class="vendor-dropdown hidden" style="border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; background: white; max-height: 150px; overflow-y: auto; position: absolute; z-index: 1000; width: calc(100% - 40px);">
+        @foreach($vendors as $vendor)
+            <div class="vendor-list-item" 
+                 data-vendor-id="{{ $vendor->id }}" 
+                 data-vendor-name="{{ $vendor->name }}"
+                 style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
+                <span class="vendor-check-icon" style="width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;">✓</span>
+                <span style="font-size: 14px; color: #333;">{{ $vendor->name }}</span>
+            </div>
+        @endforeach
+    </div>
+</div>
             </div>
             <div class="form-row-epic">
                 <div class="form-group-epic">

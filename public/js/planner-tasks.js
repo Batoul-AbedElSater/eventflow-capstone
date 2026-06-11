@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeTaskModal();
     initializeTaskActions();
     updateColumnCounts();
-    
-    // Restore timer if exists
     restoreFocusTimer();
 });
 
@@ -39,7 +37,6 @@ function restoreFocusTimer() {
                     startFocusTimer(timerButton, savedTitle, Math.ceil(remainingSeconds/60), true);
                 }
             } else {
-                // Timer expired while away
                 localStorage.removeItem('focusTimerEnd');
                 localStorage.removeItem('focusTimerTitle');
                 alert(`🎉 Focus session "${savedTitle}" completed while you were away!`);
@@ -79,7 +76,7 @@ function initializePowerMode() {
     });
 }
 
-// ========== FOCUS TIMER MODAL with STOP functionality & persistence ==========
+// ========== FOCUS TIMER MODAL ==========
 function initializeFocusTimerModal() {
     const timerBtn = document.getElementById('focusTimerBtn');
     const modal = document.getElementById('focusTimerModal');
@@ -91,7 +88,6 @@ function initializeFocusTimerModal() {
     
     if (!timerBtn || !modal) return;
     
-    // Remove old listener and clone to avoid duplicates
     const newTimerBtn = timerBtn.cloneNode(true);
     timerBtn.parentNode.replaceChild(newTimerBtn, timerBtn);
     
@@ -129,7 +125,6 @@ function initializeFocusTimerModal() {
             timerButton.classList.add('timer-active');
         }
         
-        // Save end time to localStorage
         const endTime = Date.now() + (minutes * 60 * 1000);
         localStorage.setItem('focusTimerEnd', endTime);
         localStorage.setItem('focusTimerTitle', title);
@@ -171,7 +166,6 @@ function startFocusTimer(button, title, minutes, isRestored = false) {
         const secondsLeft = focusTimeRemaining % 60;
         button.innerHTML = `<i class="fas fa-stop-circle"></i> ${title} - ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
         
-        // Update localStorage each second to sync remaining time
         if (!isRestored) {
             const newEndTime = Date.now() + (focusTimeRemaining * 1000);
             localStorage.setItem('focusTimerEnd', newEndTime);
@@ -293,6 +287,23 @@ async function loadTaskData(taskId) {
         document.getElementById('taskDueDate').value = task.due_date ? task.due_date.substring(0,16) : '';
         document.getElementById('taskProgress').value = task.progress || 0;
         document.getElementById('progressValue').textContent = (task.progress || 0) + '%';
+        
+        // ✅ Load assigned assistant
+        if (task.assistants && task.assistants.length > 0) {
+            const assistantSelect = document.getElementById('taskAssistant');
+            if (assistantSelect) {
+                assistantSelect.value = task.assistants[0].id;
+            }
+        }
+        if (task.vendors && task.vendors.length > 0) {
+            const vendorSelect = document.getElementById('taskVendors');
+            if (vendorSelect) {
+                const vendorIds = task.vendors.map(v => v.id.toString());
+                Array.from(vendorSelect.options).forEach(opt => {
+                    opt.selected = vendorIds.includes(opt.value);
+                });
+            }
+        }
     } catch (error) {
         showNotification('Failed to load task', 'error');
     }
@@ -300,15 +311,28 @@ async function loadTaskData(taskId) {
 
 async function handleTaskSubmit(e) {
     e.preventDefault();
+    
+    const submitBtn = document.querySelector('#taskForm .btn-primary-epic');
+    if (submitBtn) submitBtn.disabled = true;  // ✅ Prevent double click
+    
     const taskId = document.getElementById('taskId').value;
+    
+    const assistantSelect = document.getElementById('taskAssistant');
+    const assistantId = assistantSelect?.value || null;
+
+
+     const vendorIds = typeof getSelectedVendorIds === 'function' ? getSelectedVendorIds() : [];
     const formData = {
         title: document.getElementById('taskTitle').value,
         description: document.getElementById('taskDescription').value,
         priority: document.getElementById('taskPriority').value,
         event_id: document.getElementById('taskEvent').value || null,
         due_date: document.getElementById('taskDueDate').value || null,
-        progress: parseInt(document.getElementById('taskProgress').value)
+        progress: parseInt(document.getElementById('taskProgress').value),
+        assistant_id: assistantId,
+        vendor_ids: vendorIds  
     };
+    
     try {
         const url = taskId ? `/planner/tasks/${taskId}` : '/planner/tasks';
         const method = taskId ? 'PUT' : 'POST';
@@ -327,6 +351,7 @@ async function handleTaskSubmit(e) {
         setTimeout(() => location.reload(), 800);
     } catch (error) {
         showNotification('Failed to save task', 'error');
+        if (submitBtn) submitBtn.disabled = false;  // Re-enable on error
     }
 }
 
@@ -379,6 +404,95 @@ window.duplicateTask = async function(taskId) {
 window.openTaskDetails = function(taskId) { openTaskModal(taskId); };
 window.openTaskMenu = function(taskId, event) { event.stopPropagation(); };
 
+// ============================================
+// ✅ ASSISTANT ASSIGNMENT FUNCTIONS
+// ============================================
+
+/**
+ * Show modal to assign an assistant to a task
+ */
+window.showAssignAssistantModal = function(taskId) {
+    const modal = document.getElementById('assignAssistantModal');
+    if (modal) {
+        document.getElementById('assignTaskId').value = taskId;
+        modal.style.display = 'block';
+    } else {
+        // Fallback to prompt if modal doesn't exist
+        const assistantId = prompt('Enter Assistant ID to assign:');
+        if (assistantId) {
+            assignAssistantToTask(taskId, assistantId);
+        }
+    }
+};
+
+window.closeAssignModal = function() {
+    const modal = document.getElementById('assignAssistantModal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.confirmAssignAssistant = function() {
+    const taskId = document.getElementById('assignTaskId')?.value;
+    const assistantId = document.getElementById('assignAssistantSelect')?.value;
+    
+    if (!assistantId) {
+        alert('Please select an assistant');
+        return;
+    }
+    
+    assignAssistantToTask(taskId, assistantId);
+    window.closeAssignModal();
+};
+
+async function assignAssistantToTask(taskId, assistantId) {
+    try {
+        const response = await fetch(`/planner/tasks/${taskId}/assign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ assistant_id: assistantId })
+        });
+        const data = await response.json();
+        if (data.success) {
+            showNotification(data.message, 'success');
+            location.reload();
+        } else {
+            showNotification(data.message || 'Failed to assign', 'error');
+        }
+    } catch (error) {
+        showNotification('Failed to assign assistant', 'error');
+    }
+}
+
+window.removeAssistant = async function(taskId, assistantId) {
+    if (!confirm('Remove this assistant from the task?')) return;
+    
+    try {
+        const response = await fetch(`/planner/tasks/${taskId}/unassign/${assistantId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+        const data = await response.json();
+        if (data.success) {
+            showNotification(data.message, 'success');
+            location.reload();
+        } else {
+            showNotification(data.message || 'Failed to remove', 'error');
+        }
+    } catch (error) {
+        showNotification('Failed to remove assistant', 'error');
+    }
+};
+
+// ============================================
+// HELPERS
+// ============================================
+
 function celebrateTaskCompletion() {
     if (typeof confetti !== 'undefined') {
         const colors = powerModeActive ? ['#E19184', '#C63E4E', '#475B35', '#FFD700'] : ['#E19184', '#C63E4E'];
@@ -399,8 +513,69 @@ function showNotification(message, type = 'success') {
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 3000);
 }
+// ========== VENDOR SELECTION ==========
+// ========== VENDOR SELECTION ==========
+const selectedVendors = [];
 
-// Inject keyframe animations and modal styles if not already present
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdown = document.getElementById('vendorDropdown');
+    if (!dropdown) return;
+
+    dropdown.addEventListener('click', function(e) {
+        const item = e.target.closest('.vendor-list-item');
+        if (!item) return;
+
+        const vendorId = item.dataset.vendorId;
+        const vendorName = item.dataset.vendorName;
+        const checkIcon = item.querySelector('.vendor-check-icon');
+
+        if (item.classList.contains('selected')) {
+            item.classList.remove('selected');
+            checkIcon.style.color = 'transparent';
+            checkIcon.style.background = 'transparent';
+            checkIcon.style.borderColor = '#ddd';
+            const index = selectedVendors.findIndex(v => v.id === vendorId);
+            if (index > -1) selectedVendors.splice(index, 1);
+        } else {
+            item.classList.add('selected');
+            checkIcon.style.color = 'white';
+            checkIcon.style.background = '#C63E4E';
+            checkIcon.style.borderColor = '#C63E4E';
+            selectedVendors.push({ id: vendorId, name: vendorName });
+        }
+        
+        updateVendorSelectText();
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#vendorSelectBox') && !e.target.closest('#vendorDropdown')) {
+            document.getElementById('vendorDropdown').classList.add('hidden');
+        }
+    });
+});
+
+function updateVendorSelectText() {
+    const textEl = document.getElementById('vendorSelectText');
+    if (selectedVendors.length === 0) {
+        textEl.textContent = 'No vendors selected';
+        textEl.style.color = '#999';
+    } else {
+        textEl.textContent = selectedVendors.map(v => v.name).join(', ');
+        textEl.style.color = '#333';
+    }
+}
+
+function getSelectedVendorIds() {
+    return selectedVendors.map(v => v.id);
+}
+function toggleVendorDropdown() {
+    const dropdown = document.getElementById('vendorDropdown');
+    const arrow = document.getElementById('vendorArrow');
+    dropdown.classList.toggle('hidden');
+    arrow.classList.toggle('open');
+}
+// Inject keyframe animations and modal styles
 if (!document.querySelector('#tasks-dynamic-styles')) {
     const style = document.createElement('style');
     style.id = 'tasks-dynamic-styles';
@@ -523,7 +698,7 @@ if (!document.querySelector('#tasks-dynamic-styles')) {
             cursor: pointer;
             color: var(--green);
         }
-         .timer-active {
+        .timer-active {
             background: linear-gradient(135deg, #D0021B, #A00116) !important;
             border: none !important;
         }
@@ -533,4 +708,4 @@ if (!document.querySelector('#tasks-dynamic-styles')) {
         }
     `;
     document.head.appendChild(style);
-}   
+}

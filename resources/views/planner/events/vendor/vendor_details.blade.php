@@ -88,6 +88,31 @@
         <p class="location_row"><i class="fas fa-map-marker-alt"></i>{{ $location }}</p>
        @endforeach
     </div>
+@if($vendor->orders && $vendor->orders->count() > 0)
+    <div class="card">
+        <p class="subheader">Task Orders</p>
+        @foreach($vendor->orders as $order)
+            <div class="order-item">
+                <p class="order-task">
+                    <i class="fas fa-tasks"></i> {{ $order->task->title }}
+                </p>
+                <p class="order-meta">
+                    <i class="fas fa-user"></i> Assistant: {{ $order->assistant->name }}
+                </p>
+                <p class="order-meta">
+                    <i class="fas fa-dollar-sign"></i> Price: ${{ number_format($order->price, 2) }}
+                </p>
+                @if($order->notes)
+                    <p class="order-meta">
+                        <i class="fas fa-sticky-note"></i> Order: {{ $order->notes }}
+                    </p>
+                @endif
+            </div>
+        @endforeach
+    </div>
+@endif
+
+
 
 
 </div>
