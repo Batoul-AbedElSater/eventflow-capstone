@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\StaffProfile;
 use App\Models\Vendor;
+use App\Models\Task;
+use App\Models\TaskAssignment;
 
 class User extends Authenticatable
 {
@@ -50,14 +52,6 @@ class User extends Authenticatable
         return $this->hasMany(Event::class, 'planner_id');
     }
 
-    // ========================================
-    // RELATIONSHIPS
-    // ========================================
-
-    /**
-     * Get the client profile for this user.
-     * One-to-One: User -> ClientProfile
-     */
     public function clientProfile()
     {
         return $this->hasOne(ClientProfile::class);
@@ -99,10 +93,7 @@ class User extends Authenticatable
      * Get tasks assigned to this user (planner).
      * One-to-Many: User (planner) -> Tasks
      */
-    public function assignedTasks()
-    {
-        return $this->hasMany(Task::class, 'user_id');
-    }
+    
 
     /**
      * Get message threads where this user is the client.
@@ -196,6 +187,46 @@ class User extends Authenticatable
 
     public function favoriteVendors(){
         return $this->belongsToMany(Vendor::class,'user_vendor_favorites');
+    }
+
+    public function assignedTasks()
+    {
+    return $this->belongsToMany(
+        Task::class,
+        'task_assignments',
+        'assistant_id',
+        'task_id'
+    )->withPivot('assigned_by')->withTimestamps();
+    }
+ 
+
+    public function assignedOutTasks()
+    {
+    return $this->hasMany(TaskAssignment::class, 'assigned_by');
+    }
+ 
+// Tasks this user (planner) created
+    public function createdTasks()
+    {
+    return $this->hasMany(Task::class, 'user_id');
+    }
+ 
+
+    public function assistants()
+    {
+    return $this->hasManyThrough(
+        User::class,          
+        TaskAssignment::class, 
+        'assigned_by',         
+        'id',                  
+        'id',                  
+        'assistant_id'         
+    )->distinct();
+    }
+
+    public function vendorOrders()
+    {
+    return $this->hasMany(VendorOrder::class, 'assistant_id');
     }
 }
 

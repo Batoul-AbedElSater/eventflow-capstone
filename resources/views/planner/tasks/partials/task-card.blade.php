@@ -45,6 +45,33 @@
             </div>
         @endif
 
+ @if($task->assistants && $task->assistants->first())
+    {{-- Show assigned assistant --}}
+    <div class="task-assistant-tag">
+        <span class="assistant-avatar-small">
+            {{ strtoupper(substr($task->assistants->first()->name, 0, 1)) }}
+        </span>
+        <span class="assistant-name">{{ $task->assistants->first()->name }}</span>
+        <button class="remove-assistant-btn" 
+                onclick="event.stopPropagation(); removeAssistant({{ $task->id }}, {{ $task->assistants->first()->id }})"
+                title="Remove {{ $task->assistants->first()->name }}">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+@else
+    {{-- Opens the Edit Task modal to assign assistant --}}
+    <button class="assign-assistant-btn" 
+            onclick="event.stopPropagation(); openTaskModal({{ $task->id }})">
+        <i class="fas fa-user-plus"></i> Assign Assistant
+    </button>
+@endif
+
+@if($task->vendors && $task->vendors->count() > 0)
+    <div class="task-vendors-row">
+        <i class="fas fa-store"></i>
+        <span>{{ $task->vendors->pluck('name')->join(', ') }}</span>
+    </div>
+@endif
         @if($task->progress > 0)
             <div class="task-progress-bar-container">
                 <div class="task-progress-bar" style="width: {{ $task->progress }}%"></div>
@@ -64,10 +91,8 @@
             <div class="task-due-date {{ $isOverdue ? 'overdue' : ($isUrgent ? 'urgent' : '') }}">
                 <i class="fas fa-clock"></i>
                 <span>
-                    @if($isOverdue)
-                        Overdue
-                    @else
-                        {{ $dueDate->format('M d, h:i A') }}
+                    @if($isOverdue) Overdue
+                    @else {{ $dueDate->format('M d, h:i A') }}
                     @endif
                 </span>
             </div>
@@ -88,3 +113,4 @@
 
     <div class="task-glow-effect"></div>
 </div>
+
