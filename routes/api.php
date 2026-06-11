@@ -103,14 +103,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/requests/{event}/accept', [EventRequestController::class, 'accept'])->name('requests.accept');
         Route::post('/requests/{event}/decline', [EventRequestController::class, 'decline'])->name('requests.decline');
 
-        // vendors
-    Route::middleware('auth:sanctum')->prefix('planner')->group(function () {
-    Route::get('events/{event}/vendors',                    [VendorController::class, 'index']);
-    Route::get('events/{event}/vendors/{vendor}',           [VendorController::class, 'show']);
-    Route::get('events/{eventId}/vendors/favorites',        [VendorController::class, 'favorites']);
-    Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
-    Route::delete('events/{event}/vendors/{vendor}/favorite',[VendorController::class, 'removeFavorite']);
-});
+
+// Vendors
+Route::get('events/{event}/vendors', [VendorController::class, 'index']);
+Route::get('events/{event}/vendors/favorites', [VendorController::class, 'favorites']);
+Route::get('events/{event}/vendors/{vendor}', [VendorController::class, 'show']);
+Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
+Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
     });
 
 });

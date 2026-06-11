@@ -40,7 +40,7 @@ $vendors=$event->vendors()->wherePivot('is_favorite',true)->get();
  ]);
 }
 
-public function toggleFavoite(Event $event,Vendor $vendor): JsonResponse{
+public function toggleFavorite(Event $event,Vendor $vendor): JsonResponse{
     if($event->planner_id!== Auth::id()){
 return response()->json(['message'=>'Forbidden.'],403);
     }
@@ -67,7 +67,7 @@ public function removeFavorite(Event $event,Vendor $vendor): JsonResponse{
     if($event->planner_id!==Auth::id()){
         return response()->json(['message'=>'Forbidden.'],403);
     }
-    $event->venodrs()->detach($vendor->id);
+    $event->vendors()->detach($vendor->id);
     return response()->json([
         'message'=>'vendor removed from favorites',
     ]);
