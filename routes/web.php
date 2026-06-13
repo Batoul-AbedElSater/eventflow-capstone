@@ -16,7 +16,7 @@ Route::get('/', function () {
         return match($role) {
             'planner' => redirect()->route('planner.dashboard'),
             'client'  => redirect()->route('client.dashboard'),
-            'assistant' => redirect()->route('assistant.dashboard'),
+            'assistant' => redirect()->route('assistant.tasks'),
             default   => redirect()->route('login'),
         };
     }
