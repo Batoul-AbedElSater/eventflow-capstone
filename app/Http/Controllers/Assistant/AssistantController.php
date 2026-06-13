@@ -157,4 +157,15 @@ public function myOrders()
     
     return view('assistant.my-orders', compact('orders'));
 }
+
+public function deleteOrder($orderId)
+{
+    $order = \App\Models\VendorOrder::where('id', $orderId)
+        ->where('assistant_id', auth()->id())
+        ->firstOrFail();
+    
+    $order->delete();
+    
+    return redirect()->back()->with('success', 'Order deleted successfully!');
+}
 }

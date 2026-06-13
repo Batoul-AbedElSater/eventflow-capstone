@@ -139,6 +139,7 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
     Route::post('/task/{task}/vendor/{vendor}/order', [AssistantController::class, 'submitOrder'])->name('vendor.order.submit');
 
     Route::get('/orders', [AssistantController::class, 'myOrders'])->name('orders');
+    Route::delete('/orders/{order}', [AssistantController::class, 'deleteOrder'])->name('orders.delete');
 
     });
 
