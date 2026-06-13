@@ -21,13 +21,21 @@ public function index(Event $event): JsonResponse{
     ]);
 }
 
-public function show(Event $event,Vendor $vendor): JsonResponse{
-    if($event->planner_id!== Auth::id()){
-        return response()->json(['message'=>'Forbidden.'],403);
+public function show(Event $event, Vendor $vendor): JsonResponse
+{
+    if ($event->planner_id !== Auth::id()) {
+        return response()->json(['message' => 'Forbidden.'], 403);
     }
+
+    $vendor->load(['orders' => function ($query) use ($event) {
+        $query->whereHas('task', function ($q) use ($event) {
+            $q->where('event_id', $event->id);
+        })->with(['task', 'assistant']);
+    }]);
+
     return response()->json([
-        'event'=>$event,
-        'vendor'=>$vendor,
+        'event'  => $event,
+        'vendor' => $vendor,
     ]);
 }
 

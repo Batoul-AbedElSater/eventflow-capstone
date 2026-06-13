@@ -6,15 +6,13 @@
 <style>
     body {
         background-color: #EFE7DA;
-         font-family: Georgia, 'Times New Roman', serif;
+        font-family: Georgia, 'Times New Roman', serif;
     }
     .orders-container {
         max-width: 1000px;
         margin: 0 auto;
         padding: 24px 36px;
     }
-    
-    /* Title */
     .orders-title {
         font-size: 28px;
         color: #620607;
@@ -28,7 +26,6 @@
         margin-bottom: 28px;
         text-align: left;
     }
-    
     .order-card {
         background: white;
         border-radius: 16px;
@@ -50,7 +47,7 @@
     .order-card .task-name {
         font-size: 22px;
         font-weight: 700;
-        color: #2C3821;
+        color: #620607;
     }
     .order-card .vendor-name {
         font-size: 18px;
@@ -59,52 +56,44 @@
         margin-top: 4px;
     }
     .order-card .vendor-name i {
-    color: #E19184;
-}
-
-
+        color: #E19184;
+    }
     .order-card .order-price {
         font-size: 28px;
         font-weight: 800;
         color: #475B35;
         text-align: right;
     }
-   .order-card .order-meta {
-    display: flex;
-    gap: 24px;
-    font-size: 16px;
-    color: #620607;
-    margin-top: 10px;
-}
-  .order-card .order-meta i {
-    color: #E19184;
-    margin-right: 5px;
-}
-  .order-card .order-notes {
-    font-size: 16px;
-    color: #620607;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #f0ebe4;
-}
-.order-card .order-notes i {
-    color: #E19184;
-}
-
-.order-card .task-name {
-    font-size: 22px;
-    font-weight: 700;
-    color: #620607;
-}
+    .order-card .order-meta {
+        display: flex;
+        gap: 24px;
+        font-size: 16px;
+        color: #620607;
+        margin-top: 10px;
+    }
+    .order-card .order-meta i {
+        color: #E19184;
+        margin-right: 5px;
+    }
+    .order-card .order-notes {
+        font-size: 16px;
+        color: #620607;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0ebe4;
+    }
+    .order-card .order-notes i {
+        color: #E19184;
+    }
     .order-card .order-actions {
         margin-top: 14px;
         display: flex;
         gap: 10px;
+        align-items: center;
     }
-
     .btn-view-order {
         padding: 8px 18px;
-        background:transparent;
+        background: transparent;
         color: #C63E4E;
         border: 2px solid #C63E4E;
         border-radius: 20px;
@@ -113,13 +102,10 @@
         text-decoration: none;
         transition: all 0.2s;
     }
-
-
-
     .btn-edit-order {
         padding: 8px 18px;
         background: #C63E4E;
-        color: White;
+        color: white;
         border: 2px solid #C63E4E;
         border-radius: 20px;
         font-size: 13px;
@@ -132,7 +118,6 @@
         border: 2px solid #E19184;
         color: white;
     }
-
     .btn-view-order:hover {
         background: #E19184;
         border: 2px solid #E19184;
@@ -154,15 +139,15 @@
         color: #bbb;
     }
     .header_title {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 2.6rem;
-    font-weight: 700;
-    color: var(--vampire, #620607);
-    letter-spacing: -0.5px;
-    margin: 0;
-    margin-bottom: 14px;
-    margin-top: 4px;
-}
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: #620607;
+        letter-spacing: -0.5px;
+        margin: 0;
+        margin-bottom: 14px;
+        margin-top: 4px;
+    }
 </style>
 @endpush
 
@@ -170,12 +155,9 @@
 
 <div class="orders-container">
     
- <h2 class="header_title" style="margin-bottom: 25px;">
-    My Orders
-</h2>
-<p class="orders-subtitle">Track all your vendor orders in one place</p>
+    <h2 class="header_title" style="margin-bottom: 25px;">My Orders</h2>
+    <p class="orders-subtitle">Track all your vendor orders in one place</p>
 
-    
     @forelse($orders as $order)
         <div class="order-card">
             <div class="order-header">
@@ -185,9 +167,9 @@
                         <i class="fas fa-store"></i> {{ $order->vendor->name }}
                     </div>
                     @if($order->task->event)
-                       <div style="font-size: 13px; color: #620607; margin-top: 8px; margin-left: 3px;">
-    <i class="fas fa-calendar-alt" style="color: #E19184;"></i> {{ $order->task->event->name }}
-</div>
+                        <div style="font-size: 13px; color: #620607; margin-top: 8px; margin-left: 3px;">
+                            <i class="fas fa-calendar-alt" style="color: #E19184;"></i> {{ $order->task->event->name }}
+                        </div>
                     @endif
                 </div>
                 <div class="order-price">${{ number_format($order->price, 2) }}</div>
@@ -205,14 +187,20 @@
             </div>
             
             <div class="order-actions">
-
-                 <a href="{{ route('assistant.tasks.vendors', $order->task_id) }}" class="btn-view-order">
+                <a href="{{ route('assistant.tasks.vendors', $order->task_id) }}" class="btn-view-order">
                     <i class="fas fa-eye"></i> View Vendors
                 </a>
                 <a href="{{ route('assistant.vendor.order', ['task' => $order->task_id, 'vendor' => $order->vendor_id]) }}" class="btn-edit-order">
                     <i class="fas fa-edit"></i> Edit Order
                 </a>
-               
+                
+                <form method="POST" action="{{ route('assistant.orders.delete', $order->id) }}" onsubmit="return confirm('Delete this order?')" style="margin-left: auto;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="background: none; border: none; cursor: pointer; padding: 8px;">
+                        <i class="fas fa-trash" style="color: #aaa; font-size: 18px;"></i>
+                    </button>
+                </form>
             </div>
         </div>
     @empty
