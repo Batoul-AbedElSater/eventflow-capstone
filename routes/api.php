@@ -113,6 +113,7 @@ Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class
 Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
     });
 
+
     //notification
     Route::prefix('notifications')->name('notifications.')->group(function(){
 
@@ -125,5 +126,22 @@ Route::delete('/', [PlannerNotificationController::class, 'deleteAll'])->name('d
 
 
 });
+
+
+//Asistant
+//
+//
+//
+    Route::prefix('assistant')->name('api.assistant.')->middleware(['auth:sanctum'])->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'dashboard']);
+        Route::get('/tasks', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'tasks']);
+        Route::patch('/tasks/{task}/complete', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'completeTask']);
+        Route::get('/tasks/{task}/vendors', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'taskVendors']);
+        Route::get('/vendor/{vendor}', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'vendorShow']);
+        Route::post('/task/{task}/vendor/{vendor}/order', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'submitOrder']);
+        Route::get('/orders', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'myOrders']);
+        Route::delete('/orders/{order}', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'deleteOrder']);
+        });
+
 
 });

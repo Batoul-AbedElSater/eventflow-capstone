@@ -2,75 +2,84 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Task extends Model
 {
     use HasFactory;
 
-   protected $fillable = [
-        'user_id',
-        'user_id',
+    protected $fillable = [
+        'user_id',      
         'event_id',
         'title',
         'description',
         'priority',
         'status',
         'due_date',
-        'deadline',
         'progress',
         'completed_at',
-        'order_index',
-        'source',
     ];
 
     protected $casts = [
-        'due_date' => 'datetime',
-        'deadline' => 'datetime',
+        'due_date'     => 'datetime',
         'completed_at' => 'datetime',
-        'progress' => 'integer',
     ];
 
-    /**
-     * Get the user who owns this task
-     */
-    public function user() // CHANGED from planner
+    
+    public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function planner()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * Get the event this task belongs to
-     */
     public function event()
     {
         return $this->belongsTo(Event::class);
     }
 
-    /**
-     * Check if task is overdue
-     */
-    public function isOverdue()
+   
+    public function assignments()
     {
-        return $this->due_date && now()->gt($this->due_date) && $this->status !== 'completed';
+        return $this->hasMany(TaskAssignment::class);
     }
 
-    /**
-     * Check if task is urgent (less than 24 hours)
-     */
-    public function isUrgent()
-    {
-        if (!$this->due_date || $this->status === 'completed') {
-            return false;
-        }
 
-        $hoursUntil = now()->diffInHours($this->due_date, false);
-        return $hoursUntil > 0 && $hoursUntil < 24;
+    public function assistants()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'task_assignments',
+            'task_id',
+            'assistant_id'
+        )->withPivot('assigned_by')->withTimestamps();
     }
+
+   
+
+    public function scopeForAssistant($query, $assistantId)
+    {
+        return $query->whereHas('assignments', function ($q) use ($assistantId) {
+            $q->where('assistant_id', $assistantId);
+        });
+    }
+
+    public function scopeCreatedBy($query, $plannerId)
+    {
+        return $query->where('user_id', $plannerId);
+    }
+
+    public function scopeUrgent($query)
+    {
+        return $query->where('priority', 'urgent')->where('status', '!=', 'completed');
+    }
+
+    public function vendors()
+    {
+    return $this->belongsToMany(Vendor::class, 'task_vendor')->withTimestamps();
+    }
+    public function vendorOrders()
+    {
+    return $this->hasMany(VendorOrder::class);
+    }
+
 }

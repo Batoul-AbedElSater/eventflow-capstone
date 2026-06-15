@@ -32,6 +32,9 @@
         --green-dark: #2C3821;
 
     }
+    body {
+    padding: 0 35px;
+}
     /* sidebar */
     aside.planner-sidebar {
     position: fixed;
@@ -48,6 +51,7 @@
     gap: 6px;
     color: var(--cream);
 }
+
 
 .sidebar-link {
     display: flex;
@@ -489,15 +493,7 @@
          <div class="header-left">
 
              <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s;">
-                <span style="color: #E19184;">E</span>
-                <span style="color: #C63E4E;">v</span>
-                <span style="color: #475B35;">e</span>
-                <span style="color: #620607;">n</span>
-                <span style="color: #E19184;">t</span>
-                <span style="color: #C63E4E;">F</span>
-                <span style="color: #475B35;">l</span>
-                <span style="color: #620607;">o</span>
-                <span style="color: #E19184;">w</span>
+                <span style="color:#620607;">Event</span><span style="color:#C63E4E;">Flow</span>
             </h1>
 
         </div>

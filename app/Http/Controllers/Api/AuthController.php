@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\ClientProfile;
 use App\Models\PlannerProfile;
+use App\Models\StaffProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,7 +19,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
-            'role' => 'required|in:client,planner',
+            'role' => 'required|in:client,planner,assistant', 
             'phone' => 'required|string|max:20',
         ]);
 
@@ -30,20 +31,21 @@ class AuthController extends Controller
             'phone' => $validated['phone'],
         ]);
 
-        // Create profile
+        // Create profile based on role
         if ($user->role === 'client') {
             ClientProfile::create(['user_id' => $user->id]);
-        } else {
+        } elseif ($user->role === 'planner') {
             PlannerProfile::create(['user_id' => $user->id]);
+        } else {
+            StaffProfile::create(['user_id' => $user->id]); 
         }
 
-        // Create API token for mobile
         $token = $user->createToken('mobile-app')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'user' => $user,
-            'token' => $token, // Mobile saves this for future requests
+            'token' => $token,
         ], 201);
     }
 
@@ -57,7 +59,6 @@ class AuthController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
-        // Check if user exists and password matches
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json([
                 'success' => false,
@@ -65,7 +66,6 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Create token
         $token = $user->createToken('mobile-app')->plainTextToken;
 
         return response()->json([
@@ -78,7 +78,6 @@ class AuthController extends Controller
     // API Logout
     public function logout(Request $request)
     {
-        // Delete current token
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -92,7 +91,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'user' => $request->user()->load('clientProfile', 'plannerProfile'),
+            'user' => $request->user(),
         ]);
     }
 }

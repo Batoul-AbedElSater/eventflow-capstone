@@ -36,4 +36,14 @@ class Vendor extends Model
         return $this->belongsToMany(User::class,'user_vendor_favorites');
     }
 
+    public function tasks()
+    {
+    return $this->belongsToMany(Task::class, 'task_vendor')->withTimestamps();
+    }
+
+    public function orders()
+    {
+    return $this->hasMany(VendorOrder::class);
+    }
+
 }

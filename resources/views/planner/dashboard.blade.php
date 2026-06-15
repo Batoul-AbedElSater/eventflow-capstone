@@ -16,7 +16,7 @@
     {{-- COMMAND CENTER HEADER (updated stats) --}}
     <div class="command-header">
         <div class="command-title">
-            <h1><span class="time-greeting">Good {{ date('H') < 12 ? 'Morning' : (date('H') < 18 ? 'Afternoon' : 'Evening') }}</span> {{ Auth::user()->name }} 👋</h1>
+            <h1><span class="time-greeting">Good {{ date('H') < 12 ? 'Morning' : (date('H') < 18 ? 'Afternoon' : 'Evening') }}</span> {{ Auth::user()->name }} </h1>
             <p>Command Center - {{ Carbon\Carbon::now()->format('l, F j, Y') }}</p>
         </div>
         <div class="command-stats">
