@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Client\NotificationController;
 use App\Http\Controllers\Api\Planner\DashboardController as PlannerDashboardController;
 use App\Http\Controllers\Api\Planner\EventRequestController;
 use App\Http\Controllers\Api\Planner\VendorController as VendorController;
+use App\Http\Controllers\Planner\NotificationController as PlannerNotificationController;
 
 
 /*
@@ -111,5 +112,18 @@ Route::get('events/{event}/vendors/{vendor}', [VendorController::class, 'show'])
 Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
 Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
     });
+
+    //notification
+    Route::prefix('notifications')->name('notifications.')->group(function(){
+
+Route::get('/',[PlannerNotificationController::class,'index'])->name('index');
+Route::get('/stats',[PlannerNotificationController::class,'stats'])->name('stats');
+Route::post('/{id}/read',[PlannerNotificationController::class,'markAsRead'])->name('read');
+Route::post('/{id}/archive',[PlannerNotificationController::class,'archive'])->name('archive');
+ Route::post('/mark-all-read', [PlannerNotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+Route::delete('/', [PlannerNotificationController::class, 'deleteAll'])->name('delete-all');
+
+
+});
 
 });

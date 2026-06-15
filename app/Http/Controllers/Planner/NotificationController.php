@@ -69,7 +69,7 @@ class NotificationController extends Controller
     public function stats()
     {
         $userId = Auth::id();
-        
+
         $stats = [
             'total_today' => Notification::where('user_id', $userId)
                 ->whereDate('created_at', today())
@@ -85,4 +85,13 @@ class NotificationController extends Controller
 
         return response()->json($stats);
     }
+    // deletes all active notifications
+public function deleteAll()
+{
+    Notification::where('user_id', Auth::id())
+        ->active()
+        ->delete();
+
+    return response()->json(['success' => true]);
+}
 }

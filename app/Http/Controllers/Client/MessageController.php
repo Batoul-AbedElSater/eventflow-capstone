@@ -86,7 +86,7 @@ public function index($eventId)
                     'body'        => $validated['message'],   // keep both if you want
                     'message'     => $validated['message'],
                     'is_read'     => false,
-                    'sent_at'     => now(),
+                   // 'sent_at'     => now(),
                 ]);
 
                 // Create notification for planner
