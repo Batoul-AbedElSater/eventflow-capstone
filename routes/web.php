@@ -14,17 +14,10 @@ Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
         return match($role) {
-
             'planner'   => redirect()->route('planner.dashboard'),
             'client'    => redirect()->route('client.dashboard'),
-            'assistant' => redirect()->route('assistant.dashboard'),
-            default     => redirect()->route('login'),
-
-            'planner' => redirect()->route('planner.dashboard'),
-            'client'  => redirect()->route('client.dashboard'),
             'assistant' => redirect()->route('assistant.tasks'),
-            default   => redirect()->route('login'),
-
+            default     => redirect()->route('login'),
         };
     }
     return redirect()->route('login');

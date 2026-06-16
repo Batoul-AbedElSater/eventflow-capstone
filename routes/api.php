@@ -92,41 +92,36 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // PLANNER API ROUTES - CORRECTED
 
 
-    Route::prefix('planner')->name('api.planner.')->group(function () {
+   Route::prefix('planner')->name('api.planner.')->group(function () {
 
-        // Dashboard - Weekly Calendar
-        Route::get('/dashboard', [PlannerDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard/events/{date}', [PlannerDashboardController::class, 'getDayEvents'])->name('dashboard.events');
+    // Dashboard - Weekly Calendar
+    Route::get('/dashboard', [PlannerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/events/{date}', [PlannerDashboardController::class, 'getDayEvents'])->name('dashboard.events');
 
-        // Event Requests
-        Route::get('/requests', [EventRequestController::class, 'index'])->name('requests.index');
-        Route::get('/requests/stats', [EventRequestController::class, 'stats'])->name('requests.stats');
-        Route::post('/requests/{event}/accept', [EventRequestController::class, 'accept'])->name('requests.accept');
-        Route::post('/requests/{event}/decline', [EventRequestController::class, 'decline'])->name('requests.decline');
+    // Event Requests
+    Route::get('/requests', [EventRequestController::class, 'index'])->name('requests.index');
+    Route::get('/requests/stats', [EventRequestController::class, 'stats'])->name('requests.stats');
+    Route::post('/requests/{event}/accept', [EventRequestController::class, 'accept'])->name('requests.accept');
+    Route::post('/requests/{event}/decline', [EventRequestController::class, 'decline'])->name('requests.decline');
 
+    // Vendors
+    Route::get('events/{event}/vendors', [VendorController::class, 'index']);
+    Route::get('events/{event}/vendors/favorites', [VendorController::class, 'favorites']);
+    Route::get('events/{event}/vendors/{vendor}', [VendorController::class, 'show']);
+    Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
+    Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
 
-// Vendors
-Route::get('events/{event}/vendors', [VendorController::class, 'index']);
-Route::get('events/{event}/vendors/favorites', [VendorController::class, 'favorites']);
-Route::get('events/{event}/vendors/{vendor}', [VendorController::class, 'show']);
-Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
-Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
+    // Notifications  ← moved INSIDE planner group
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [PlannerNotificationController::class, 'index']);
+        Route::get('/stats', [PlannerNotificationController::class, 'stats']);
+        Route::post('/{id}/read', [PlannerNotificationController::class, 'markAsRead']);
+        Route::post('/{id}/archive', [PlannerNotificationController::class, 'archive']);
+        Route::post('/mark-all-read', [PlannerNotificationController::class, 'markAllAsRead']);
+        Route::delete('/', [PlannerNotificationController::class, 'deleteAll']);
     });
 
-
-    //notification
-    Route::prefix('notifications')->name('notifications.')->group(function(){
-
-Route::get('/',[PlannerNotificationController::class,'index'])->name('index');
-Route::get('/stats',[PlannerNotificationController::class,'stats'])->name('stats');
-Route::post('/{id}/read',[PlannerNotificationController::class,'markAsRead'])->name('read');
-Route::post('/{id}/archive',[PlannerNotificationController::class,'archive'])->name('archive');
- Route::post('/mark-all-read', [PlannerNotificationController::class, 'markAllAsRead'])->name('mark-all-read');
-Route::delete('/', [PlannerNotificationController::class, 'deleteAll'])->name('delete-all');
-
-
-});
-
+}); 
 
 //Asistant
 //
