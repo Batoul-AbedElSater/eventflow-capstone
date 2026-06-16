@@ -17,7 +17,7 @@ class Message extends Model
         'is_read',
         'read_at',
         'image_url',
-        'sent_at',
+       // 'sent_at',
         'deleted_by_sender',
         'deleted_by_receiver',
     ];
@@ -25,7 +25,7 @@ class Message extends Model
     protected $casts = [
         'is_read' => 'boolean',
         'read_at' => 'datetime',
-        'sent_at' => 'datetime',
+       // 'sent_at' => 'datetime',
     ];
 
     /**

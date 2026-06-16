@@ -14,10 +14,17 @@ Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
         return match($role) {
+
+            'planner'   => redirect()->route('planner.dashboard'),
+            'client'    => redirect()->route('client.dashboard'),
+            'assistant' => redirect()->route('assistant.dashboard'),
+            default     => redirect()->route('login'),
+
             'planner' => redirect()->route('planner.dashboard'),
             'client'  => redirect()->route('client.dashboard'),
             'assistant' => redirect()->route('assistant.tasks'),
             default   => redirect()->route('login'),
+
         };
     }
     return redirect()->route('login');
@@ -39,7 +46,14 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])->group(function () {
 
+
+    // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
+
+    // Analytics
+
+    Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/analytics', [App\Http\Controllers\Planner\AnalyticsController::class, 'index'])->name('events.analytics');
 
     // Event Requests
@@ -60,6 +74,34 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
     Route::resource('events', App\Http\Controllers\Planner\EventController::class);
     Route::get('/events/analytics', [App\Http\Controllers\Planner\EventController::class, 'analytics'])->name('events.analytics');
     Route::put('/events/{event}/status', [App\Http\Controllers\Planner\EventController::class, 'updateStatus'])->name('events.status');
+
+
+    // Tasks (standalone)
+    Route::prefix('tasks')->name('tasks.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Planner\TaskController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\Planner\TaskController::class, 'store'])->name('store');
+        Route::get('/{task}', [App\Http\Controllers\Planner\TaskController::class, 'show'])->name('show');
+        Route::put('/{task}', [App\Http\Controllers\Planner\TaskController::class, 'update'])->name('update');
+        Route::delete('/{task}', [App\Http\Controllers\Planner\TaskController::class, 'destroy'])->name('destroy');
+        Route::put('/{task}/status', [App\Http\Controllers\Planner\TaskController::class, 'updateStatus'])->name('status');
+        Route::post('/{task}/duplicate', [App\Http\Controllers\Planner\TaskController::class, 'duplicate'])->name('duplicate');
+    });
+
+    // Gamification & Pomodoro
+    Route::get('/gamification/stats', [App\Http\Controllers\Planner\TaskController::class, 'getGamificationStats'])->name('gamification.stats');
+    Route::post('/pomodoro/record', [App\Http\Controllers\Planner\TaskController::class, 'recordPomodoro'])->name('pomodoro.record');
+
+    // Tasks (per event)
+    Route::prefix('events/{event}/tasks')->name('events.tasks.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Planner\TaskController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\Planner\TaskController::class, 'store'])->name('store');
+        Route::put('/{task}', [App\Http\Controllers\Planner\TaskController::class, 'update'])->name('update');
+        Route::delete('/{task}', [App\Http\Controllers\Planner\TaskController::class, 'destroy'])->name('destroy');
+        Route::post('/{task}/toggle', [App\Http\Controllers\Planner\TaskController::class, 'toggleStatus'])->name('toggle');
+        Route::put('/tasks/{task}/status', [App\Http\Controllers\Planner\TaskController::class, 'updateStatus'])->name('planner.tasks.status');
+    });
+
+    // Guests (per event)
 
     // Tasks
     Route::prefix('tasks')->name('tasks.')->group(function () {
@@ -89,12 +131,23 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
     });
 
     // Guests
+
     Route::prefix('events/{event}/guests')->name('events.guests.')->group(function () {
         Route::get('/', [App\Http\Controllers\Client\GuestController::class, 'index'])->name('index');
-        Route::post('/', [App\Http\Controllers\client\GuestController::class, 'store'])->name('store');
-        Route::put('/{guest}', [App\Http\Controllers\client\GuestController::class, 'update'])->name('update');
-        Route::delete('/{guest}', [App\Http\Controllers\client\GuestController::class, 'destroy'])->name('destroy');
+        Route::post('/', [App\Http\Controllers\Client\GuestController::class, 'store'])->name('store');
+        Route::put('/{guest}', [App\Http\Controllers\Client\GuestController::class, 'update'])->name('update');
+        Route::delete('/{guest}', [App\Http\Controllers\Client\GuestController::class, 'destroy'])->name('destroy');
     });
+
+
+    // Budget (per event)
+    Route::prefix('events/{event}/budget')->name('events.budget.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Client\BudgetController::class, 'index'])->name('index');
+        Route::post('/items', [App\Http\Controllers\Client\BudgetController::class, 'storeItem'])->name('items.store');
+        Route::put('/items/{item}', [App\Http\Controllers\Client\BudgetController::class, 'updateItem'])->name('items.update');
+        Route::delete('/items/{item}', [App\Http\Controllers\Client\BudgetController::class, 'destroyItem'])->name('items.destroy');
+    });
+
 
     // Messages
     Route::get('/messages', [App\Http\Controllers\Planner\MessageController::class, 'showPage'])->name('messages');
@@ -113,15 +166,25 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
     });
 
     // Profile
-    Route::get('/profile', [App\Http\Controllers\client\ProfileController::class, 'edit'])->name('profile.edit');
+
+    Route::get('/profile', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
 });
+
+// ============================================
+// ASSISTANT ROUTES
+// ============================================
+
+    Route::get('/profile', [App\Http\Controllers\client\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
+
 
 // Assistant
 //
 //
 //
 //
+
 
 Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assistant'])->group(function () {
 
@@ -130,10 +193,10 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
 
     // Task Vendors
     Route::get('/tasks/{task}/vendors', [AssistantController::class, 'taskVendors'])->name('tasks.vendors');
-    
+
     // Vendor Details
    Route::get('/vendor/{vendor}', [AssistantController::class, 'vendorShow'])->name('vendor.show');
-    
+
     // Order Routes
     Route::get('/task/{task}/vendor/{vendor}/order', [AssistantController::class, 'orderForm'])->name('vendor.order');
     Route::post('/task/{task}/vendor/{vendor}/order', [AssistantController::class, 'submitOrder'])->name('vendor.order.submit');
@@ -148,9 +211,17 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
 // ============================================
 
 Route::prefix('client')->name('client.')->middleware(['auth', 'role:client'])->group(function () {
+
     Route::post('/events/{event}/rating', [App\Http\Controllers\Client\EventController::class, 'storeRating'])->name('rating.store');
+
+    // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Client\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('events', App\Http\Controllers\Client\EventController::class);
+
+
+    // Events
+    Route::resource('events', App\Http\Controllers\Client\EventController::class);
+
 
     // Messages
     Route::get('/messages', [App\Http\Controllers\Client\MessageController::class, 'showPage'])->name('messages');
@@ -180,7 +251,11 @@ Route::prefix('client')->name('client.')->middleware(['auth', 'role:client'])->g
         Route::post('/{guest}/resend', [App\Http\Controllers\Client\GuestController::class, 'resendInvitation'])->name('resend');
     });
 
+
+    // Profile & Settings
+
     // Profile
+
     Route::get('/profile', [App\Http\Controllers\Client\ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -197,10 +272,24 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
     Route::post('/{token}', [App\Http\Controllers\RsvpController::class, 'update'])->name('update');
 });
 
+
+// ============================================
+// ADMIN ROUTES
+// ============================================
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Client\DashboardController::class, 'index'])->name('dashboard');
+});
+
+
 // ============================================
 // FALLBACK ROUTE
 // ============================================
 
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
+
 });
+
+
+
