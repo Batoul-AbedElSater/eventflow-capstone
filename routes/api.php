@@ -111,6 +111,56 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'toggleFavorite']);
     Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
 
+    // event controller
+    Route::get('/events', [App\Http\Controllers\Api\Planner\EventController::class, 'index']);
+    Route::get('/events/{event}', [App\Http\Controllers\Api\Planner\EventController::class, 'show']);
+    Route::put('/events/{event}/status', [App\Http\Controllers\Api\Planner\EventController::class, 'updateStatus']);
+    Route::delete('/events/{event}', [App\Http\Controllers\Api\Planner\EventController::class, 'destroy']);
+    Route::get('/events/analytics', [App\Http\Controllers\Api\Planner\EventController::class, 'analytics']);
+
+    Route::get('/events/{event}/tasks', [App\Http\Controllers\Api\Planner\TaskController::class, 'index']);
+    Route::post('/events/{event}/tasks', [App\Http\Controllers\Api\Planner\TaskController::class, 'store']);
+    Route::put('/tasks/{task}', [App\Http\Controllers\Api\Planner\TaskController::class, 'update']);
+    Route::put('/tasks/{task}/status', [App\Http\Controllers\Api\Planner\TaskController::class, 'updateStatus']);
+    Route::delete('/tasks/{task}', [App\Http\Controllers\Api\Planner\TaskController::class, 'destroy']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     // Notifications  ← moved INSIDE planner group
     Route::prefix('notifications')->group(function () {
         Route::get('/', [PlannerNotificationController::class, 'index']);
