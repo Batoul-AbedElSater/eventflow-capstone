@@ -123,7 +123,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/tasks/{task}', [App\Http\Controllers\Api\Planner\TaskController::class, 'update']);
     Route::put('/tasks/{task}/status', [App\Http\Controllers\Api\Planner\TaskController::class, 'updateStatus']);
     Route::delete('/tasks/{task}', [App\Http\Controllers\Api\Planner\TaskController::class, 'destroy']);
-
+    Route::get('/assistants', [App\Http\Controllers\Api\Planner\TaskController::class, 'getAssistants']);
 
 
 

@@ -201,6 +201,14 @@ class TaskController extends Controller
         }
     }
 
+    public function getAssistants()
+{
+    $assistants = \App\Models\User::where('role', 'assistant')
+        ->select('id', 'name')
+        ->get();
+    return response()->json(['success' => true, 'data' => $assistants]);
+}
+
     /**
      * Update task status
      * PUT /api/planner/tasks/{task}/status
