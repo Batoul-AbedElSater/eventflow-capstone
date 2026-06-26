@@ -22,6 +22,43 @@ class MessageController extends Controller
         return view('planner.messages', compact('events'));
     }
 
+    public function events()
+{
+    try {
+        $events = Event::where('planner_id', Auth::id())
+            ->with(['client:id,name'])
+            ->whereHas('messages')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $data = $events->map(function ($event) {
+            $lastMessage = Message::where('event_id', $event->id)
+                ->latest()
+                ->first();
+
+            $unread = Message::where('event_id', $event->id)
+                ->where('receiver_id', Auth::id())
+                ->where('is_read', false)
+                ->count();
+
+            return [
+                'id'           => $event->id,
+                'name'         => $event->name,
+                'client'       => $event->client,
+                'last_message' => $lastMessage ? [
+                    'message'    => $lastMessage->message,
+                    'created_at' => $lastMessage->created_at->diffForHumans(),
+                ] : null,
+                'unread_count' => $unread,
+            ];
+        });
+
+        return response()->json(['success' => true, 'data' => $data]);
+
+    } catch (\Exception $e) {
+        return response()->json(['success' => false], 500);
+    }
+}
 public function index($eventId)
 {
     try {

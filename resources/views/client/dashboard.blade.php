@@ -9,16 +9,14 @@
         <div class="hero-backdrop"></div>
         <div class="hero-container">
             <div class="hero-badge">
-                <span class="badge-glow"><i class="fas fa-feather-alt"></i> Your Journey</span>
+                <span class="badge-glow"><i class="fas fa-wand-magic-sparkles"></i> Your Journey</span>
             </div>
-            <h1 class="hero-title">
-                Plan <span class="green-text">Extraordinary</span><br>
-                Moments,<br>
-                <span class="berry-text">Effortlessly</span>
-            </h1>
+            <h1 class="hero-title">Plan
+             <span class="italic-text"> Extraordinary </span>  Moments, Effortlessly </h1>
             <p class="hero-desc">
-                From intimate gatherings to grand celebrations,<br>
-                we bring your vision to life with style and grace.
+                Because the best memories are the ones
+                you didn't have to worry about.<br>
+
             </p>
             <div class="hero-stats">
                 <div class="stat-item">
@@ -69,7 +67,7 @@
                             default => 'pending'
                         };
                     @endphp
-              <div class="event-card-luxury {{ $displayStatus === 'pending' ? 'is-pending' : '' }} {{ $displayStatus === 'declined' ? 'is-declined' : '' }}" data-status="{{ $displayStatus }}">          
+              <div class="event-card-luxury {{ $displayStatus === 'pending' ? 'is-pending' : '' }} {{ $displayStatus === 'declined' ? 'is-declined' : '' }}" data-status="{{ $displayStatus }}">
                         {{-- Event Photo --}}
                         <div class="event-photo-container">
                             @if($event->event_photo)
@@ -93,7 +91,7 @@
                                     </div>
                                 </div>
                             @endif
-                            
+
                             {{-- Status Badge on Photo --}}
                         <div class="event-status-badge-photo {{ $displayStatus }}">
                             @if($displayStatus === 'pending')
@@ -250,84 +248,90 @@
 
 <style>
 /* ===== NEW HERO STYLES ===== */
-           .hero-elegant {
+
+:root {
+     --coral: #E19184;
+        --berry: #C63E4E;
+        --vampire: #620607;
+        --cream: #EFE7DA;
+        --white: #FFFFFF;
+        --amnesiac: #F5F9E5;
+        --green: #475B35;
+        --green-dark: #2C3821;
+}
+ .hero-elegant {
     position: relative;
-    background: linear-gradient(135deg, #E19184, #C63E4E);
+    background: var(--berry);
     border-radius: 40px;
     padding: 80px 60px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
     overflow: hidden;
     isolation: isolate;
     box-shadow: 0 15px 35px rgba(225,145,132,0.3);
+      display: flex;
+    align-items: center;
 }
-.hero-backdrop {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 70% 30%, rgba(255,245,235,0.3) 0%, transparent 70%);
-    pointer-events: none;
-}
+
 .hero-container {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    max-width: 800px;
+    max-width:1050px;
     margin: 0 auto;
+     text-align: left;
 }
 .hero-badge {
     margin-bottom: 25px;
 }
 .badge-glow {
-    background: rgba(255,255,240,0.15);
-    backdrop-filter: blur(12px);
     padding: 8px 24px;
-    border-radius: 60px;
-    font-size: 14px;
+    font-size: 26px;
     font-weight: 600;
-    color: #EFE7DA;
-    letter-spacing: 1px;
+    color: var(--cream);
+    letter-spacing: 1.8px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid rgba(255,255,240,0.3);
+    text-transform: uppercase;
+    font-weight: 800;
+
 }
 .hero-title {
-    font-size: 64px;
+    font-size: 68px;
     font-weight: 900;
     line-height: 1.2;
     color: white;
     margin-bottom: 25px;
     text-shadow: 0 6px 30px rgba(0,0,0,0.2);
+ font-family: 'DM Serif Display', serif;
 }
-.green-text { color: #475B35; text-shadow: 0 0 12px rgba(225,145,132,0.5); }
-.berry-text { color: #C63E4E; }
+.italic-text { color:white;
+    font-style: italic;
+ }
+.berry-text { color: white; }
 .hero-desc {
-    font-size: 18px;
-    color: #EFE7DA;
+    font-size: 27px;
+    color:var(--cream);
     margin-bottom: 35px;
     line-height: 1.6;
 }
 .stat-item {
     display: flex;
-    align-items: center;
     gap: 12px;
-    background: rgba(71,91,53,0.3);
-    backdrop-filter: blur(10px);
-    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px);
+    padding: 14px 30px;
     border-radius: 50px;
-    color: #F5F9E5;
+    color: var(--white);
     font-weight: 600;
     font-size: 15px;
-    border: 1px solid #EFE7DA;
+
 }
 .stat-item i {
-    font-size: 20px;
-    color: #C63E4E;
+    font-size: 22px;
+    color:var(--white);
 }
 
 .hero-stats {
     display: flex;
     gap: 40px;
-    justify-content: center;
 }
 
 .hero-floating-shapes {
