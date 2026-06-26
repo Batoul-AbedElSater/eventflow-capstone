@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ asset('css/client-dashboard.css') }}">
 
     <style>
-    /* ===== COLOR PALETTE ===== */
+
     :root {
         --coral: #E19184;
         --berry: #C63E4E;
@@ -32,7 +32,7 @@
     position: fixed;
     left: 0;
     top: 75px;
-    width: 270px;
+    width: 290px;
     height: calc(100vh - 75px);
     z-index: 100;
     background: var(--cream);
@@ -50,9 +50,9 @@
     gap: 14px;
     padding: 14px 28px;
     text-decoration: none;
-    color: var(--vampire);
+    color: var(--berry);
     font-family: 'Poppins', sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     border-radius: 0 50px 50px 0;
     margin-right: 20px;
@@ -73,27 +73,24 @@
 }
 
 .sidebar-link.active {
-    background: var(--coral);
-    color: white;
-    box-shadow: var(--coral);
+    background: rgba(198, 62, 78, 0.1);
+    color:var(--berry);
+    box-shadow:  rgba(198, 62, 78, 0.1);
 }
 
 .sidebar-link.active i {
-    color: white;
+    color:var(--berry);
 }
 
-    /* ==================== HEADER (NAVBAR) – NO SEARCH, NO MOOD ==================== */
-   /* ===== LUXURY FONTS ===== */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Raleway:wght@300;400;600;700;800&display=swap');
 
-/* ==================== LUXE NAVBAR ==================== */
 .header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 75px;
-
+    height: 90px;
+background-color: var(--cream);
     border-bottom: 3px solid transparent;
     border-image: linear-gradient(90deg, var(--coral), var(--berry), var(--vampire)) 1;
     display: flex;
@@ -101,7 +98,7 @@
     align-items: center;
     padding: 0 50px;
     z-index: 1000;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: none;
 }
 
 .header-left {
@@ -149,10 +146,10 @@
     gap: 20px;
 }
 
-/* ===== VOICE BUTTON (circle, green border, only icon) ===== */
+/*  VOICE BUTTON  */
 .voice-commander-btn {
     background: white;
-    border: 3px solid var(--green);
+    border: 3px solid var(--berry);
     cursor: pointer;
     width: 48px;
     height: 48px;
@@ -166,18 +163,18 @@
 
 .voice-commander-btn i {
     font-size: 20px;
-    color: var(--green);
+    color: var(--berry);
     transition: all 0.3s;
 }
 
 .voice-commander-btn:hover {
     transform: translateY(-2px);
-    border-color: var(--green);
+    border-color: var(--vampire);
     box-shadow: 0 8px 20px rgba(71, 91, 53, 0.4);
 }
 
 .voice-commander-btn:hover i {
-    color: var(--green);
+    color: var(--vampire);
     animation: micPulse 0.8s ease-in-out;
 }
 
@@ -186,7 +183,7 @@
     50% { transform: scale(1.15); }
 }
 
-/* ===== NOTIFICATIONS BELL (vampire border) ===== */
+/* NOTIFICATIONS BELL  */
 .notifications {
     position: relative;
     cursor: pointer;
@@ -199,8 +196,7 @@
     justify-content: center;
     transition: all 0.3s;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    border: 3px solid var(--vampire);
-    overflow:hidden;
+     border: 3px solid var(--berry);
 }
 
 .notifications:hover {
@@ -211,7 +207,7 @@
 
 .notifications i {
     font-size: 20px;
-    color: var(--green);
+    color: var(--berry);
     transition: all 0.3s;
     display:inline-block;
     transform: rotate(0deg) !important;
@@ -230,25 +226,27 @@
 }
 
 .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: linear-gradient(135deg, var(--berry), var(--vampire));
+  position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 19px;
+    height: 19px;
+    background: linear-gradient(100deg, var(--berry), var(--vampire));
+     border-radius: 50%;
     color: white;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    font-size: 11px;
-    font-weight: 900;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(98, 6, 7, 0.3);
+    padding: 0 6px;
+     box-shadow: 0 2px 8px rgba(98, 6, 7, 0.3);
     font-family: 'Raleway', sans-serif;
     animation: badgePulse 2s ease-in-out infinite;
 }
 
-/* ===== PROFILE DROPDOWN (berry border) ===== */
+/*  PROFILE DROPDOWN  */
 .profile-dropdown {
     position: relative;
     cursor: pointer;
@@ -274,12 +272,13 @@
     height: 42px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--green);
+    border: none;
     transition: all 0.3s;
+     border: 3px solid var(--berry);
+
 }
 
 .profile-dropdown:hover img {
-    border-color: var(--vampire);
     transform: scale(1.05);
 }
 
@@ -287,7 +286,7 @@
     font-family: 'Raleway', sans-serif;
     font-size: 15px;
     font-weight: 700;
-    color: var(--green);
+    color: var(--berry);
     transition: all 0.3s;
 }
 
@@ -297,7 +296,7 @@
 
 .profile-dropdown i {
     font-size: 13px;
-    color: var(--green);
+    color: var(--berry);
     transition: transform 0.3s ease;
 }
 
@@ -310,7 +309,7 @@
 
 }
 
-/* ===== DROPDOWN MENU BORDER (berry) ===== */
+/* DROPDOWN MENU BORDER  */
 .dropdown-menu {
     position: absolute;
     top: 62px;
@@ -364,9 +363,9 @@
 
 .dropdown-menu a:hover,
 .dropdown-menu button:hover {
-    background: linear-gradient(135deg, var(--coral), var(--berry));
+    background:rgba(198, 62, 78, 0.1) ;
     color: white;
-    transform: translateX(6px);
+
 }
 
 .dropdown-menu hr {
@@ -378,46 +377,199 @@
 
 
 
-
-    /* ==================== MAIN CONTENT ==================== */
+/* main content*/
     .main-content {
-        margin-left: 280px;
+        margin-left: 270px;
         margin-top: 75px;
         min-height: calc(100vh - 70px);
+        background-color: var(--cream);
+         padding: 40px;
     }
 
-    /* ==================== MODALS (unchanged – full HTML) ==================== */
+/* voice page*/
 
-    .voice-commander-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 10000;
-        align-items: center;
-        justify-content: center;
-    }
-    .mood-modal.active,
-    .voice-commander-modal.active {
-        display: flex;
-    }
-    .mood-modal-overlay,
-    .voice-modal-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0,0,0,0.7);
-        backdrop-filter: blur(8px);
-    }
-    .mood-modal-content,
-    .voice-modal-content {
-        position: relative;
-        background: white;
-        border-radius: 30px;
-        width: 90%;
-        max-width: 600px;
-        max-height: 90vh;
-        overflow-y: auto;
-        z-index: 1;
-    }
+.voice-commander-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+.voice-commander-modal.active {
+    display: flex;
+}
+.voice-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+}
+.voice-modal-content {
+    background: var(--cream);
+    border-radius: 30px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.6);
+    animation: modalSlideUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+@keyframes modalSlideUp {
+    from { transform: translateY(100px) scale(0.8); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.voice-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--berry);
+    color: var(--coral);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+.voice-close-btn:hover {
+    background: var(--berry);
+    color: white;
+    transform: rotate(90deg);
+}
+.voice-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.voice-icon-pulse {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--berry);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: white;
+    position: relative;
+    box-shadow: 0 15px 50px rgba(225,145,132,0.6);
+}
+.voice-icon-pulse.listening {
+    animation: voicePulse 1.5s ease-in-out infinite;
+}
+@keyframes voicePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 15px 50px rgba(225,145,132,0.6); }
+    50% { transform: scale(1.15); box-shadow: 0 20px 70px rgba(225,145,132,0.9); }
+}
+.pulse-ring {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 4px solid var(--coral);
+    opacity: 0;
+}
+.voice-icon-pulse.listening .pulse-ring {
+    animation: pulsateRing 2s ease-out infinite;
+}
+.voice-icon-pulse.listening .pulse-ring:nth-child(2) {
+    animation-delay: 1s;
+}
+@keyframes pulsateRing {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.4); opacity: 0; }
+}
+.voice-header h2 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--vampire);
+    margin-bottom: 12px;
+    font-family:'DM Serif Display', serif;
+}
+#voiceStatus {
+    font-size: 18px;
+    color: var(--green);
+    font-weight: 500;
+}
+.voice-suggestions {
+    background: var(--cream);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    align-content: center;
+}
+.suggestions-title {
+    font-size: 15px;
+    font-weight: 700;
+    color:var(--green);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.chip {
+    padding: 10px 18px;
+    background: white;
+    border-radius: 25px;
+    font-size: 14px;
+    color:var(--vampire);
+    border: 2px solid var(--berry);
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.chip:hover {
+    background: var(--coral);
+    color: white;
+}
+.voice-transcript {
+    min-height: 100px;
+    background: var(--white);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: var(--green);
+}
+.transcript-final {
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.transcript-interim {
+    color: #9B9B9B;
+    font-style: italic;
+}
+.btn-voice-toggle {
+    width: 100%;
+    padding: 20px;
+    background: var(--berry);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(225,145,132,0.5);
+}
+.btn-voice-toggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(225,145,132,0.7);
+}
     </style>
     @stack('styles')
 </head>
@@ -438,25 +590,6 @@
         </div>
 
         <div class="header-right">
-            <aside class="client-sidebar">
-    <a href="{{ route('client.dashboard') }}"
-       class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i> Dashboard
-    </a>
-    <a href="{{ route('client.events.index') }}"
-       class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
-        <i class="fas fa-calendar-alt"></i> My Events
-    </a>
-    <a href="{{ route('client.messages') }}"
-       class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
-        <i class="fas fa-comments"></i> Messages
-    </a>
-    <a href="{{ route('client.profile') }}"
-       class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
-        <i class="fas fa-user"></i> Profile
-    </a>
-</aside>
-
             <!-- Voice Commander Button -->
              <button class="voice-commander-btn" id="voiceCommanderBtn">
                     <i class="fas fa-microphone"></i>
@@ -470,7 +603,7 @@
 
             <!-- Profile Dropdown (click toggle) -->
             <div class="profile-dropdown" id="profileDropdownBtn">
-                <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}" alt="Profile">
+                <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=FFFFFF&color=C63E4E' }}" alt="Profile">
                 <span>{{ Auth::user()->name }}</span>
                 <i class="fas fa-chevron-down"></i>
                 <div class="dropdown-menu" id="profileDropdownMenu">
@@ -485,6 +618,21 @@
             </div>
         </div>
     </header>
+
+    <aside class="client-sidebar">
+        <a href="{{ route('client.dashboard') }}" class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="{{ route('client.events.index') }}" class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
+            <i class="fas fa-calendar-alt"></i> My Events
+        </a>
+        <a href="{{ route('client.messages') }}" class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
+            <i class="fas fa-comments"></i> Messages
+        </a>
+        <a href="{{ route('client.profile') }}" class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
+            <i class="fas fa-user"></i> Profile
+        </a>
+    </aside>
 
     <script src="{{ asset('js/client-dashboard.js') }}"></script>
     <script src="{{ asset('js/client-notification.js') }}"></script>
