@@ -548,11 +548,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('#vendorSelectBox') && !e.target.closest('#vendorDropdown')) {
-            document.getElementById('vendorDropdown').classList.add('hidden');
-        }
-    });
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#vendorSelectBox') && !e.target.closest('#vendorDropdown')) {
+                const dropdown = document.getElementById('vendorDropdown');
+                if (dropdown) dropdown.classList.add('hidden');
+            }
+        });
 });
 
 function updateVendorSelectText() {
@@ -572,9 +573,11 @@ function getSelectedVendorIds() {
 function toggleVendorDropdown() {
     const dropdown = document.getElementById('vendorDropdown');
     const arrow = document.getElementById('vendorArrow');
+    if (!dropdown) return;
     dropdown.classList.toggle('hidden');
-    arrow.classList.toggle('open');
+    if (arrow) arrow.classList.toggle('open');
 }
+
 // Inject keyframe animations and modal styles
 if (!document.querySelector('#tasks-dynamic-styles')) {
     const style = document.createElement('style');

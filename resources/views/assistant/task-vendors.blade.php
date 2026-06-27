@@ -22,7 +22,7 @@
     cursor: pointer;
 }
 .btn_book {
-    background: var(#C63E4E);
+    background: #C63E4E;
     color: white;
     border: none;
     text-align: center;
@@ -48,40 +48,55 @@
 
     {{-- Vendor Grid --}}
     <div class="vendor_grid" id="vendorsGrid">
-       @forelse ($task->vendors as $vendor)
-    @php
-        $order = \App\Models\VendorOrder::where('task_id', $task->id)
-            ->where('vendor_id', $vendor->id)
-            ->where('assistant_id', auth()->id())
-            ->first();
-    @endphp
-    <div class="vendor_card" data-category="{{ $vendor->category }}">
-        <div class="vendor_card_top">
-            <img src="{{ asset($vendor->imageIcon) }}" alt="{{ $vendor->name }}" class="vendor_img">
-            <div class="vendor_info">
-                <h3 class="vendor_name">{{ strtoupper($vendor->name) }}</h3>
-                <span class="vendor_category">{{ ucfirst($vendor->category) }}</span>
-                <div class="vendor_rating">
-                    <i class="fas fa-star"></i>
-                    <span>{{ $vendor->rating }}</span>
+        @forelse ($task->vendors as $vendor)
+            @php
+                $order = \App\Models\VendorOrder::where('task_id', $task->id)
+                    ->where('vendor_id', $vendor->id)
+                    ->where('assistant_id', auth()->id())
+                    ->first();
+                
+                $orderCount = \App\Models\VendorOrder::where('vendor_id', $vendor->id)
+                    ->whereHas('task', function($q) use ($task) {
+                        $q->where('event_id', $task->event_id);
+                    })->count();
+            @endphp
+
+            <div class="vendor_card" data-category="{{ $vendor->category }}">
+                <div class="vendor_card_top">
+                    <img src="{{ asset($vendor->imageIcon) }}" alt="{{ $vendor->name }}" class="vendor_img">
+                    <div class="vendor_info">
+                        <h3 class="vendor_name">{{ strtoupper($vendor->name) }}</h3>
+                        <span class="vendor_category">{{ ucfirst($vendor->category) }}</span>
+                        <div class="vendor_rating">
+                            <i class="fas fa-star"></i>
+                            <span>{{ $vendor->rating }}</span>
+                        </div>
+                        
+                        {{-- 🏷️ ORDERED BADGE --}}
+                        @if($order)
+                            <span style="display: inline-block; background: #7ED321; color: white; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 4px;">
+                                <i class="fas fa-check-circle"></i> Ordered
+                            </span>
+                        @endif
+
+                        {{-- 📦 ORDER COUNT --}}
+                        @if($orderCount > 0)
+                            <span style="display: inline-block; background: var(--coral); color: white; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 4px;">
+                                <i class="fas fa-box"></i> {{ $orderCount }} order{{ $orderCount > 1 ? 's' : '' }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
                 
-                @if($order)
-                    <span style="font-size: 12px; color: var(--green); font-weight: 600;">
-                        📋 Order: ${{ number_format($order->price, 2) }}
-                    </span>
-                @endif
+                <div class="vendor_card_actions">
+                    <a href="{{ route('assistant.vendor.show', $vendor->id) }}" class="btn_view">View Details</a>
+                    <a href="{{ route('assistant.vendor.order', ['task' => $task->id, 'vendor' => $vendor->id]) }}" class="btn_book">
+                        {{ $order ? 'Edit Order' : 'Place Order' }}
+                    </a>
+                </div>
             </div>
-        </div>
-        
-        <div class="vendor_card_actions">
-            <a href="{{ route('assistant.vendor.show', $vendor->id) }}" class="btn_view">View Details</a>
-            <a href="{{ route('assistant.vendor.order', ['task' => $task->id, 'vendor' => $vendor->id]) }}" class="btn_book">
-                {{ $order ? 'Edit Order' : 'Place Order' }}
-            </a>
-        </div>
-    </div>
-@empty
+        @empty
+            {{-- EMPTY STATE --}}
             <div class="no_vendors">
                 <i class="fas fa-store-slash"></i>
                 <p>No vendors assigned to this task yet.</p>
