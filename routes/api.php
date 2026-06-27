@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Client\NotificationController;
 use App\Http\Controllers\Api\Planner\DashboardController as PlannerDashboardController;
 use App\Http\Controllers\Api\Planner\EventRequestController;
 use App\Http\Controllers\Api\Planner\VendorController as VendorController;
+use App\Http\Controllers\Planner\AnalyticsController;
 use App\Http\Controllers\Planner\NotificationController as PlannerNotificationController;
 
 
@@ -128,39 +129,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     // Notifications  ← moved INSIDE planner group
     Route::prefix('notifications')->group(function () {
         Route::get('/', [PlannerNotificationController::class, 'index']);
@@ -171,7 +139,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/', [PlannerNotificationController::class, 'deleteAll']);
     });
 
-}); 
+Route::get('/messages/events',[App\Http\Controllers\Planner\MessageController::class,'events']);
+Route::get('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'index']);
+Route::post('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'store']);
+Route::delete('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'deleteAll']);
+
+//analytics
+Route::get('/analytics',[AnalyticsController::class,'index']);
+});
 
 //Asistant
 //

@@ -98,6 +98,9 @@ class AnalyticsController extends Controller
             'year_total' => 'You\'re on track for ' . ($stats['total_events'] * 2) . ' events this year',
             'busy_season' => 'Your busiest season is May - July',
         ];
+        if (request()->expectsJson()) {
+    return response()->json(compact('stats', 'monthlyData', 'revenueData', 'eventTypeStats', 'milestones', 'predictions'));
+}
 
         return view('planner.events.analytics', compact(
             'stats',
