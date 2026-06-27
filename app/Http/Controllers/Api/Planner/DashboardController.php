@@ -21,7 +21,7 @@ class DashboardController extends Controller
         
         // Get only confirmed events assigned to this planner
         $myEvents = Event::where('planner_id', $user->id)
-            ->where('status', 'confirmed')
+            ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
             ->with(['eventType', 'client', 'tasks'])
             ->orderBy('start_date', 'asc')
             ->get();
@@ -89,7 +89,7 @@ class DashboardController extends Controller
         $selectedDate = Carbon::parse($date);
         
         $dayEvents = Event::where('planner_id', $user->id)
-            ->where('status', 'confirmed')
+            ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
             ->whereDate('start_date', $selectedDate)
             ->with(['eventType', 'client', 'tasks'])
             ->orderBy('start_date', 'asc')

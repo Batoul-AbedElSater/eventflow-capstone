@@ -12,15 +12,45 @@ use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
-    public function showPage()
-    {
-        $events = Event::where('client_id', Auth::id())
-            ->with(['planner:id,name,email'])
-            ->orderBy('start_date', 'desc')
-            ->get();
+   public function showPage()
+{
+    $userId = Auth::id();
 
-        return view('client.messages', compact('events'));
-    }
+    $events = Event::where('client_id', $userId)
+        ->whereHas('planner')
+        ->with(['planner:id,name,email'])
+        ->get()
+        ->map(function ($event) use ($userId) {
+            $lastMessage = Message::where('event_id', $event->id)
+                ->where(function ($query) use ($userId) {
+                    $query->where(function ($q) use ($userId) {
+                        $q->where('sender_id', $userId)
+                            ->where('deleted_by_sender', false);
+                    })->orWhere(function ($q) use ($userId) {
+                        $q->where('receiver_id', $userId)
+                            ->where('deleted_by_receiver', false);
+                    });
+                })
+                ->latest()
+                ->first();
+
+            $unread = Message::where('event_id', $event->id)
+                ->where('receiver_id', $userId)
+                ->where('is_read', false)
+                ->where('deleted_by_receiver', false)
+                ->count();
+
+            $event->last_message = $lastMessage;
+            $event->unread_count = $unread;
+            $event->sort_time = $lastMessage ? $lastMessage->created_at->timestamp : 0;
+
+            return $event;
+        })
+        ->sortByDesc('sort_time')
+        ->values();
+
+    return view('client.messages', compact('events'));
+}
 
 public function index($eventId)
 {

@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
        // Get planner's events (only confirmed/accepted events)
 $myEvents = Event::where('planner_id', $user->id)
-    ->where('status', 'confirmed')  // ← ADD THIS LINE
+   ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
     ->with(['eventType', 'client', 'tasks'])
     ->orderBy('start_date', 'asc')
     ->get();
