@@ -1,6 +1,13 @@
-/* ====================================
-   CREATE EVENT PAGE STYLES
-   ==================================== */
+:root{
+      --coral: #E19184;
+        --berry: #C63E4E;
+        --vampire: #620607;
+        --cream: #EFE7DA;
+        --white: #FFFFFF;
+        --amnesiac: #F5F9E5;
+        --green: #475B35;
+        --green-dark: #2C3821;
+}
 
 .create-event-container {
     max-width: 900px;
@@ -12,33 +19,16 @@
     margin-bottom: 40px;
 }
 
-.back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--ebony);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    transition: var(--transition);
-}
-
-.back-link:hover {
-    color: var(--onyx);
-    gap: 12px;
-}
-
 .page-header h2 {
     font-size: 32px;
     font-weight: 700;
-    color: var(--onyx);
+    color: var(--vampire);
     margin-bottom: 5px;
 }
 
 .page-header p {
     font-size: 16px;
-    color: var(--gray);
+    color: var(--green);
 }
 
 /* Form Section */
@@ -56,13 +46,13 @@
     gap: 15px;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid var(--beige);
+    border-bottom: 2px solid var(--cream);
 }
 
 .step-number {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--ebony), var(--onyx));
+    background: var(--vampire);
     color: var(--white);
     border-radius: 50%;
     display: flex;
@@ -76,7 +66,8 @@
 .section-header h3 {
     font-size: 22px;
     font-weight: 700;
-    color: var(--onyx);
+    color: var(--vampire);
+
 }
 
 /* Form Grid */
@@ -99,37 +90,46 @@
 .form-group label {
     font-size: 14px;
     font-weight: 600;
-    color: var(--onyx);
+    color: var(--vampire);
 }
 
 .required {
-    color: var(--red);
+    color: var(--vampire);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     padding: 14px 18px;
-    border: 2px solid var(--beige);
+    border: 2px solid var(--cream);
     border-radius: 10px;
     font-size: 15px;
-    color: var(--onyx);
-    background: var(--ivory);
+    color: var(--berry);
+    background: var(--cream);
     transition: var(--transition);
 }
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--berry);
 
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(13%) sepia(85%) saturate(1200%) hue-rotate(330deg) brightness(80%);
+    cursor: pointer;
+}
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--ebony);
+    border-color: var(--berry);
     background: var(--white);
-    box-shadow: 0 0 0 3px rgba(88, 96, 65, 0.1);
+    box-shadow: var(--coral);
 }
 
 .form-group small {
     font-size: 12px;
-    color: var(--gray);
+    color: var(--coral);
 }
 
 .error {
@@ -149,7 +149,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 16px;
-    color: var(--ebony);
+    color: var(--vampire);
     font-weight: 600;
 }
 
@@ -178,35 +178,34 @@
     align-items: center;
     gap: 12px;
     padding: 25px 20px;
-    border: 2px solid var(--beige);
+    border: 2px solid var(--cream);
     border-radius: 12px;
-    background: var(--ivory);
+    background: var(--cream);
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
 }
 
 .planner-card:hover label {
-    border-color: var(--ebony);
-    box-shadow: var(--shadow-md);
+    border-color: var(--berry);
 }
 
 .planner-card input[type="radio"]:checked + label {
-    border-color: var(--ebony);
+    border-color: var(--berry);
     background: var(--white);
-    box-shadow: 0 0 0 3px rgba(88, 96, 65, 0.2);
+
 }
 
 .planner-icon {
     width: 60px;
     height: 60px;
-    background: var(--beige);
+    background: var(--cream);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    color: var(--gray);
+    color: var(--berry);
 }
 
 .planner-avatar {
@@ -214,19 +213,22 @@
     height: 70px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid var(--ebony);
+    border: 3px solid var(--berry);
+    background-color: var(--cream);
+
 }
 
 .planner-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+
 }
 
 .planner-card h4 {
     font-size: 16px;
     font-weight: 700;
-    color: var(--onyx);
+    color: var(--vampire);
     margin: 0;
 }
 
@@ -235,7 +237,7 @@
     align-items: center;
     gap: 5px;
     font-size: 14px;
-    color: var(--ebony);
+    color: var(--green);
 }
 
 .planner-rating i {
@@ -243,13 +245,13 @@
 }
 
 .planner-rating small {
-    color: var(--gray);
+    color: var(--green);
 }
 
 .planner-specialties,
 .planner-experience {
     font-size: 12px;
-    color: var(--gray);
+    color: var(--green);
     margin: 0;
 }
 
@@ -259,6 +261,21 @@
     justify-content: space-between;
     gap: 15px;
     padding-top: 30px;
+
+}
+
+.btn-primary,.btn-secondary{
+    color:var(--white);
+    background-color: var(--berry);
+    border-radius: 30px;
+    padding: 14px 30px;
+       font-size: 18px;
+}
+
+
+.btn-primary:hover,.btn-secondary:hover{
+    color:var(--berry);
+    background-color: var(--white);
 }
 
 /* Responsive */
@@ -266,15 +283,15 @@
     .form-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .planners-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .form-actions {
         flex-direction: column-reverse;
     }
-    
+
     .form-actions .btn-primary,
     .form-actions .btn-secondary {
         width: 100%;

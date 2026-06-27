@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="events-paradise">
-    
+
     {{-- Ultra Creative Header --}}
     <div class="paradise-header">
         <div class="header-art">
@@ -12,12 +12,8 @@
             <div class="art-blob blob-2"></div>
         </div>
         <div class="header-content">
-            <div class="header-badge">
-                <i class="fas fa-sparkles"></i>
-                <span>Your Celebration Journey</span>
-            </div>
             <h1 class="paradise-title">
-                My <span class="coral-text">Dream</span> Events
+                My Events
             </h1>
             <p class="paradise-subtitle">Every moment, perfectly planned</p>
         </div>
@@ -60,7 +56,7 @@
                     };
                 @endphp
                 <div class="event-masterpiece" data-status="{{ $displayStatus }}">
-                    
+
                     {{-- Photo Section with Overlay --}}
                     <div class="event-visual">
                         @if($event->event_photo)
@@ -85,7 +81,7 @@
                                 </div>
                             </div>
                         @endif
-                        
+
                         {{-- Floating Status Badge (uses displayStatus) --}}
                         <div class="status-float {{ $displayStatus }}">
                             @if($displayStatus === 'pending')
@@ -94,10 +90,10 @@
                             @elseif($displayStatus === 'declined')
                                 <i class="fas fa-times-circle"></i>
                                 <span>Declined</span>
-                            @elseif($displayStatus === 'confirmed')
+                           @elseif($displayStatus === 'confirmed')
                                 <i class="fas fa-check-circle"></i>
                                 <span>Confirmed</span>
-                                {{-- Sub‑badge for real planner status --}}
+
                                 <div class="sub-status-badge {{ $event->status }}">
                                     @if($event->status === 'confirmed')
                                         Confirmed
@@ -120,7 +116,7 @@
                     {{-- Content Section --}}
                     <div class="event-essence">
                         <h3 class="event-name">{{ $event->name }}</h3>
-                        
+
                         <div class="event-meta">
                             <div class="meta-item">
                                 <div class="meta-icon">
@@ -237,16 +233,16 @@
 
 .events-paradise {
     padding: 40px;
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFF 50%, #FFF5F0 100%);
+  /*  background: var(--cream);*/
     min-height: 100vh;
 }
 
 /* ========== HEADER ========== */
 .paradise-header {
     position: relative;
-    background: linear-gradient(135deg, var(--coral) 0%, var(--berry) 100%);
+    background:var(--berry);
     border-radius: 30px;
-    padding: 50px 60px;
+    padding: 35px 45px;
     margin-bottom: 40px;
     overflow: hidden;
     display: flex;
@@ -294,35 +290,16 @@
     z-index: 2;
 }
 
-.header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    padding: 10px 20px;
-    border-radius: 50px;
-    color: white;
-    font-weight: 700;
-    margin-bottom: 20px;
-    font-size: 14px;
-}
-
 .paradise-title {
-    font-size: 56px;
+    font-size: 50px;
     font-weight: 900;
     color: white;
     margin: 0 0 10px 0;
     line-height: 1;
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    font-family: 'Dm Serif Display',serif;
 }
 
-
-
-.coral-text {
-    color: var(--cream);
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
-}
 
 .paradise-subtitle {
     font-size: 18px;
@@ -363,10 +340,10 @@
 .filter-pill {
     padding: 14px 28px;
     background: white;
-    border: 2px solid var(--cream);
+    border: 2px solid var(--berry);
     border-radius: 50px;
     font-weight: 800;
-    color: var(--green);
+    color: var(--berry);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -381,7 +358,7 @@
 }
 
 .filter-pill.active {
-    background: linear-gradient(135deg, var(--coral), var(--berry));
+    background: var(--berry);
     color: white;
     border-color: var(--berry);
 }
@@ -457,7 +434,7 @@
 .placeholder-pattern {
     position: absolute;
     inset: 0;
-    background: 
+    background:
         repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 255, 255, 0.1) 20px, rgba(255, 255, 255, 0.1) 40px);
 }
 
@@ -548,7 +525,7 @@
 .meta-icon {
     width: 45px;
     height: 45px;
-    background: linear-gradient(135deg, var(--coral), var(--berry));
+    background:var(--berry);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -658,7 +635,7 @@
 .btn-enter {
     flex: 1;
     padding: 16px;
-    background: linear-gradient(135deg, var(--coral), var(--berry));
+    background: var(--berry);
     color: white;
     border-radius: 15px;
     font-weight: 900;
@@ -759,7 +736,7 @@
     .events-masonry {
         grid-template-columns: 1fr;
     }
-    
+
     .paradise-header {
         flex-direction: column;
         text-align: center;
@@ -802,10 +779,10 @@
 document.querySelectorAll('.filter-pill').forEach(pill => {
     pill.addEventListener('click', function() {
         const status = this.dataset.status;
-        
+
         document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
         this.classList.add('active');
-        
+
         document.querySelectorAll('.event-masterpiece').forEach(card => {
             if (status === 'all' || card.dataset.status === status) {
                 card.style.display = 'block';

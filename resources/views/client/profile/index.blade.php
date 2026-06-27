@@ -4,11 +4,7 @@
 
 @section('content')
 <div class="profile-container">
-    <!-- Back to Dashboard -->
-    <a href="{{ route('client.dashboard') }}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
-    
+
     <!-- Header -->
     <div class="page-header">
         <h1>My Profile</h1>
@@ -60,11 +56,11 @@
                     <label for="name">
                         Full Name <span class="required">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        value="{{ old('name', $user->name) }}" 
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value="{{ old('name', $user->name) }}"
                         required>
                     @error('name')
                         <span class="form-error">{{ $message }}</span>
@@ -76,11 +72,11 @@
                     <label for="email">
                         Email Address <span class="required">*</span>
                     </label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value="{{ old('email', $user->email) }}" 
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ old('email', $user->email) }}"
                         required>
                     @error('email')
                         <span class="form-error">{{ $message }}</span>
@@ -90,10 +86,10 @@
                 <!-- Phone -->
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input 
-                        type="text" 
-                        id="phone" 
-                        name="phone" 
+                    <input
+                        type="text"
+                        id="phone"
+                        name="phone"
                         value="{{ old('phone', $user->phone) }}"
                         placeholder="+1 (555) 123-4567">
                     @error('phone')
@@ -129,10 +125,10 @@
                     <label for="current_password">
                         Current Password <span class="required">*</span>
                     </label>
-                    <input 
-                        type="password" 
-                        id="current_password" 
-                        name="current_password" 
+                    <input
+                        type="password"
+                        id="current_password"
+                        name="current_password"
                         required>
                     @error('current_password')
                         <span class="form-error">{{ $message }}</span>
@@ -144,10 +140,10 @@
                     <label for="new_password">
                         New Password <span class="required">*</span>
                     </label>
-                    <input 
-                        type="password" 
-                        id="new_password" 
-                        name="new_password" 
+                    <input
+                        type="password"
+                        id="new_password"
+                        name="new_password"
                         required>
                     <small class="form-hint">Minimum 8 characters</small>
                     @error('new_password')
@@ -160,10 +156,10 @@
                     <label for="new_password_confirmation">
                         Confirm New Password <span class="required">*</span>
                     </label>
-                    <input 
-                        type="password" 
-                        id="new_password_confirmation" 
-                        name="new_password_confirmation" 
+                    <input
+                        type="password"
+                        id="new_password_confirmation"
+                        name="new_password_confirmation"
                         required>
                 </div>
             </div>
