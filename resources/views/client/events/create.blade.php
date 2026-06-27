@@ -4,13 +4,10 @@
 
 @section('content')
 <div class="create-event-container">
-    
+
     <!-- Header -->
     <div class="page-header">
         <div>
-            <a href="{{ route('client.dashboard') }}" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
             <h2>Create New Event</h2>
             <p>Fill in the details to start planning your event</p>
         </div>
@@ -51,11 +48,11 @@
                     <label for="name">
                         Event Name <span class="required">*</span>
                     </label>
-                    <input type="text" 
-                           name="name" 
-                           id="name" 
-                           placeholder="e.g., Sarah's Beach Wedding" 
-                           value="{{ old('name') }}" 
+                    <input type="text"
+                           name="name"
+                           id="name"
+                           placeholder="e.g., Sarah's Beach Wedding"
+                           value="{{ old('name') }}"
                            required>
                     @error('name')
                         <span class="error">{{ $message }}</span>
@@ -67,10 +64,10 @@
                     <label for="start_date">
                         Event Date <span class="required">*</span>
                     </label>
-                    <input type="date" 
-                           name="start_date" 
-                           id="start_date" 
-                           value="{{ old('start_date') }}" 
+                    <input type="date"
+                           name="start_date"
+                           id="start_date"
+                           value="{{ old('start_date') }}"
                            min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                            required>
                     @error('start_date')
@@ -83,9 +80,9 @@
                     <label for="end_date">
                         End Date (Optional)
                     </label>
-                    <input type="date" 
-                           name="end_date" 
-                           id="end_date" 
+                    <input type="date"
+                           name="end_date"
+                           id="end_date"
                            value="{{ old('end_date') }}">
                     <small>Leave blank if single-day event</small>
                     @error('end_date')
@@ -98,11 +95,11 @@
                     <label for="location_text">
                         Location <span class="required">*</span>
                     </label>
-                    <input type="text" 
-                           name="location_text" 
-                           id="location_text" 
-                           placeholder="e.g., Sunset Beach, Malibu, CA" 
-                           value="{{ old('location_text') }}" 
+                    <input type="text"
+                           name="location_text"
+                           id="location_text"
+                           placeholder="e.g., Sunset Beach, Malibu, CA"
+                           value="{{ old('location_text') }}"
                            required>
                     @error('location_text')
                         <span class="error">{{ $message }}</span>
@@ -114,9 +111,9 @@
                     <label for="description">
                         Description (Optional)
                     </label>
-                    <textarea name="description" 
-                              id="description" 
-                              rows="4" 
+                    <textarea name="description"
+                              id="description"
+                              rows="4"
                               placeholder="Tell us about your vision for this event...">{{ old('description') }}</textarea>
                     @error('description')
                         <span class="error">{{ $message }}</span>
@@ -140,13 +137,13 @@
                     </label>
                     <div class="input-with-icon">
                         <span class="icon">$</span>
-                        <input type="number" 
-                               name="budget_overall" 
-                               id="budget_overall" 
-                               placeholder="20000" 
-                               value="{{ old('budget_overall') }}" 
-                               min="0" 
-                               step="0.01" 
+                        <input type="number"
+                               name="budget_overall"
+                               id="budget_overall"
+                               placeholder="20000"
+                               value="{{ old('budget_overall') }}"
+                               min="0"
+                               step="0.01"
                                required>
                     </div>
                     @error('budget_overall')
@@ -159,12 +156,12 @@
                     <label for="guest_estimate">
                         Estimated Guests <span class="required">*</span>
                     </label>
-                    <input type="number" 
-                           name="guest_estimate" 
-                           id="guest_estimate" 
-                           placeholder="150" 
-                           value="{{ old('guest_estimate') }}" 
-                           min="1" 
+                    <input type="number"
+                           name="guest_estimate"
+                           id="guest_estimate"
+                           placeholder="150"
+                           value="{{ old('guest_estimate') }}"
+                           min="1"
                            required>
                     @error('guest_estimate')
                         <span class="error">{{ $message }}</span>
@@ -195,15 +192,16 @@
 
                 @foreach($planners as $planner)
                     <div class="planner-card">
-                        <input type="radio" 
-                               name="planner_id" 
-                               value="{{ $planner->id }}" 
+                        <input type="radio"
+                               name="planner_id"
+                               value="{{ $planner->id }}"
                                id="planner-{{ $planner->id }}"
                                {{ old('planner_id') == $planner->id ? 'checked' : '' }}>
                         <label for="planner-{{ $planner->id }}">
                             <div class="planner-avatar">
-                                <img src="{{ $planner->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($planner->name) }}" 
-                                     alt="{{ $planner->name }}">
+                                <img  src="{{ $planner->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($planner->name) . '&background=EFE7DA&color=C63E4E&rounded=true&bold=true' }}">
+                               {{-- -  <img src="{{ $planner->avatar_url ?? 'https://ui-avatars.com/api/?name=' . '&background=FFFFFF&color=C63E4E'}} urlencode($planner->name) }}"
+                                     alt="{{ $planner->name }}">--}}
                             </div>
                             <h4>{{ $planner->name }}</h4>
                             <div class="planner-rating">

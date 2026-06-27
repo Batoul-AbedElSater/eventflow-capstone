@@ -40,9 +40,6 @@
     <div class="my-events-section">
         <div class="section-header-luxury">
             <div class="section-title-wrapper">
-                <div class="section-icon">
-                    <i class="fas fa-calendar-star"></i>
-                </div>
                 <div>
                     <h2>My Events</h2>
                     <p>Your upcoming celebrations</p>
@@ -588,7 +585,7 @@
 .section-header-luxury {
     background: white !important;
     border: 3px solid var(--berry, #C63E4E) !important;
-    border-radius: 30 !important;   /* square corners */
+    border-radius: 40px;
     padding: 20px 30px !important;
     margin-bottom: 25px !important;
     display: flex !important;
@@ -601,32 +598,22 @@
     align-items: center;
     gap: 15px;
 }
-.section-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #620607, #C63E4E);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 24px;
-}
+
 .section-title-wrapper h2 {
     font-size: 28px;
-    font-weight: 800;
-    color: #475B35;
+    font-weight: 700;
+    color: var(--vampire);
     margin: 0;
 }
 .section-title-wrapper p {
-    font-size: 14px;
-    color: #7F8C8D;
+    font-size: 15px;
+    color: var(--green);
     margin: 0;
 }
 .btn-view-all {
     padding: 12px 24px;
-    background: #EFE7DA;
-    color: #475B35;
+    background:var(--cream);
+    color: var(--green);
     border-radius: 12px;
     font-weight: 700;
     text-decoration: none;

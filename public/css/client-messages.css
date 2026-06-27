@@ -1,8 +1,14 @@
-/* ====================================
-   CLIENT MESSAGES PAGE STYLES
-   ==================================== */
+
 
 :root {
+       --coral: #E19184;
+        --berry: #C63E4E;
+        --vampire: #620607;
+        --cream: #EFE7DA;
+        --white: #FFFFFF;
+        --amnesiac: #F5F9E5;
+        --green: #475B35;
+        --green-dark: #2C3821;
     --onyx: #620607;
     --ivory: #FFFFF0;
     --beige: #C63E4E;
@@ -460,15 +466,15 @@
         margin: 10px;
         height: calc(100vh - 80px);
     }
-    
+
     .message {
         max-width: 85%;
     }
-    
+
     .chat-header {
         padding: 15px;
     }
-    
+
     .planner-info h2 {
         font-size: 16px;
     }

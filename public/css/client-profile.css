@@ -1,8 +1,14 @@
-/* ====================================
-   PROFILE & SETTINGS PAGE STYLES
-   ==================================== */
 
 :root {
+     --coral: #E19184;
+        --berry: #C63E4E;
+        --vampire: #620607;
+        --cream: #EFE7DA;
+        --white: #FFFFFF;
+        --amnesiac: #F5F9E5;
+        --green: #475B35;
+        --green-dark: #2C3821;
+
     --onyx: #353935;
     --ivory: #FFFFF0;
     --beige: #F5F5DC;
@@ -27,14 +33,14 @@
 }
 
 .page-header h1 {
-    font-size: 32px;
-    color: var(--onyx);
+    font-size: 35px;
+    color: var(--vampire);
     margin: 0 0 5px 0;
 }
 
 .subtitle {
-    color: var(--gray);
-    font-size: 15px;
+    color: var(--green);
+    font-size: 18px;
 }
 
 /* Alert */
@@ -84,19 +90,19 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--ebony), var(--onyx));
-    color: var(--white);
+    background:  var(--white);
+    color: var(--berry);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 48px;
     font-weight: 700;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border: 4px solid var(--berry);
 }
 
 .profile-info h2 {
-    font-size: 28px;
-    color: var(--onyx);
+    font-size: 30px;
+    color: var(--berry);
     margin: 0 0 10px 0;
 }
 
@@ -104,18 +110,18 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    background: linear-gradient(135deg, var(--ebony), var(--onyx));
+    padding: 7px 14px;
+    background:  var(--berry);
     color: var(--white);
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
 .member-since {
-    color: var(--gray);
-    font-size: 14px;
+    color: var(--green);
+    font-size: 16px;
     margin: 0;
 }
 
@@ -137,7 +143,7 @@
 
 .section-header h3 {
     font-size: 20px;
-    color: var(--onyx);
+    color: var(--vampire);
     margin: 0;
     display: flex;
     align-items: center;
@@ -170,11 +176,11 @@
 .form-group label {
     font-size: 14px;
     font-weight: 600;
-    color: var(--onyx);
+    color: var(--vampire);
 }
 
 .required {
-    color: var(--danger);
+    color: var(--vampire);
 }
 
 .form-group input {
@@ -182,19 +188,20 @@
     border: 2px solid var(--beige);
     border-radius: 10px;
     font-size: 15px;
-    background: var(--ivory);
+    background: var(--cream);
     transition: var(--transition);
+    color:var(--berry)
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--ebony);
+    border-color: var(--berry);
     background: var(--white);
 }
 
 .form-hint {
     font-size: 12px;
-    color: var(--gray);
+    color: var(--berry);
     font-style: italic;
 }
 
@@ -214,10 +221,10 @@
     align-items: center;
     gap: 10px;
     padding: 12px 30px;
-    background: linear-gradient(135deg, var(--ebony), var(--onyx));
+    background:  var(--berry);
     color: var(--white);
     border: none;
-    border-radius: 10px;
+    border-radius: 30px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -402,18 +409,18 @@
     .info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .profile-header {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .danger-content {
         flex-direction: column;
         gap: 20px;
         text-align: center;
     }
-    
+
     .setting-item {
         flex-direction: column;
         gap: 15px;
