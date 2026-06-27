@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\TaskAssignment;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +19,7 @@ class TaskController extends Controller
         $userId = Auth::id();
 
         $tasks = Task::where('user_id', $userId)
-             ->with(['event:id,name', 'assistants:id,name', 'vendors:id,name']) 
+            ->with(['event:id,name', 'assistants:id,name', 'vendors:id,name']) 
             ->orderBy('due_date', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -51,8 +52,7 @@ class TaskController extends Controller
         ];
         $vendors = \App\Models\Vendor::select('id', 'name')->orderBy('name')->get();
 
-
-       return view('planner.tasks.index', compact('tasks', 'events', 'stats', 'gamification', 'assistants', 'vendors'));
+        return view('planner.tasks.index', compact('tasks', 'events', 'stats', 'gamification', 'assistants', 'vendors'));
     }
 
     public function store(Request $request)
@@ -68,18 +68,19 @@ class TaskController extends Controller
                 'assistant_id' => 'nullable|exists:users,id',
                 'vendor_ids' => 'nullable|array',
                 'vendor_ids.*' => 'exists:vendors,id',
-                ]);
+            ]);
 
             $userId = Auth::id();
             $status = 'pending';
-                if (($validated['progress'] ?? 0) >= 100) {
-                  $status = 'done';
+            if (($validated['progress'] ?? 0) >= 100) {
+                $status = 'done';
             } elseif (($validated['progress'] ?? 0) > 0) {
-             $status = 'in_progress';
+                $status = 'in_progress';
             }
 
             $task = Task::create([
                 'user_id' => $userId,
+                'assigned_planner_id' => $userId,
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'priority' => $validated['priority'],
@@ -97,7 +98,25 @@ class TaskController extends Controller
                     'assistant_id' => $validated['assistant_id'],
                     'assigned_by' => $userId,
                 ]);
+
+                // 🔔 NOTIFICATION: Task created and assigned
+                $assistant = User::find($validated['assistant_id']);
+                $planner = Auth::user();
+                $eventName = $task->event ? $task->event->name : 'No event';
+                
+                Notification::create([
+                    'user_id' => $assistant->id,
+                    'type' => 'task',
+                    'priority' => 'high',
+                    'title' => 'New Task Assigned to You',
+                    'message' => "{$planner->name} assigned you a task for event: {$eventName}",
+                    'icon' => 'fas fa-tasks',
+                    'action_url' => route('assistant.tasks'),
+                    'is_read' => false,
+                    'is_archived' => false,
+                ]);
             }
+
             if (!empty($validated['vendor_ids'])) {
                 $task->vendors()->sync($validated['vendor_ids']);
             }
@@ -122,7 +141,7 @@ class TaskController extends Controller
     public function show($id)
     {
         $task = Task::where('user_id', Auth::id())
-           ->with(['event:id,name', 'assistants:id,name', 'vendors:id,name'])  
+            ->with(['event:id,name', 'assistants:id,name', 'vendors:id,name'])  
             ->findOrFail($id);
 
         return response()->json($task);
@@ -144,7 +163,7 @@ class TaskController extends Controller
                 'assistant_id' => 'nullable|exists:users,id',
                 'vendor_ids' => 'nullable|array',
                 'vendor_ids.*' => 'exists:vendors,id',
-                ]);
+            ]);
 
             $updateData = [
                 'title' => $validated['title'],
@@ -168,25 +187,39 @@ class TaskController extends Controller
 
             // Sync single assistant
             if ($request->has('assistant_id')) {
-                // Remove old assignment
                 TaskAssignment::where('task_id', $task->id)->delete();
                 
-                // Create new assignment if not empty
                 if (!empty($validated['assistant_id'])) {
                     TaskAssignment::create([
                         'task_id' => $task->id,
                         'assistant_id' => $validated['assistant_id'],
                         'assigned_by' => Auth::id(),
                     ]);
+
+                    // 🔔 NOTIFICATION: Assistant assigned/reassigned
+                    $assistant = User::find($validated['assistant_id']);
+                    $planner = Auth::user();
+                    $eventName = $task->event ? $task->event->name : 'No event';
+                    
+                    Notification::create([
+                        'user_id' => $assistant->id,
+                        'type' => 'task',
+                        'priority' => 'high',
+                        'title' => 'New Task Assigned to You',
+                        'message' => "{$planner->name} assigned you a task for event: {$eventName}",
+                        'icon' => 'fas fa-tasks',
+                        'action_url' => route('assistant.tasks'),
+                        'is_read' => false,
+                        'is_archived' => false,
+                    ]);
                 }
             }
 
-            // After syncing assistant...
-if ($request->has('vendor_ids')) {
-    $task->vendors()->sync($validated['vendor_ids'] ?? []);
-}
+            if ($request->has('vendor_ids')) {
+                $task->vendors()->sync($validated['vendor_ids'] ?? []);
+            }
 
-          $task->load(['event:id,name', 'assistants:id,name', 'vendors:id,name']);
+            $task->load(['event:id,name', 'assistants:id,name', 'vendors:id,name']);
 
             return response()->json([
                 'success' => true,
@@ -203,38 +236,35 @@ if ($request->has('vendor_ids')) {
         }
     }
 
-  public function updateStatus(Request $request, $id)
-{
-    try {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
-        $validated = $request->validate(['status' => 'required|in:pending,in_progress,done']);
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $task = Task::where('user_id', Auth::id())->findOrFail($id);
+            $validated = $request->validate(['status' => 'required|in:pending,in_progress,done']);
 
-        $updateData = ['status' => $validated['status']];
-        
-      
-        if ($validated['status'] === 'done') {
-            $updateData['progress'] = 100;
-            $updateData['completed_at'] = now();
-        }
-        
-        
-        if ($validated['status'] === 'pending' && $task->status === 'done') {
-            $updateData['progress'] = 0;
-            $updateData['completed_at'] = null;
-        }
-        
-        
-        if ($validated['status'] === 'in_progress' && $task->status === 'done') {
-            $updateData['progress'] = 50;
-            $updateData['completed_at'] = null;
-        }
+            $updateData = ['status' => $validated['status']];
+            
+            if ($validated['status'] === 'done') {
+                $updateData['progress'] = 100;
+                $updateData['completed_at'] = now();
+            }
+            
+            if ($validated['status'] === 'pending' && $task->status === 'done') {
+                $updateData['progress'] = 0;
+                $updateData['completed_at'] = null;
+            }
+            
+            if ($validated['status'] === 'in_progress' && $task->status === 'done') {
+                $updateData['progress'] = 50;
+                $updateData['completed_at'] = null;
+            }
 
-        $task->update($updateData);
-        return response()->json(['success' => true]);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            $task->update($updateData);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
-}
 
     public function assignAssistant(Request $request, $taskId)
     {
@@ -245,10 +275,8 @@ if ($request->has('vendor_ids')) {
                 'assistant_id' => 'required|exists:users,id',
             ]);
 
-            // Remove old assignment first (one task = one assistant)
             TaskAssignment::where('task_id', $task->id)->delete();
 
-            // Create new assignment
             TaskAssignment::create([
                 'task_id' => $task->id,
                 'assistant_id' => $validated['assistant_id'],
@@ -256,6 +284,21 @@ if ($request->has('vendor_ids')) {
             ]);
 
             $assistant = User::find($validated['assistant_id']);
+            $planner = Auth::user();
+            $eventName = $task->event ? $task->event->name : 'No event';
+
+            // 🔔 NOTIFICATION: Task assigned to assistant
+            Notification::create([
+                'user_id' => $assistant->id,
+                'type' => 'task',
+                'priority' => 'high',
+                'title' => 'New Task Assigned to You',
+                'message' => "{$planner->name} assigned you a task for event: {$eventName}",
+                'icon' => 'fas fa-tasks',
+                'action_url' => route('assistant.tasks'),
+                'is_read' => false,
+                'is_archived' => false,
+            ]);
 
             return response()->json([
                 'success' => true,

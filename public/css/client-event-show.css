@@ -1,6 +1,3 @@
-/* ============================================
-   EVENT SHOW PAGE STYLES
-   ============================================ */
 
 .event-show-container {
     padding: 0;
@@ -815,36 +812,36 @@
     .event-hero-section {
         height: 350px;
     }
-    
+
     .event-hero-title {
         font-size: 36px;
     }
-    
+
     .hero-content {
         padding: 30px 20px;
     }
-    
+
     .event-stats-bar {
         grid-template-columns: 1fr;
         padding: 20px;
     }
-    
+
     .event-tabs-container {
         padding: 0 20px 20px;
     }
-    
+
     .overview-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .budget-summary {
         grid-template-columns: 1fr;
     }
-    
+
     .guests-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .message-content {
         max-width: 85%;
     }
@@ -1159,7 +1156,7 @@
     .guests-table-container {
         overflow-x: auto;
     }
-    
+
     .guests-table-luxury {
         min-width: 1000px;
     }

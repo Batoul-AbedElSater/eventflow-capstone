@@ -4,16 +4,6 @@
 
 @section('content')
 <div class="messages-container-epic">
-    <!-- Header -->
-    <div class="messages-header-epic">
-        <div class="header-icon-epic">
-            <i class="fas fa-comments"></i>
-        </div>
-        <div class="header-text-epic">
-            <h1>Messages</h1>
-            <p>Chat with your event planner</p>
-        </div>
-    </div>
 
     <div class="messages-layout-epic">
         <!-- Events Sidebar -->
@@ -23,7 +13,7 @@
             </div>
             <div class="events-list-epic">
                      @forelse($events as $event)
-                        <div class="event-card-epic" 
+                        <div class="event-card-epic"
                             data-event-id="{{ $event->id }}"
                             data-event-name="{{ $event->name }}"
                             data-planner-name="{{ $event->planner->name ?? 'Planner' }}"
@@ -84,9 +74,9 @@
                 <!-- Input Area -->
                 <div class="message-input-area-epic">
                     <form id="messageForm" class="message-form-epic">
-                        <textarea 
-                            id="messageInput" 
-                            placeholder="Type your message..." 
+                        <textarea
+                            id="messageInput"
+                            placeholder="Type your message..."
                             rows="1"
                             required></textarea>
                         <button type="submit" class="send-btn-epic">

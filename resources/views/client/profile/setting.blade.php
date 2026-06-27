@@ -4,11 +4,6 @@
 
 @section('content')
 <div class="settings-container">
-    
-    <!-- Back to Dashboard -->
-    <a href="{{ route('client.dashboard') }}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
 
     <!-- Page Header -->
     <div class="page-header-section">
@@ -51,9 +46,9 @@
                         <p>Receive updates and alerts via email</p>
                     </div>
                     <label class="toggle-switch">
-                        <input 
-                            type="checkbox" 
-                            name="email_notifications" 
+                        <input
+                            type="checkbox"
+                            name="email_notifications"
                             value="1"
                             {{ ($preferences['email_notifications'] ?? false) ? 'checked' : '' }}>
                         <span class="toggle-slider"></span>
@@ -67,9 +62,9 @@
                         <p>Get text messages for important updates</p>
                     </div>
                     <label class="toggle-switch">
-                        <input 
-                            type="checkbox" 
-                            name="sms_notifications" 
+                        <input
+                            type="checkbox"
+                            name="sms_notifications"
                             value="1"
                             {{ ($preferences['sms_notifications'] ?? false) ? 'checked' : '' }}>
                         <span class="toggle-slider"></span>
@@ -83,9 +78,9 @@
                         <p>Get notified about upcoming task deadlines</p>
                     </div>
                     <label class="toggle-switch">
-                        <input 
-                            type="checkbox" 
-                            name="task_reminders" 
+                        <input
+                            type="checkbox"
+                            name="task_reminders"
                             value="1"
                             {{ ($preferences['task_reminders'] ?? false) ? 'checked' : '' }}>
                         <span class="toggle-slider"></span>
@@ -99,9 +94,9 @@
                         <p>Receive alerts when budget limits are reached</p>
                     </div>
                     <label class="toggle-switch">
-                        <input 
-                            type="checkbox" 
-                            name="budget_alerts" 
+                        <input
+                            type="checkbox"
+                            name="budget_alerts"
                             value="1"
                             {{ ($preferences['budget_alerts'] ?? false) ? 'checked' : '' }}>
                         <span class="toggle-slider"></span>

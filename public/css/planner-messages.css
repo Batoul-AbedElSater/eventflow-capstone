@@ -1,6 +1,13 @@
-/* ============================================
-   PLANNER MESSAGES - CREATIVE DESIGN
-   ============================================ */
+:root{
+      --coral: #E19184;
+        --berry: #C63E4E;
+        --vampire: #620607;
+        --cream: #EFE7DA;
+        --white: #FFFFFF;
+        --amnesiac: #F5F9E5;
+        --green: #475B35;
+        --green-dark: #2C3821;
+}
 
 .messages-container-epic {
     padding: 30px;
@@ -10,7 +17,7 @@
 }
 
 .messages-header-epic {
-    background: linear-gradient(135deg,#E19184, #C63E4E);
+    background: var(--berry);
     border-radius: 20px;
     padding: 30px 40px;
     margin-bottom: 30px;
@@ -29,7 +36,7 @@
     align-items: center;
     justify-content: center;
     font-size: 32px;
-    color: white;
+    color: var(--white);
 }
 
 .header-text-epic h1 {
@@ -37,11 +44,12 @@
     font-weight: 900;
     color: white;
     margin: 0 0 5px 0;
+    font-family: 'Dm Serif Display';
 }
 
 .header-text-epic p {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
+    color:var(--cream);
     margin: 0;
 }
 
@@ -66,15 +74,19 @@
 }
 
 .sidebar-header {
-    background: linear-gradient(135deg,#475B35, #2C3821);
-    padding: 20px;
+    background: var(--berry);
+    padding: 0 30px;
+    height: 95px;
     color: white;
     flex-shrink: 0;
+     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-header h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 25px;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -98,14 +110,14 @@
 }
 
 .event-card-epic:hover {
-    background: #EFE7DA;
-    border-color: #E19184;
+    background: var(--cream);
+    border-color: var(--berry);
     transform: translateX(5px);
 }
 
 .event-card-epic.active {
     background: linear-gradient(135deg, rgba(71, 91, 53, 0.1), rgba(225, 145, 132, 0.1));
-    border-color: #475B35;
+    border-color: var(--berry);
 }
 
 .event-card-content {
@@ -116,7 +128,7 @@
 .event-icon {
     width: 45px;
     height: 45px;
-    background: linear-gradient(135deg, #475B35, #2C3821);
+    background: var(--berry);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -133,19 +145,19 @@
 .event-details h4 {
     font-size: 15px;
     font-weight: 800;
-    color: #475B35;
+    color: var(--vampire);
     margin: 0 0 5px 0;
 }
 
 .event-details p {
     font-size: 13px;
-    color: #7F8C8D;
+    color: var(--green);
     margin: 0 0 5px 0;
 }
 
 .event-date {
     font-size: 12px;
-    color: #E19184;
+    color: var(--coral);
     font-weight: 600;
 }
 
@@ -216,9 +228,9 @@
 
 /* Chat Header with delete button */
 .chat-header-epic {
-    background: linear-gradient(135deg, #C63E4E, #620607);
-    padding: 20px 30px;
-    border-bottom: 3px solid #E19184;
+    background: var(--berry);
+    padding: 0 30px;
+    height: 95px;
     flex-shrink: 0;
     display: flex;
     justify-content: space-between;
@@ -234,35 +246,36 @@
 .client-avatar {
     width: 55px;
     height: 55px;
-    background: linear-gradient(135deg, #E19184, #C63E4E);
+    background: var(--white);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    font-weight: 900;
-    color: white;
+    font-weight: 700;
+    color:var(--berry);
     flex-shrink: 0;
+    border: var(--berry);
 }
 
 .chat-header-info h3 {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 800;
     color: white;
     margin: 0 0 3px 0;
 }
 
 .chat-header-info p {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
+    color:var(--cream);
     margin: 0;
 }
 
 /* Delete Chat Button (visible only when chat is active) */
 .delete-chat-btn {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--white);
     border: none;
-    color: white;
+    color: var(--berry);
     padding: 8px 16px;
     border-radius: 30px;
     font-size: 13px;
@@ -276,8 +289,8 @@
 }
 
 .delete-chat-btn:hover {
-    background: #C63E4E;
-    color: white;
+    background:var(--berry);
+    color: var(--white);
 }
 
 /* Messages List - Scrollable */
@@ -329,8 +342,8 @@
 }
 
 .message-bubble.mine .message-content {
-    background: linear-gradient(135deg, #475B35, #2C3821);
-    color: white;
+    background: var(--berry);
+    color: var(--color-black);
     border-bottom-right-radius: 5px;
 }
 
@@ -344,7 +357,7 @@
     font-size: 12px;
     font-weight: 800;
     margin-bottom: 5px;
-    color: #E19184;
+    color: var(--vampire);
 }
 
 .message-bubble.mine .message-sender {
@@ -361,7 +374,7 @@
 
 .message-time {
     font-size: 11px;
-    color: #95A5A6;
+    color: var(--green);
     margin-top: 8px;
     display: block;
 }
@@ -407,7 +420,7 @@
 .send-btn-epic {
     width: 55px;
     height: 55px;
-    background: linear-gradient(135deg, #E19184, #C63E4E);
+    background: var(--berry);
     border: none;
     border-radius: 15px;
     color: white;
