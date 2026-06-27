@@ -5,7 +5,13 @@ namespace App\Http\Controllers\Assistant;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\TaskAssignment;
+use App\Models\Vendor;
+use App\Models\VendorOrder;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;   
+
 
 class AssistantController extends Controller
 {
@@ -59,22 +65,38 @@ class AssistantController extends Controller
         ));
     }
 
-    public function completeTask(Request $request, Task $task)
-    {
-        $isAssigned = TaskAssignment::where('task_id', $task->id)
-                                    ->where('assistant_id', $request->user()->id)
-                                    ->exists();
+   public function completeTask($taskId)
+{
+    $task = Task::findOrFail($taskId);
+    
+    // Ensure task is assigned to this assistant
+    $assignment = TaskAssignment::where('task_id', $taskId)
+        ->where('assistant_id', Auth::id())
+        ->firstOrFail();
+    
+    $task->status = 'done';
+    $task->progress = 100;
+    $task->completed_at = now();
+    $task->save();
 
-        abort_if(!$isAssigned, 403, 'You are not assigned to this task.');
-
-        $task->update([
-            'status'       => 'done',
-            'progress'     => 100,
-            'completed_at' => now(),
+    // 🔔 NOTIFICATION: Task completed by assistant → notify planner
+    $planner = User::find($task->user_id);
+    if ($planner) {
+        Notification::create([
+            'user_id' => $planner->id,
+            'type' => 'task',
+            'priority' => 'medium',
+            'title' => 'Task Completed by Assistant',
+            'message' => Auth::user()->name . " completed task: {$task->title}" . ($task->event ? " for event '{$task->event->name}'" : ''),
+            'icon' => 'fas fa-check-circle',
+            'action_url' => route('planner.tasks.index'),
+            'is_read' => false,
+            'is_archived' => false,
         ]);
-
-        return redirect()->back()->with('success', "Task \"{$task->title}\" marked as complete!");
     }
+
+    return redirect()->back()->with('success', 'Task marked as done!');
+}
 
     public function taskVendors($taskId)
 {
@@ -116,36 +138,61 @@ public function orderForm($taskId, $vendorId)
 }
 public function submitOrder(Request $request, $taskId, $vendorId)
 {
+    $task = Task::findOrFail($taskId);
+    $vendor = Vendor::findOrFail($vendorId);
+    
+    // Ensure task is assigned to this assistant
+    TaskAssignment::where('task_id', $taskId)
+        ->where('assistant_id', Auth::id())
+        ->firstOrFail();
+
     $validated = $request->validate([
         'price' => 'required|numeric|min:0',
         'notes' => 'nullable|string|max:500',
     ]);
-    
-    $task = Task::findOrFail($taskId);
-    $vendor = \App\Models\Vendor::findOrFail($vendorId);
-    
-    // Verify assistant is assigned
-    $isAssigned = TaskAssignment::where('task_id', $taskId)
-        ->where('assistant_id', auth()->id())
-        ->exists();
-    
-    abort_if(!$isAssigned, 403);
-    
-    // Update or create order
-    \App\Models\VendorOrder::updateOrCreate(
-        [
-            'task_id' => $taskId,
-            'vendor_id' => $vendorId,
-            'assistant_id' => auth()->id(),
-        ],
-        [
+
+    // Check if order exists
+    $existingOrder = VendorOrder::where('task_id', $taskId)
+        ->where('vendor_id', $vendorId)
+        ->where('assistant_id', Auth::id())
+        ->first();
+
+    if ($existingOrder) {
+        $existingOrder->update([
             'price' => $validated['price'],
             'notes' => $validated['notes'],
-        ]
-    );
-    
+        ]);
+        $order = $existingOrder;
+        $message = 'Order updated successfully!';
+    } else {
+        $order = VendorOrder::create([
+            'task_id' => $taskId,
+            'vendor_id' => $vendorId,
+            'assistant_id' => Auth::id(),
+            'price' => $validated['price'],
+            'notes' => $validated['notes'],
+        ]);
+        $message = 'Order placed successfully!';
+    }
+
+    // 🔔 NOTIFICATION: Order placed by assistant → notify planner
+    $planner = User::find($task->user_id);
+    if ($planner) {
+        \App\Models\Notification::create([
+            'user_id' => $planner->id,
+            'type' => 'order',
+            'priority' => 'medium',
+            'title' => 'New Order Placed',
+            'message' => Auth::user()->name . " placed an order with {$vendor->name} for task: {$task->title}",
+            'icon' => 'fas fa-shopping-cart',
+            'action_url' => route('planner.events.vendors.show', [$task->event_id, $vendorId]),
+            'is_read' => false,
+            'is_archived' => false,
+        ]);
+    }
+
     return redirect()->route('assistant.tasks.vendors', $taskId)
-        ->with('success', 'Order placed successfully!');
+        ->with('success', $message);
 }
 
 public function myOrders()

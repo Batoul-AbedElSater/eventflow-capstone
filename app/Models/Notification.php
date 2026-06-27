@@ -75,21 +75,22 @@ class Notification extends Model
         };
     }
 
-    public function getIconClass()
-    {
-        if ($this->icon) {
-            return $this->icon;
-        }
-
-        return match($this->type) {
-            'task' => 'fas fa-tasks',
-            'event' => 'fas fa-calendar',
-            'request' => 'fas fa-inbox',
-            'message' => 'fas fa-envelope',
-            'weather' => 'fas fa-cloud-sun',
-            'conflict' => 'fas fa-exclamation-triangle',
-            'health' => 'fas fa-heartbeat',
-            default => 'fas fa-bell'
-        };
+ public function getIconClass()
+{
+    if ($this->icon) {
+        return $this->icon;
     }
+
+    return match($this->type) {
+        'task' => 'fas fa-tasks',
+        'order' => 'fas fa-shopping-cart',
+        'event' => 'fas fa-calendar',
+        'request' => 'fas fa-inbox',
+        'message' => 'fas fa-envelope',
+        'weather' => 'fas fa-cloud-sun',
+        'conflict' => 'fas fa-exclamation-triangle',
+        'health' => 'fas fa-heartbeat',
+        default => 'fas fa-bell'
+    };
+}
 }
