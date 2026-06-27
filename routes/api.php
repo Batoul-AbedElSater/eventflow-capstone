@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\Planner\EventRequestController;
 use App\Http\Controllers\Api\Planner\VendorController as VendorController;
 use App\Http\Controllers\Planner\AnalyticsController;
 use App\Http\Controllers\Planner\NotificationController as PlannerNotificationController;
-
+use App\Http\Controllers\Api\Planner\MonthlyCalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +64,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/events/{event}/messages', [MessageController::class, 'store'])->name('messages.store');
         Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
         Route::delete('/events/{event}/messages', [MessageController::class, 'deleteAll'])->name('messages.delete-all');
-
+        Route::post('/messages/events/{event}/read', [MessageController::class, 'markEventMessagesAsRead'])->name('messages.read');
+        
         // Guests
         Route::get('/guests', [GuestController::class, 'index'])->name('guests.index');
         Route::get('/events/{event}/guests', [GuestController::class, 'byEvent'])->name('events.guests.index');
@@ -128,6 +129,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 
+   Route::get('/monthly-calendar', [MonthlyCalendarController::class, 'index']);
 
     // Notifications  ← moved INSIDE planner group
     Route::prefix('notifications')->group(function () {
@@ -143,6 +145,7 @@ Route::get('/messages/events',[App\Http\Controllers\Planner\MessageController::c
 Route::get('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'index']);
 Route::post('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'store']);
 Route::delete('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'deleteAll']);
+Route::post('/messages/events/{event}/read', [\App\Http\Controllers\Planner\MessageController::class, 'markEventMessagesAsRead']);
 
 //analytics
 Route::get('/analytics',[AnalyticsController::class,'index']);

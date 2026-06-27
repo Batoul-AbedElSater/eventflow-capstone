@@ -22,41 +22,66 @@ class MessageController extends Controller
         return view('planner.messages', compact('events'));
     }
 
-    public function events()
+ public function events()
 {
     try {
-        $events = Event::where('planner_id', Auth::id())
+        $userId = Auth::id();
+
+        $events = Event::where('planner_id', $userId)
             ->with(['client:id,name'])
-            ->whereHas('messages')
-            ->orderBy('updated_at', 'desc')
+            ->orderByDesc('start_date')
             ->get();
 
-        $data = $events->map(function ($event) {
+        $data = $events->map(function ($event) use ($userId) {
             $lastMessage = Message::where('event_id', $event->id)
+                ->where(function ($query) use ($userId) {
+                    $query->where(function ($q) use ($userId) {
+                        $q->where('sender_id', $userId)
+                            ->where('deleted_by_sender', false);
+                    })->orWhere(function ($q) use ($userId) {
+                        $q->where('receiver_id', $userId)
+                            ->where('deleted_by_receiver', false);
+                    });
+                })
                 ->latest()
                 ->first();
 
             $unread = Message::where('event_id', $event->id)
-                ->where('receiver_id', Auth::id())
+                ->where('receiver_id', $userId)
                 ->where('is_read', false)
+                ->where('deleted_by_receiver', false)
                 ->count();
 
             return [
-                'id'           => $event->id,
-                'name'         => $event->name,
-                'client'       => $event->client,
+                'id' => $event->id,
+                'name' => $event->name,
+                'client' => $event->client,
                 'last_message' => $lastMessage ? [
-                    'message'    => $lastMessage->message,
+                    'message' => $lastMessage->message ?? $lastMessage->body,
                     'created_at' => $lastMessage->created_at->diffForHumans(),
                 ] : null,
                 'unread_count' => $unread,
+                '_sort_time' => $lastMessage ? $lastMessage->created_at->timestamp : 0,
             ];
+        })
+        ->sortByDesc('_sort_time')
+        ->values()
+        ->map(function ($item) {
+            unset($item['_sort_time']);
+            return $item;
         });
 
-        return response()->json(['success' => true, 'data' => $data]);
-
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     } catch (\Exception $e) {
-        return response()->json(['success' => false], 500);
+        Log::error('Planner message events error: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to load message events',
+        ], 500);
     }
 }
 public function index($eventId)
@@ -180,4 +205,26 @@ public function index($eventId)
                 return response()->json(['success' => false, 'message' => 'Failed to clear chat'], 500);
             }
         }
+ public function markEventMessagesAsRead(Event $event)
+{
+    $user = Auth::user();
+
+    if ($event->planner_id !== $user->id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized',
+        ], 403);
+    }
+
+    Message::where('event_id', $event->id)
+        ->where('receiver_id', $user->id)
+        ->where('is_read', false)
+        ->update([
+            'is_read' => true,
+        ]);
+
+    return response()->json([
+        'success' => true,
+    ]);
+}
 }
