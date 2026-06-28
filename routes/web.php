@@ -226,9 +226,7 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
 // ADMIN ROUTES
 // ============================================
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-});
+
 
 // ============================================
 // FALLBACK ROUTE
