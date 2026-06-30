@@ -652,12 +652,11 @@ background-color: var(--cream);
 
             <!-- Profile Dropdown (click toggle) -->
             <div class="profile-dropdown" id="profileDropdownBtn">
-                <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=FFFFFF&color=C63E4E' }}" alt="Profile">
-                <span>{{ Auth::user()->name }}</span>
+              <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=C63E4E&color=F5F9E5' }}" alt="Profile">                <span>{{ Auth::user()->name }}</span>
                 <i class="fas fa-chevron-down"></i>
                 <div class="dropdown-menu" id="profileDropdownMenu">
                     <a href="{{ route('client.profile') }}"><i class="fas fa-user"></i> Profile</a>
-                    <a href="{{ route('client.settings') }}"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="{{ route('client.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
                     <hr>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -668,20 +667,24 @@ background-color: var(--cream);
         </div>
     </header>
 
-    <aside class="client-sidebar">
-        <a href="{{ route('client.dashboard') }}" class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-home"></i> Dashboard
-        </a>
-        <a href="{{ route('client.events.index') }}" class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-alt"></i> My Events
-        </a>
-        <a href="{{ route('client.messages') }}" class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
-            <i class="fas fa-comments"></i> Messages
-        </a>
-        <a href="{{ route('client.profile') }}" class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
-            <i class="fas fa-user"></i> Profile
-        </a>
-    </aside>
+   <aside class="client-sidebar">
+    <a href="{{ route('client.dashboard') }}" class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+    <a href="{{ route('client.events.index') }}" class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i> My Events
+    </a>
+    <a href="{{ route('client.messages') }}" class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
+        <i class="fas fa-comments"></i> Messages
+    </a>
+    <a href="{{ route('client.profile') }}" class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
+        <i class="fas fa-user"></i> Profile
+    </a>
+    <!-- ✅ ADD/UPDATE THIS SETTINGS LINK -->
+    <a href="{{ route('client.settings.index') }}" class="sidebar-link {{ request()->routeIs('client.settings*') ? 'active' : '' }}">
+        <i class="fas fa-cog"></i> Settings
+    </a>
+</aside>
 
     <script src="{{ asset('js/client-dashboard.js') }}"></script>
     

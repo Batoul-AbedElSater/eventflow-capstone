@@ -612,13 +612,12 @@
         </div>
 
         <div class="profile-dropdown" id="profileDropdownBtn">
-            <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=C63E4E&color=F5F9E5' }}" alt="Profile">
-            <span>{{ Auth::user()->name }}</span>
+         <img src="{{ Auth::user()->avatar_url }}" alt="Profile">            <span>{{ Auth::user()->name }}</span>
             <i class="fas fa-chevron-down"></i>
             <div class="dropdown-menu" id="profileDropdownMenu">
                 <hr>
                 <a href="#"><i class="fas fa-user"></i> My Profile</a>
-                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="{{ route('assistant.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
                 <hr>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -639,16 +638,14 @@
 <aside class="assistant-sidebar">
     <div class="sidebar-section-label">Main</div>
 
-    <a href="{{ route('assistant.tasks') }}"
-       class="sidebar-link {{ request()->routeIs('assistant.tasks*') ? 'active' : '' }}">
+    <a href="{{ route('assistant.tasks') }}" class="sidebar-link {{ request()->routeIs('assistant.tasks*') ? 'active' : '' }}">
         <i class="fas fa-tasks"></i> My Tasks
         @if($pendingTasksCount > 0)
             <span class="sidebar-badge">{{ $pendingTasksCount }}</span>
         @endif
     </a>
 
-    <a href="{{ route('assistant.orders') }}"
-       class="sidebar-link {{ request()->routeIs('assistant.orders') ? 'active' : '' }}">
+    <a href="{{ route('assistant.orders') }}" class="sidebar-link {{ request()->routeIs('assistant.orders') ? 'active' : '' }}">
         <i class="fas fa-shopping-cart"></i> My Orders
     </a>
 
@@ -656,6 +653,11 @@
 
     <a href="#" class="sidebar-link">
         <i class="fas fa-user"></i> Profile
+    </a>
+
+    <!-- ✅ ADD/UPDATE THIS SETTINGS LINK -->
+    <a href="{{ route('assistant.settings.index') }}" class="sidebar-link {{ request()->routeIs('assistant.settings*') ? 'active' : '' }}">
+        <i class="fas fa-cog"></i> Settings
     </a>
 </aside>
 
