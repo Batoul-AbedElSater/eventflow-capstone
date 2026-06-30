@@ -127,6 +127,26 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
     // Profile
     Route::get('/profile', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
+
+    // ===== PLANNER SETTINGS =====
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Planner\SettingsController::class, 'index'])->name('index');
+        Route::get('/account', [App\Http\Controllers\Planner\SettingsController::class, 'account'])->name('account');
+        Route::post('/profile', [App\Http\Controllers\Planner\SettingsController::class, 'updateProfile'])->name('profile');
+        Route::post('/photo', [App\Http\Controllers\Planner\SettingsController::class, 'updateProfilePhoto'])->name('photo');
+        Route::post('/password', [App\Http\Controllers\Planner\SettingsController::class, 'changePassword'])->name('password');
+        Route::get('/business', [App\Http\Controllers\Planner\SettingsController::class, 'business'])->name('business');
+        Route::post('/business', [App\Http\Controllers\Planner\SettingsController::class, 'updateBusiness'])->name('business.update');
+        Route::get('/team', [App\Http\Controllers\Planner\SettingsController::class, 'team'])->name('team');
+        Route::post('/team/add', [App\Http\Controllers\Planner\SettingsController::class, 'addTeamMember'])->name('team.add');
+        Route::get('/vendors', [App\Http\Controllers\Planner\SettingsController::class, 'vendors'])->name('vendors');
+        Route::post('/vendors', [App\Http\Controllers\Planner\SettingsController::class, 'updateVendorPreferences'])->name('vendors.update');
+        Route::get('/analytics', [App\Http\Controllers\Planner\SettingsController::class, 'analytics'])->name('analytics');
+        Route::get('/notifications', [App\Http\Controllers\Planner\SettingsController::class, 'notifications'])->name('notifications');
+        Route::post('/notifications', [App\Http\Controllers\Planner\SettingsController::class, 'updateNotifications'])->name('notifications.update');
+        Route::get('/appearance', [App\Http\Controllers\Planner\SettingsController::class, 'appearance'])->name('appearance');
+        Route::post('/appearance', [App\Http\Controllers\Planner\SettingsController::class, 'updateAppearance'])->name('appearance.update');
+    });
 });
 
 // ============================================
@@ -151,7 +171,7 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
     Route::get('/orders', [AssistantController::class, 'myOrders'])->name('orders');
     Route::delete('/orders/{order}', [AssistantController::class, 'deleteOrder'])->name('orders.delete');
 
-    // ===== NOTIFICATION ROUTES =====
+    // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [App\Http\Controllers\Assistant\NotificationController::class, 'index'])->name('index');
         Route::post('/{id}/read', [App\Http\Controllers\Assistant\NotificationController::class, 'markAsRead'])->name('read');
@@ -161,6 +181,22 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::get('/stats', [App\Http\Controllers\Assistant\NotificationController::class, 'stats'])->name('stats');
     });
 
+    // ===== ASSISTANT SETTINGS =====
+   Route::prefix('settings')->name('settings.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Assistant\SettingsController::class, 'index'])->name('index');
+    Route::get('/account', [App\Http\Controllers\Assistant\SettingsController::class, 'account'])->name('account');
+    Route::post('/profile', [App\Http\Controllers\Assistant\SettingsController::class, 'updateProfile'])->name('profile');
+    Route::post('/photo', [App\Http\Controllers\Assistant\SettingsController::class, 'updateProfilePhoto'])->name('photo');
+    Route::post('/password', [App\Http\Controllers\Assistant\SettingsController::class, 'changePassword'])->name('password');
+    Route::get('/skills', [App\Http\Controllers\Assistant\SettingsController::class, 'skills'])->name('skills');
+    Route::post('/skills', [App\Http\Controllers\Assistant\SettingsController::class, 'updateSkills']);
+    Route::get('/availability', [App\Http\Controllers\Assistant\SettingsController::class, 'availability'])->name('availability');
+    Route::post('/availability', [App\Http\Controllers\Assistant\SettingsController::class, 'updateAvailability']);
+    Route::get('/notifications', [App\Http\Controllers\Assistant\SettingsController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications', [App\Http\Controllers\Assistant\SettingsController::class, 'updateNotifications']);
+    Route::get('/appearance', [App\Http\Controllers\Assistant\SettingsController::class, 'appearance'])->name('appearance');
+    Route::post('/appearance', [App\Http\Controllers\Assistant\SettingsController::class, 'updateAppearance']);
+});
 });
 
 // ============================================
@@ -209,10 +245,26 @@ Route::prefix('client')->name('client.')->middleware(['auth', 'role:client'])->g
     Route::get('/profile', [App\Http\Controllers\Client\ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'updatePassword'])->name('profile.password');
-    Route::get('/settings', [App\Http\Controllers\Client\ProfileController::class, 'settings'])->name('settings');
-    Route::put('/settings', [App\Http\Controllers\Client\ProfileController::class, 'updateSettings'])->name('settings.update');
-});
 
+    // ===== CLIENT SETTINGS =====
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Client\SettingsController::class, 'index'])->name('index');
+        Route::get('/account', [App\Http\Controllers\Client\SettingsController::class, 'account'])->name('account');
+        Route::post('/profile', [App\Http\Controllers\Client\SettingsController::class, 'updateProfile'])->name('profile');
+        Route::post('/photo', [App\Http\Controllers\Client\SettingsController::class, 'updateProfilePhoto'])->name('photo');
+        Route::post('/password', [App\Http\Controllers\Client\SettingsController::class, 'changePassword'])->name('password');
+        Route::get('/notifications', [App\Http\Controllers\Client\SettingsController::class, 'notifications'])->name('notifications');
+        Route::post('/notifications', [App\Http\Controllers\Client\SettingsController::class, 'updateNotifications'])->name('notifications.update');
+        Route::get('/privacy', [App\Http\Controllers\Client\SettingsController::class, 'privacy'])->name('privacy');
+        Route::post('/privacy', [App\Http\Controllers\Client\SettingsController::class, 'updatePrivacy'])->name('privacy.update');
+        Route::get('/appearance', [App\Http\Controllers\Client\SettingsController::class, 'appearance'])->name('appearance');
+        Route::post('/appearance', [App\Http\Controllers\Client\SettingsController::class, 'updateAppearance'])->name('appearance.update');
+        Route::get('/preferences', [App\Http\Controllers\Client\SettingsController::class, 'preferences'])->name('preferences');
+        Route::post('/preferences', [App\Http\Controllers\Client\SettingsController::class, 'updatePreferences'])->name('preferences.update');
+        Route::get('/export', [App\Http\Controllers\Client\SettingsController::class, 'exportData'])->name('export');
+        Route::delete('/account', [App\Http\Controllers\Client\SettingsController::class, 'deleteAccount'])->name('delete');
+    });
+});
 // ============================================
 // PUBLIC GUEST RSVP ROUTES
 // ============================================
@@ -226,7 +278,9 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
 // ADMIN ROUTES
 // ============================================
 
-
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+});
 
 // ============================================
 // FALLBACK ROUTE

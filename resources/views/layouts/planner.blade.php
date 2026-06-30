@@ -499,14 +499,13 @@
         </div>
 
         <div class="header-right">
-      <aside class="planner-sidebar">
+<aside class="planner-sidebar">
     <a href="{{ route('planner.dashboard') }}" class="sidebar-link {{ request()->routeIs('planner.dashboard') ? 'active' : '' }}">
         <i class="fas fa-home"></i> Dashboard
     </a>
-   <a href="{{ route('planner.events.index') }}"
-   class="sidebar-link {{ request()->routeIs('planner.events*') && !request()->routeIs('planner.events.analytics') ? 'active' : '' }}">
-    <i class="fas fa-calendar-alt"></i> Events
-</a>
+    <a href="{{ route('planner.events.index') }}" class="sidebar-link {{ request()->routeIs('planner.events*') && !request()->routeIs('planner.events.analytics') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i> Events
+    </a>
     <a href="{{ route('planner.requests') }}" class="sidebar-link {{ request()->routeIs('planner.requests*') ? 'active' : '' }}">
         <i class="fas fa-clipboard-list"></i> Requests
     </a>
@@ -518,6 +517,10 @@
     </a>
     <a href="{{ route('planner.messages') }}" class="sidebar-link {{ request()->routeIs('planner.messages*') ? 'active' : '' }}">
         <i class="fas fa-envelope"></i> Messages
+    </a>
+    <!-- ✅ ADD/UPDATE THIS SETTINGS LINK -->
+    <a href="{{ route('planner.settings.index') }}" class="sidebar-link {{ request()->routeIs('planner.settings*') ? 'active' : '' }}">
+        <i class="fas fa-cog"></i> Settings
     </a>
 </aside>
             <!-- Voice Commander Button -->
@@ -531,17 +534,16 @@
 
             <!-- Profile Dropdown (click toggle) -->
             <div class="profile-dropdown" id="profileDropdownBtn">
-                <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=C63E4E&color=F5F9E5' }}" alt="Profile">
-                <span>{{ Auth::user()->name }}</span>
+                 <img src="{{ Auth::user()->avatar_url }}" alt="Profile">                <span>{{ Auth::user()->name }}</span>
                 <i class="fas fa-chevron-down"></i>
                 <div class="dropdown-menu" id="profileDropdownMenu">
                     <div class="dropdown-header">
-                        <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=C63E4E&color=F5F9E5' }}" alt="Profile">
+                        <img src="{{ Auth::user()->avatar_url }}" alt="Profile">
                         <div><strong>{{ Auth::user()->name }}</strong><span>{{ Auth::user()->email }}</span></div>
                     </div>
                     <hr>
                     <a href="#"><i class="fas fa-user"></i> My Profile</a>
-                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="{{ route('planner.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
                     <hr>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
