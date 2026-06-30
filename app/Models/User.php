@@ -7,14 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\StaffProfile;
-use App\Models\Vendor;
-use App\Models\Task;
-use App\Models\TaskAssignment;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +23,17 @@ class User extends Authenticatable
         'phone',
         'notification_preferences',
         'avatar',
+        'bio',
+        'theme',
+        'language',
+        'timezone',
+        'email_notifications',
+        'push_notifications',
+        'event_reminders',
+        'marketing_emails',
+        'two_factor_enabled',
+        'is_active',
+        'profile_photo_path',
     ];
 
     /**
@@ -43,37 +50,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'notification_preferences' => 'array',
+        'email_notifications' => 'boolean',
+        'push_notifications' => 'boolean',
+        'event_reminders' => 'boolean',
+        'marketing_emails' => 'boolean',
+        'two_factor_enabled' => 'boolean',
+        'is_active' => 'boolean',
     ];
-    /**
-     * Get events where user is the planner
-     */
-    public function plannedEvents()
-    {
-        return $this->hasMany(Event::class, 'planner_id');
-    }
 
-    public function clientProfile()
-    {
-        return $this->hasOne(ClientProfile::class);
-    }
-
-    /**
-     * Get the planner profile for this user.
-     * One-to-One: User -> PlannerProfile
-     */
-    public function plannerProfile()
-    {
-        return $this->hasOne(PlannerProfile::class);
-    }
-
-    public function staffProfile()
-    {
-        return $this->hasOne(StaffProfile::class, 'user_id');
-    }
+    // ========================================
+    // RELATIONSHIPS
+    // ========================================
 
     /**
      * Get events where this user is the client.
-     * One-to-Many: User (client) -> Events
      */
     public function clientEvents()
     {
@@ -82,7 +73,6 @@ class User extends Authenticatable
 
     /**
      * Get events where this user is the planner.
-     * One-to-Many: User (planner) -> Events
      */
     public function plannerEvents()
     {
@@ -90,14 +80,47 @@ class User extends Authenticatable
     }
 
     /**
-     * Get tasks assigned to this user (planner).
-     * One-to-Many: User (planner) -> Tasks
+     * Get events where this user is the planner (alias for plannerEvents).
      */
-    
+    public function eventsOfPlanner()
+    {
+        return $this->plannerEvents();
+    }
+
+    /**
+     * Get the client profile for this user.
+     */
+    public function clientProfile()
+    {
+        return $this->hasOne(ClientProfile::class);
+    }
+
+    /**
+     * Get the planner profile for this user.
+     */
+    public function plannerProfile()
+    {
+        return $this->hasOne(PlannerProfile::class);
+    }
+
+    /**
+     * Get the staff (assistant) profile for this user.
+     */
+    public function staffProfile()
+    {
+        return $this->hasOne(StaffProfile::class, 'user_id');
+    }
+
+    /**
+     * Get messages sent by this user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
 
     /**
      * Get message threads where this user is the client.
-     * One-to-Many: User (client) -> MessageThreads
      */
     public function clientThreads()
     {
@@ -106,19 +129,18 @@ class User extends Authenticatable
 
     /**
      * Get message threads where this user is the planner.
-     * One-to-Many: User (planner) -> MessageThreads
      */
     public function plannerThreads()
     {
         return $this->hasMany(MessageThread::class, 'planner_id');
     }
 
-        /**
-     * Get unread messages count
+    /**
+     * Get unread messages count for this user.
      */
     public function unreadMessagesCount()
     {
-        return \App\Models\Message::whereHas('thread', function ($query) {
+        return Message::whereHas('thread', function ($query) {
                 $query->where('client_id', $this->id)
                     ->orWhere('planner_id', $this->id);
             })
@@ -128,17 +150,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get messages sent by this user.
-     * One-to-Many: User -> Messages
-     */
-    public function sentMessages()
-    {
-        return $this->hasMany(Message::class, 'sender_id');
-    }
-
-    /**
      * Get notifications for this user.
-     * One-to-Many: User -> Notifications
      */
     public function notifications()
     {
@@ -147,12 +159,91 @@ class User extends Authenticatable
 
     /**
      * Get notification preferences for this user.
-     * One-to-One: User -> NotificationPreference
      */
     public function notificationPreference()
     {
         return $this->hasOne(NotificationPreference::class);
     }
+
+    /**
+     * Get user preferences (general settings).
+     */
+    public function preferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    /**
+     * Get user settings (detailed settings).
+     */
+    public function settings()
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    /**
+     * Get tasks assigned to this user (as assistant).
+     */
+    public function assignedTasks()
+    {
+        return $this->belongsToMany(
+            Task::class,
+            'task_assignments',
+            'assistant_id',
+            'task_id'
+        )->withPivot('assigned_by')->withTimestamps();
+    }
+
+    /**
+     * Get tasks this user has assigned to others.
+     */
+    public function assignedOutTasks()
+    {
+        return $this->hasMany(TaskAssignment::class, 'assigned_by');
+    }
+
+    /**
+     * Get tasks this user created.
+     */
+    public function createdTasks()
+    {
+        return $this->hasMany(Task::class, 'user_id');
+    }
+
+    /**
+     * Get assistants assigned to tasks by this user.
+     */
+    public function assistants()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            TaskAssignment::class,
+            'assigned_by',
+            'id',
+            'id',
+            'assistant_id'
+        )->distinct();
+    }
+
+    /**
+     * Get vendors favorited by this user.
+     */
+    public function favoriteVendors()
+    {
+        return $this->belongsToMany(Vendor::class, 'user_vendor_favorites');
+    }
+
+    /**
+     * Get vendor orders placed by this user (as assistant).
+     */
+    public function vendorOrders()
+    {
+        return $this->hasMany(VendorOrder::class, 'assistant_id');
+    }
+
+    // ========================================
+    // ROLE CHECKS
+    // ========================================
 
     /**
      * Check if user is a client.
@@ -170,65 +261,136 @@ class User extends Authenticatable
         return $this->role === 'planner';
     }
 
+    /**
+     * Check if user is an assistant.
+     */
     public function isAssistant(): bool
     {
         return $this->role === 'assistant';
     }
 
     /**
-     * Get user's full profile (client, planner, or assistant).
+     * Check if user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Get the user's profile based on role.
      */
     public function profile()
     {
-        return $this->isClient()
-            ? $this->clientProfile
-            : ($this->isPlanner() ? $this->plannerProfile : $this->staffProfile);
+        if ($this->isClient()) {
+            return $this->clientProfile;
+        } elseif ($this->isPlanner()) {
+            return $this->plannerProfile;
+        } elseif ($this->isAssistant()) {
+            return $this->staffProfile;
+        }
+        return null;
     }
 
-    public function favoriteVendors(){
-        return $this->belongsToMany(Vendor::class,'user_vendor_favorites');
+    // ========================================
+    // SETTINGS HELPERS
+    // ========================================
+
+    /**
+     * Get user preference by key.
+     */
+    public function getPreference($key, $default = null)
+    {
+        if ($this->preferences) {
+            return $this->preferences->$key ?? $default;
+        }
+        return $default;
     }
 
-    public function assignedTasks()
+    /**
+     * Set user preference.
+     */
+    public function setPreference($key, $value)
     {
-    return $this->belongsToMany(
-        Task::class,
-        'task_assignments',
-        'assistant_id',
-        'task_id'
-    )->withPivot('assigned_by')->withTimestamps();
-    }
- 
-
-    public function assignedOutTasks()
-    {
-    return $this->hasMany(TaskAssignment::class, 'assigned_by');
-    }
- 
-// Tasks this user (planner) created
-    public function createdTasks()
-    {
-    return $this->hasMany(Task::class, 'user_id');
-    }
- 
-
-    public function assistants()
-    {
-    return $this->hasManyThrough(
-        User::class,          
-        TaskAssignment::class, 
-        'assigned_by',         
-        'id',                  
-        'id',                  
-        'assistant_id'         
-    )->distinct();
+        if (!$this->preferences) {
+            $this->preferences()->create([$key => $value]);
+        } else {
+            $this->preferences->update([$key => $value]);
+        }
+        return $this;
     }
 
-    public function vendorOrders()
+    /**
+     * Get user setting by key.
+     */
+    public function getSetting($key, $default = null)
     {
-    return $this->hasMany(VendorOrder::class, 'assistant_id');
+        if ($this->settings) {
+            return $this->settings->$key ?? $default;
+        }
+        return $default;
     }
+
+    /**
+     * Set user setting.
+     */
+    public function setSetting($key, $value)
+    {
+        if (!$this->settings) {
+            $this->settings()->create([$key => $value]);
+        } else {
+            $this->settings->update([$key => $value]);
+        }
+        return $this;
+    }
+
+    /**
+     * Check if user has completed profile setup.
+     */
+    public function hasCompletedProfile(): bool
+    {
+        return $this->name && $this->email && $this->phone;
+    }
+
+    /**
+     * Get full profile data for API.
+     */
+    public function getFullProfile()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'role' => $this->role,
+            'avatar' => $this->avatar,
+            'bio' => $this->bio,
+            'theme' => $this->theme,
+            'language' => $this->language,
+            'timezone' => $this->timezone,
+            'profile' => $this->profile(),
+            'preferences' => $this->preferences,
+            'settings' => $this->settings,
+        ];
+    }
+
+    // ========================================
+    // OVERRIDES
+    // ========================================
+
+    /**
+     * Get the user's avatar URL.
+     */
+  public function getAvatarUrlAttribute()
+{
+    // Check if a profile photo exists
+    if ($this->profile_photo_path) {
+        return asset('storage/' . $this->profile_photo_path);
+    }
+    // Fallback to avatar column or avatar generator
+    if ($this->avatar) {
+        return $this->avatar;
+    }
+    return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=C63E4E&color=F5F9E5';
 }
-
-
-
+}
