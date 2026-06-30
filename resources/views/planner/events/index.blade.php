@@ -298,7 +298,7 @@
 
                     // Persist to server
                     fetch(`/planner/events/${eventId}/status`, {
-                        method: 'PATCH',
+                        method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content

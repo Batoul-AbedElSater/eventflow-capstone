@@ -44,16 +44,29 @@
         <div class="events-masonry" id="eventsGrid">
             @foreach($events as $event)
                 @php
+
+                $rawStatus = strtolower($event->status ?? 'pending');
+               
                     // Map planner statuses to client display statuses
-                    $displayStatus = match($event->status) {
+                    $displayStatus = match($rawStatus) {
                         'draft' => 'pending',
                         'pending' => 'pending',
                         'confirmed' => 'confirmed',
-                        'in_progress' => 'confirmed',
-                        'completed' => 'confirmed',
+                        'in_progress' => 'in_progress',
+                        'completed' => 'completed',
                         'declined' => 'declined',
-                        default => 'pending'
+                        default => $rawStatus,
                     };
+                       $statusLabel = match($displayStatus) {
+                        'confirmed' => 'Confirmed',
+                        'pending' => 'Pending',
+                        'in_progress' => 'In Progress',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                        'accepted' => 'Accepted',
+                        'planning' => 'Planning',
+                        'declined' => 'declined',
+        default => ucwords(str_replace('_', ' ', $event->status ?? '')),};
                 @endphp
                 <div class="event-masterpiece" data-status="{{ $displayStatus }}">
 
@@ -67,13 +80,17 @@
                                     <div class="placeholder-pattern"></div>
                                     <div class="placeholder-icon">
                                         @if($event->eventType->name === 'Wedding')
-                                            <i class="fas fa-rings-wedding"></i>
+                                            <img src="{{ asset('images/wedding.jpeg') }}" alt="Wedding" class="event-type-image">
                                         @elseif($event->eventType->name === 'Birthday')
-                                            <i class="fas fa-cake-candles"></i>
+                                              <img src="{{ asset('images/birthday.jpeg') }}" alt="Birthday" class="event-type-image">
                                         @elseif($event->eventType->name === 'Corporate')
-                                            <i class="fas fa-building"></i>
+                                             <img src="{{ asset('images/image.png') }}" alt="Corporate" class="event-type-image">
                                         @elseif($event->eventType->name === 'Anniversary')
-                                            <i class="fas fa-heart"></i>
+                                            <img src="{{ asset('images/flowers.jpg') }}" alt="anniversary" class="event-type-image">
+                                        @elseif($event->eventType->name=="Gender Reveal")   
+                                            <img src="{{ asset('images/gender.jpeg') }}" alt="gender-reveal" class="event-type-image"> 
+                                         @elseif($event->eventType->name=="Graduation")   
+                                            <img src="{{ asset('images/graduation.jpeg') }}" alt="graduation" class="event-type-image">     
                                         @else
                                             <i class="fas fa-party-horn"></i>
                                         @endif
@@ -83,28 +100,9 @@
                         @endif
 
                         {{-- Floating Status Badge (uses displayStatus) --}}
-                        <div class="status-float {{ $displayStatus }}">
-                            @if($displayStatus === 'pending')
-                                <i class="fas fa-clock"></i>
-                                <span>Awaiting</span>
-                            @elseif($displayStatus === 'declined')
-                                <i class="fas fa-times-circle"></i>
-                                <span>Declined</span>
-                           @elseif($displayStatus === 'confirmed')
-                                <i class="fas fa-check-circle"></i>
-                                <span>Confirmed</span>
-
-                                <div class="sub-status-badge {{ $event->status }}">
-                                    @if($event->status === 'confirmed')
-                                        Confirmed
-                                    @elseif($event->status === 'in_progress')
-                                        In Progress
-                                    @elseif($event->status === 'completed')
-                                        Completed
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
+                       <div class="status-float {{ $displayStatus }}">
+    {{ $statusLabel }}
+</div>
 
                         {{-- Event Type Tag --}}
                         <div class="event-type-tag">
@@ -230,11 +228,18 @@
     --cream: #EFE7DA;
     --green: #475B35;
 }
-
+body{
+      padding: 0px 2px;
+}
 .events-paradise {
-    padding: 40px;
+    
   /*  background: var(--cream);*/
     min-height: 100vh;
+}
+.event-type-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* ========== HEADER ========== */
@@ -338,7 +343,7 @@
 }
 
 .filter-pill {
-    padding: 14px 28px;
+    padding: 14px 50px;
     background: white;
     border: 2px solid var(--berry);
     border-radius: 50px;
@@ -453,33 +458,30 @@
 
 .status-float {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 900;
-    display: flex;
+    top: 18px;
+    left: 80%;
+    transform: translateX(-50%);
+    min-width: 128px;
+    height: 42px;
+    border: 2px solid var(--status-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--status-color) 45%, transparent);
+    color: white;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
 }
 
-.status-float.pending {
-    background: rgba(255, 193, 7, 0.95);
-    color: white;
-}
-
-.status-float.confirmed {
-    background: rgba(76, 175, 80, 0.95);
-    color: white;
-}
-
-.status-float.declined {
-    background: rgba(244, 67, 54, 0.95);
-    color: white;
-}
+.status-float.confirmed { --status-color: #2196F3; }
+.status-float.in_progress { --status-color: #FF9800; }
+.status-float.completed { --status-color: var(--green); }
+.status-float.cancelled { --status-color: #F44336; }
+.status-float.pending { --status-color: var(--coral); }
+.status-float.accepted { --status-color: #009688; }
+.status-float.planning { --status-color: var(--berry); }
+.status-float.declined { --status-color: var(--vampire); }
 
 .event-type-tag {
     position: absolute;
@@ -745,33 +747,7 @@
 }
 
 
-/* Sub‑badge inside the status badge */
-.sub-status-badge {
-    font-size: 10px;
-    padding: 4px 8px;
-    border-radius: 20px;
-    margin-top: 5px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    font-weight: 600;
-    text-align: center;
-    letter-spacing: 0.5px;
-}
-.sub-status-badge.confirmed {
-    background: #27ae60;
-}
-.sub-status-badge.in_progress {
-    background: #f39c12;
-}
-.sub-status-badge.completed {
-    background: #3498db;
-}
-.status-float.confirmed {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 110px;
-}
+
 </style>
 
 @push('scripts')

@@ -531,6 +531,55 @@ background-color: var(--cream);
     background: var(--coral);
     color: white;
 }
+
+.voice-icon-pulse {
+    position: relative;
+    overflow: visible;
+}
+
+.voice-icon-pulse .pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    margin: 0;
+    border-radius: 50%;
+    border: 4px solid var(--coral);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(1);
+    transform-origin: center;
+    z-index: 1;
+}
+
+.voice-icon-pulse i {
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes pulsateRing {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.65;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.35);
+        opacity: 0;
+    }
+}
+.voice-icon-pulse.listening {
+    animation: voicePulse 1.5s ease-in-out infinite;
+}
+
+.voice-icon-pulse.listening .pulse-ring {
+    animation: pulsateRing 2s ease-out infinite;
+}
+
+.voice-icon-pulse.listening .pulse-ring:nth-of-type(2) {
+    animation-delay: 1s;
+}
 .voice-transcript {
     min-height: 100px;
     background: var(--white);
@@ -638,6 +687,7 @@ background-color: var(--cream);
 </aside>
 
     <script src="{{ asset('js/client-dashboard.js') }}"></script>
+    
     <script src="{{ asset('js/client-notification.js') }}"></script>
     @stack('scripts')
 
@@ -675,11 +725,11 @@ background-color: var(--cream);
         <div class="voice-modal-content">
             <button class="voice-close-btn" id="voiceCloseBtn"><i class="fas fa-times"></i></button>
             <div class="voice-header">
-                <div class="voice-icon-pulse" id="voiceIconPulse">
+           <div class="voice-icon-pulse listening" id="voiceIconPulse">
                     <div class="pulse-ring"></div>
                     <div class="pulse-ring"></div>
                     <i class="fas fa-microphone"></i>
-                </div>
+                    </div>
                 <h2>Voice Commander</h2>
                 <p id="voiceStatus">Click the microphone to start</p>
             </div>
@@ -703,6 +753,32 @@ background-color: var(--cream);
     <div class="mood-modal" id="moodModal">...</div>
 
     <script src="{{ asset('js/mood-voice-common.js') }}"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const voiceIconPulse = document.getElementById('voiceIconPulse');
+    const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+    const voiceCloseBtn = document.getElementById('voiceCloseBtn');
+    const voiceModalOverlay = document.querySelector('.voice-modal-overlay');
+
+    if (!voiceIconPulse || !voiceToggleBtn) return;
+
+    function stopRing() {
+        voiceIconPulse.classList.remove('listening');
+    }
+
+    voiceToggleBtn.addEventListener('click', function () {
+        voiceIconPulse.classList.toggle('listening');
+    });
+
+    if (voiceCloseBtn) {
+        voiceCloseBtn.addEventListener('click', stopRing);
+    }
+
+    if (voiceModalOverlay) {
+        voiceModalOverlay.addEventListener('click', stopRing);
+    }
+});
+</script>
 
     <!-- Click-toggle for profile dropdown -->
     <script>
