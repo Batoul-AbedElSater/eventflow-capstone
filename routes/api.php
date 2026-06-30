@@ -65,7 +65,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
         Route::delete('/events/{event}/messages', [MessageController::class, 'deleteAll'])->name('messages.delete-all');
         Route::post('/messages/events/{event}/read', [MessageController::class, 'markEventMessagesAsRead'])->name('messages.read');
-        
+
         // Guests
         Route::get('/guests', [GuestController::class, 'index'])->name('guests.index');
         Route::get('/events/{event}/guests', [GuestController::class, 'byEvent'])->name('events.guests.index');
@@ -164,7 +164,18 @@ Route::get('/analytics',[AnalyticsController::class,'index']);
         Route::post('/task/{task}/vendor/{vendor}/order', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'submitOrder']);
         Route::get('/orders', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'myOrders']);
         Route::delete('/orders/{order}', [App\Http\Controllers\Api\Assistant\AssistantController::class, 'deleteOrder']);
+
+
+    Route::prefix('notifications')->group(function () {
+    Route::get('/', [App\Http\Controllers\Assistant\NotificationController::class, 'index']);
+    Route::get('/stats', [App\Http\Controllers\Assistant\NotificationController::class, 'stats']);
+    Route::post('/{id}/read', [App\Http\Controllers\Assistant\NotificationController::class, 'markAsRead']);
+    Route::post('/{id}/archive', [App\Http\Controllers\Assistant\NotificationController::class, 'archive']);
+    Route::post('/read-all', [App\Http\Controllers\Assistant\NotificationController::class, 'markAllAsRead']);
+    Route::post('/archive-all', [App\Http\Controllers\Assistant\NotificationController::class, 'archiveAll']);
+});
         });
+
 
 
 });

@@ -14,7 +14,14 @@ public function index(Event $event): JsonResponse{
     if($event->planner_id!== Auth::id()){
         return response()->json(['message'=>'Forbidden.'],403);
     }
-    $vendors =Vendor::all();
+ $vendors = Vendor::all()->map(function ($vendor) use ($event) {
+        $vendor->order_count = $vendor->orders()
+            ->whereHas('task', fn($q) => $q->where('event_id', $event->id))
+            ->count();
+        return $vendor;
+    });
+
+
     return response()->json([
         'event'=>$event,
         'vendors'=>$vendors,
