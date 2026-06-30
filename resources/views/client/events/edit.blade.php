@@ -3,6 +3,334 @@
 @section('title', 'Edit Event')
 
 @section('content')
+<style>
+:root {
+    --coral: #E19184;
+    --berry: #C63E4E;
+    --vampire: #620607;
+    --cream: #EFE7DA;
+    --white: #FFFFFF;
+    --green: #475B35;
+    --green-dark: #2C3821;
+    --danger: #D0021B;
+    --transition: all 0.3s ease;
+}
+
+body:has(.create-event-container) {
+    background: var(--cream) !important;
+}
+
+.create-event-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px;
+    background: var(--cream) !important;
+    color: var(--green-dark);
+}
+
+.create-header {
+    margin-bottom: 30px;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.create-header .breadcrumb {
+    display: none !important;
+}
+
+.create-header h1 {
+    margin: 0 0 5px 0;
+    margin-left: 40px;
+    color: var(--vampire) !important;
+    font-size: 35px;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+.create-header h1 i {
+    display: none !important;
+}
+
+.create-header p {
+    margin: 0;
+    margin-left: 40px;
+    color: var(--green) !important;
+    font-size: 18px;
+}
+
+.event-form-luxury,
+.form-sections {
+    background: transparent !important;
+}
+
+.form-section {
+    background: var(--white) !important;
+    border: 2px solid var(--cream) !important;
+    border-radius: 16px !important;
+    padding: 30px !important;
+    margin-bottom: 25px;
+    box-shadow: none !important;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 25px;
+    padding: 0 0 15px 0 !important;
+    border-bottom: 2px solid var(--cream) !important;
+}
+
+.section-icon {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--berry) !important;
+    color: var(--white) !important;
+    border-radius: 12px;
+    box-shadow: none !important;
+}
+
+.section-icon i {
+    color: var(--white) !important;
+    font-size: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: var(--vampire) !important;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.section-header p {
+    margin: 5px 0 0 0;
+    color: var(--green) !important;
+    font-size: 13px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: var(--vampire) !important;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--cream) !important;
+    border-radius: 10px !important;
+    background: var(--cream) !important;
+    color: var(--berry) !important;
+    font-size: 15px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.form-group select {
+    min-height: 49px;
+    cursor: pointer;
+}
+
+.form-group textarea {
+    min-height: 105px;
+    resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(71, 91, 53, 0.55) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none !important;
+    border-color: var(--berry) !important;
+    background: var(--white) !important;
+    box-shadow: none !important;
+}
+
+.photo-upload-container {
+    display: grid;
+    gap: 16px;
+}
+
+.current-photo {
+    width: 100%;
+    max-height: 260px;
+    overflow: hidden;
+    border: 2px solid var(--cream);
+    border-radius: 16px;
+    background: var(--cream);
+}
+
+.current-photo img {
+    display: block;
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+}
+
+.photo-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    gap: 8px;
+    padding: 24px;
+    background: var(--cream) !important;
+    border: 2px dashed var(--coral) !important;
+    border-radius: 16px;
+    color: var(--vampire) !important;
+    cursor: pointer;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.photo-upload-label:hover {
+    background: rgba(225, 145, 132, 0.12) !important;
+    border-color: var(--berry) !important;
+}
+
+.photo-upload-label i {
+    color: var(--berry) !important;
+    font-size: 30px;
+}
+
+.photo-upload-label span {
+    color: var(--vampire) !important;
+    font-weight: 700;
+}
+
+.photo-upload-label small {
+    color: var(--green) !important;
+    font-size: 12px;
+}
+
+.photo-upload-container input[type="file"] {
+    display: none;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 25px;
+    background: transparent !important;
+}
+
+.btn-primary-gradient,
+.btn-secondary-gradient {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 30px;
+    border: none !important;
+    border-radius: 30px !important;
+    color: var(--white) !important;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary-gradient {
+    background: var(--berry) !important;
+}
+
+.btn-secondary-gradient {
+    background: var(--green) !important;
+}
+
+.btn-primary-gradient:hover,
+.btn-secondary-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(88, 96, 65, 0.3);
+    color: var(--white) !important;
+}
+
+.btn-primary-gradient:hover {
+    background: var(--vampire) !important;
+}
+
+.btn-secondary-gradient:hover {
+    background: var(--green-dark) !important;
+}
+
+.error-message {
+    color: var(--danger) !important;
+    font-size: 12px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .create-event-container {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        align-items: flex-start;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-primary-gradient,
+    .btn-secondary-gradient {
+        width: 100%;
+    }
+}
+.create-event-container {
+    max-width: 1220px !important;
+    width: min(100%, 1220px) !important;
+}
+
+.create-header,
+.event-form-luxury {
+    width: min(100%, 1120px) !important;
+    max-width: 1020px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+</style>
+
 <div class="create-event-container">
     
     <div class="create-header">

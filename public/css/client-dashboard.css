@@ -706,7 +706,7 @@ body {
 
 .event-status-badge.confirmed {
     background: rgba(126, 211, 33, 0.15);
-    color: #7ED321;
+  
 }
 
 .event-status-badge.declined {
