@@ -2,6 +2,7 @@
      data-event-id="{{ $event->id }}" 
      data-status="{{ $event->status }}"
      data-type="{{ $event->eventType->slug ?? 'other' }}"
+     data-update-url="{{ route('planner.events.status', $event->id) }}"
      draggable="true">
     
     {{-- Card Header with Priority & Type --}}

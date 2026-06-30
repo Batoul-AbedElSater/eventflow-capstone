@@ -259,9 +259,7 @@
 </div>
 
 <style>
-.event-show-magic {
-    padding: 30px;
-}
+
 
 /* Hero Section */
 .event-hero-magic {

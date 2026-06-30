@@ -28,6 +28,291 @@
     border-radius: 8px;
     border: 1px solid #ddd;
 }
+:root {
+    --coral: #E19184;
+    --berry: #C63E4E;
+    --vampire: #620607;
+    --cream: #EFE7DA;
+    --white: #FFFFFF;
+    --green: #475B35;
+    --green-dark: #2C3821;
+}
+
+body:has(.event-show-container) {
+    background: var(--cream) !important;
+    
+}
+
+.event-show-container {
+    background: var(--cream) !important;
+    color: var(--green-dark);
+}
+
+.event-hero-section {
+    background: linear-gradient(135deg, var(--vampire), var(--berry) 58%, var(--coral)) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 18px 42px rgba(98, 6, 7, 0.18);
+}
+
+.hero-overlay {
+    background: linear-gradient(90deg, rgba(98, 6, 7, 0.88), rgba(198, 62, 78, 0.52)) !important;
+}
+
+.breadcrumb,
+.breadcrumb a,
+.event-hero-title {
+    color: var(--white) !important;
+}
+
+.event-stats-bar,
+.overview-card,
+.guests-header-luxury,
+.guests-table-container,
+.messages-container,
+.rating-card,
+.rating-card-luxury,
+.empty-state-small,
+.event-tabs-container {
+    background: white !important;
+
+    border: 1px solid rgba(98, 6, 7, 0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 30px rgba(71, 91, 53, 0.08) !important;
+}
+
+.event-tabs {
+    background: white !important;
+    border-radius: 16px !important;
+    padding: 8px !important;
+}
+
+.event-tab {
+    color: var(--green-dark) !important;
+    background: transparent !important;
+    border-radius: 12px !important;
+}
+
+.event-tab.active {
+    background: var(--berry) !important;
+    color: var(--white) !important;
+}
+
+.stat-icon,
+.card-icon,
+.rating-icon,
+.planner-avatar,
+.guest-avatar-small {
+    background: var(--berry) !important;
+    color: var(--white) !important;
+}
+
+.stat-icon i,
+.card-icon i,
+.rating-icon i {
+    color: var(--white) !important;
+}
+
+.stat-info strong,
+.overview-card h3,
+.guests-header-luxury h3,
+.messages-header h3,
+.rating-header h3,
+.planner-details h4,
+.detail-row strong,
+.budget-item strong,
+.guest-name strong,
+.event-description {
+    color: var(--vampire) !important;
+}
+
+.stat-label,
+.detail-label,
+.budget-label,
+.messages-header p,
+.rating-header p,
+.guest-email,
+.guest-phone,
+.rating-feedback {
+    color: rgba(71, 91, 53, 0.72) !important;
+}
+
+.btn-hero-action,
+.btn-add-guest,
+.btn-send-message,
+.btn-submit-rating,
+.btn-message-planner {
+    background: var(--berry) !important;
+    color: var(--white) !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+}
+
+.btn-primary-gradient{
+    
+    color: var(--green) ;
+    border: 0 !important;
+    border-radius: 14px !important;
+}
+
+.btn-hero-action.edit,
+.btn-export-excel {
+    background: var(--green) !important;
+}
+
+.btn-hero-action.messages,
+.btn-export-pdf {
+    background: var(--coral) !important;
+    color: var(--vampire) !important;
+}
+
+.btn-hero-action.delete,
+.btn-action.delete {
+    background: var(--vampire) !important;
+    color: var(--white) !important;
+}
+
+.meta-badge.type {
+    background: rgba(239, 231, 218, 0.18) !important;
+    color: var(--white) !important;
+}
+
+.meta-badge.status {
+    background: var(--cream) !important;
+    color: var(--vampire) !important;
+}
+
+.budget-progress-bar {
+    background: rgba(239, 231, 218, 0.95) !important;
+}
+
+.budget-progress-fill {
+    background: linear-gradient(90deg, var(--coral), var(--berry)) !important;
+}
+
+.guests-table-luxury thead th {
+    background: var(--green-dark) !important;
+    color: var(--white) !important;
+}
+
+.guests-table-luxury tbody tr {
+    background: rgba(239, 231, 218, 0.35) !important;
+}
+
+.guests-table-luxury tbody tr:hover {
+    background: rgba(225, 145, 132, 0.18) !important;
+}
+
+.messages-box {
+    background: rgba(239, 231, 218, 0.42) !important;
+    border-radius: 16px !important;
+}
+
+.message-form textarea,
+.rating-card textarea {
+    background: rgba(255, 255, 255, 0.72) !important;
+    border: 2px solid rgba(225, 145, 132, 0.32) !important;
+    color: var(--green-dark) !important;
+}
+
+/* Compact event show header */
+.event-hero-section {
+    min-height: 150px !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: linear-gradient(135deg, var(--berry), var(--coral) 100%) !important;
+    border-radius: 24px !important;
+    overflow: hidden;
+    font-family: Georgia, 'Times New Roman', serif;
+    
+}
+
+.event-hero-image,
+.event-hero-placeholder,
+.hero-overlay,
+.event-meta-badges,
+.breadcrumb {
+    display: none !important;
+}
+
+.hero-content {
+    position: relative !important;
+    inset: auto !important;
+    min-height: 150px !important;
+    padding: 34px 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 28px !important;
+}
+
+.event-hero-title {
+    margin: 0 !important;
+    color: var(--white) !important;
+    font-size: clamp(34px, 4vw, 56px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    text-shadow: 0 6px 18px rgba(98, 6, 7, 0.22) !important;
+}
+
+.event-hero-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+}
+
+.event-hero-actions form {
+    margin: 0 !important;
+    display: flex !important;
+}
+
+.btn-hero-action {
+    min-height: 46px !important;
+    padding: 12px 20px !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    color: var(--white) !important;
+    font-weight: 800 !important;
+    box-shadow: 0 8px 18px rgba(98, 6, 7, 0.16) !important;
+}
+
+.btn-hero-action.edit {
+    background: var(--white) !important;
+   color: var(--berry) !important;
+   font-size: 16px !important;
+   border-radius: 50px !important;
+}
+
+.btn-hero-action.messages {
+    background: var(--white) !important;
+    color: var(--berry) !important;
+    font-size: 16px !important;
+     border-radius: 50px !important;
+}
+
+.btn-hero-action.delete {
+    background: var(--white) !important;
+    font-size: 16px !important;
+     color: var(--berry) !important;
+      border-radius: 50px !important;
+}
+
+@media (max-width: 820px) {
+    .hero-content {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        padding: 28px !important;
+    }
+
+    .event-hero-actions {
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+}
+
 </style>
 <div class="event-show-container">
     
@@ -469,6 +754,7 @@
 @endsection
 
 <style>
+    
 .rating-container {
     margin-top: 40px;
 }

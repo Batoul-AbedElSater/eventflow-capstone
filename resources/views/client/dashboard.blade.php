@@ -53,17 +53,33 @@
         @if($events->count() > 0)
             <div class="events-grid-luxury">
                 @foreach($events as $event)
-                    @php
-                        $displayStatus = match($event->status) {
-                            'draft' => 'pending',
-                            'pending' => 'pending',
-                            'confirmed' => 'confirmed',
-                            'in_progress' => 'confirmed',
-                            'completed' => 'confirmed',
-                            'declined' => 'declined',
-                            default => 'pending'
-                        };
-                    @endphp
+                 @php
+                      $rawStatus = strtolower($event->status ?? 'pending');
+
+                     $displayStatus = match($rawStatus) {
+                     'confirmed' => 'confirmed',
+                     'pending' => 'pending',
+                     'in_progress' => 'in_progress',
+                     'completed' => 'completed',
+                     'cancelled' => 'cancelled',
+                     'accepted' => 'accepted',
+                     'planning' => 'planning',
+                     'declined' => 'declined',
+                     default => $rawStatus,
+                     };
+
+    $statusLabel = match($displayStatus) {
+        'confirmed' => 'Confirmed',
+        'pending' => 'Pending',
+        'in_progress' => 'In Progress',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        'accepted' => 'Accepted',
+        'planning' => 'Planning',
+        'declined' => 'declined',
+        default => ucwords(str_replace('_', ' ', $event->status ?? '')),
+    };
+@endphp
               <div class="event-card-luxury {{ $displayStatus === 'pending' ? 'is-pending' : '' }} {{ $displayStatus === 'declined' ? 'is-declined' : '' }}" data-status="{{ $displayStatus }}">
                         {{-- Event Photo --}}
                         <div class="event-photo-container">
@@ -73,36 +89,29 @@
                                 <div class="event-photo-placeholder">
                                     <div class="photo-gradient {{ $event->eventType->name }}">
                                         <div class="photo-icon">
-                                            @if($event->eventType->name === 'Wedding')
-                                                💒
-                                            @elseif($event->eventType->name === 'Birthday')
-                                                🎂
-                                            @elseif($event->eventType->name === 'Corporate')
-                                                💼
-                                            @elseif($event->eventType->name === 'Anniversary')
-                                                💝
-                                            @else
-                                                🎉
-                                            @endif
+                                        @if($event->eventType->name === 'Wedding')
+                                            <img src="{{ asset('images/wedding.jpeg') }}" alt="Wedding" class="event-type-image">
+                                        @elseif($event->eventType->name === 'Birthday')
+                                              <img src="{{ asset('images/birthday.jpeg') }}" alt="Birthday" class="event-type-image">
+                                        @elseif($event->eventType->name === 'Corporate')
+                                             <img src="{{ asset('images/image.png') }}" alt="Corporate" class="event-type-image">
+                                        @elseif($event->eventType->name === 'Anniversary')
+                                            <img src="{{ asset('images/flowers.jpg') }}" alt="anniversary" class="event-type-image">
+                                        @elseif($event->eventType->name=="Gender Reveal")   
+                                            <img src="{{ asset('images/gender.jpeg') }}" alt="gender-reveal" class="event-type-image"> 
+                                         @elseif($event->eventType->name=="Graduation")   
+                                            <img src="{{ asset('images/graduation.jpeg') }}" alt="graduation" class="event-type-image">     
+                                        @else
+                                            <i class="fas fa-party-horn"></i>
+                                        @endif
                                         </div>
                                     </div>
                                 </div>
                             @endif
 
                             {{-- Status Badge on Photo --}}
-                        <div class="event-status-badge-photo {{ $displayStatus }}">
-                            @if($displayStatus === 'pending')
-                                <i class="fas fa-clock"></i> Pending
-                            @elseif($displayStatus === 'confirmed')
-                                <i class="fas fa-check-circle"></i> Confirmed
-                                @if($event->status !== 'confirmed')
-                                    <div class="sub-status-badge {{ $event->status }}">
-                                        {{ ucfirst(str_replace('_', ' ', $event->status)) }}
-                                    </div>
-                                @endif
-                            @elseif($displayStatus === 'declined')
-                                <i class="fas fa-times-circle"></i> Declined
-                            @endif
+                         <div class="event-status-badge-photo {{ $displayStatus }}">
+                            {{ $statusLabel }}
                         </div>
                         </div>
 
@@ -255,6 +264,12 @@
         --amnesiac: #F5F9E5;
         --green: #475B35;
         --green-dark: #2C3821;
+}
+
+.event-type-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
  .hero-elegant {
     position: relative;
@@ -411,20 +426,41 @@
 }
 .event-status-badge-photo {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 8px 18px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 900;
-    backdrop-filter: blur(10px);
+    top: 18px;
+    left: 80%;
+    transform: translateX(-50%);
+    min-width: 128px;
+    height: 42px;
+    padding: 0 18px;
+    border: 2px solid var(--status-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--status-color) 45%, transparent);
     color: white;
-    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: none;
+    z-index: 5;
 }
-.event-status-badge-photo.pending { background: #F5A623; }
-.event-status-badge-photo.confirmed { background: #7ED321; }
-.event-status-badge-photo.declined { background: #D0021B; }
-.event-status-badge-photo i { margin-right: 6px; }
+
+.event-status-badge-photo i,
+.sub-status-badge {
+    display: none !important;
+}
+
+.event-status-badge-photo.confirmed { --status-color: #2196F3; }
+.event-status-badge-photo.in_progress { --status-color: #FF9800; }
+.event-status-badge-photo.completed { --status-color: var(--green); }
+.event-status-badge-photo.cancelled,
+.event-status-badge-photo.canceled { --status-color: #F44336; }
+.event-status-badge-photo.pending { --status-color: var(--coral); }
+.event-status-badge-photo.accepted { --status-color: #009688; }
+.event-status-badge-photo.planning { --status-color: var(--berry); }
+.event-status-badge-photo.declined { --status-color: var(--vampire); }
 
 .event-lock-overlay {
     position: absolute;
@@ -670,33 +706,10 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(225,145,132,0.4);
 }
-
-/* Sub-status badge inside confirmed badge */
 .event-status-badge-photo.confirmed {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 110px;
-    padding: 8px 18px;
-}
-.sub-status-badge {
-    margin-top: 6px;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 20px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    text-transform: capitalize;
-}
-.sub-status-badge.in_progress {
-    background: #f39c12;
-}
-.sub-status-badge.completed {
-    background: #3498db;
-}
-.sub-status-badge.confirmed {
-    background: #27ae60;
+    --status-color: #2196F3 !important;
+    background: color-mix(in srgb, #2196F3 45%, transparent) !important;
+    border-color: #2196F3 !important;
 }
 
 /* Hero section from old file – removed, replaced by .hero-elegant above */

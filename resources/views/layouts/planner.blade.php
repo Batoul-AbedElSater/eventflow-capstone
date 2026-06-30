@@ -483,6 +483,249 @@
     color: #FFD700;
     margin-bottom: 15px;
 }
+
+/* Voice Commander modal theme - paste after the existing modal CSS */
+.voice-commander-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.voice-commander-modal.active {
+    display: flex;
+}
+
+.voice-commander-modal .voice-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+}
+
+.voice-commander-modal .voice-modal-content {
+    position: relative;
+    z-index: 1;
+    width: min(90%, 500px) !important;
+    max-width: 500px !important;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 40px !important;
+    background: var(--cream) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.6);
+    animation: modalSlideUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(100px) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.voice-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 3px solid var(--berry);
+    color: var(--coral);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.voice-close-btn:hover {
+    background: var(--berry);
+    color: var(--white);
+    transform: rotate(90deg);
+}
+
+.voice-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.voice-icon-pulse {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--berry);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: var(--white);
+    position: relative;
+    box-shadow: 0 15px 50px rgba(225, 145, 132, 0.6);
+}
+
+.voice-icon-pulse i {
+    color: var(--white);
+    position: relative;
+    z-index: 2;
+}
+
+.voice-icon-pulse.listening {
+    animation: voicePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 15px 50px rgba(225, 145, 132, 0.6);
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 20px 70px rgba(225, 145, 132, 0.9);
+    }
+}
+
+.pulse-ring {
+    position: absolute;
+    inset: -1px ;
+    border-radius: 60%;
+    border: 4px solid var(--coral);
+    opacity: 0;
+}
+
+.voice-icon-pulse.listening .pulse-ring {
+    animation: pulsateRing 2s ease-out infinite;
+}
+
+.voice-icon-pulse.listening .pulse-ring:nth-child(2) {
+    animation-delay: 1s;
+}
+
+@keyframes pulsateRing {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+}
+
+.voice-header h2 {
+    margin: 0 0 12px;
+    color: var(--vampire);
+    font-family: 'DM Serif Display', 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+#voiceStatus {
+    margin: 0;
+    color: var(--green);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.voice-suggestions {
+    background: rgba(255, 255, 255, 0.36);
+    border: 1px solid rgba(98, 6, 7, 0.08);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.suggestions-title {
+    margin: 0 0 15px;
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.chip {
+    padding: 10px 18px;
+    background: var(--white);
+    border: 2px solid var(--berry);
+    border-radius: 25px;
+    color: var(--vampire);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chip:hover {
+    background: var(--coral);
+    color: var(--white);
+}
+
+.voice-transcript {
+    min-height: 100px;
+    background: var(--white);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: var(--green);
+    font-size: 16px;
+}
+
+.transcript-final {
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.transcript-interim {
+    color: #9B9B9B;
+    font-style: italic;
+}
+
+.btn-voice-toggle {
+    width: 100%;
+    padding: 20px;
+    background: var(--berry);
+    color: var(--white);
+    border: none;
+    border-radius: 30px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(225, 145, 132, 0.5);
+}
+
+.btn-voice-toggle i {
+    color: var(--white);
+}
+
+.btn-voice-toggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(225, 145, 132, 0.7);
+}
+
     </style>
     @stack('styles')
 </head>
@@ -564,7 +807,7 @@
         <div class="voice-modal-content">
             <button class="voice-close-btn" id="voiceCloseBtn"><i class="fas fa-times"></i></button>
             <div class="voice-header">
-                <div class="voice-icon-pulse" id="voiceIconPulse">
+               <div class="voice-icon-pulse listening" id="voiceIconPulse">
                     <div class="pulse-ring"></div><div class="pulse-ring"></div>
                     <i class="fas fa-microphone"></i>
                 </div>
