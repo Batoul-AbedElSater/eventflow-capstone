@@ -8,6 +8,18 @@ class NotificationHelper
 {
     public static function send($userId, $type, $priority, $title, $message, $icon = null, $actionUrl = null)
     {
+        // Respect user's in-app notification preference: if they turned off notifications,
+        // do not create an in-app Notification record. Messages and other data are still saved.
+        try {
+            $userModel = \App\Models\User::find($userId);
+            if ($userModel && $userModel->preferences && isset($userModel->preferences->in_app_notifications) && !$userModel->preferences->in_app_notifications) {
+                // User has disabled in-app notifications
+                return null;
+            }
+        } catch (\Exception $e) {
+            // If anything goes wrong checking preferences, fall back to sending the notification.
+        }
+
         return Notification::create([
             'user_id' => $userId,
             'type' => $type,

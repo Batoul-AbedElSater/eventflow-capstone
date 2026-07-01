@@ -69,7 +69,83 @@
 
         <!-- Main Content Area -->
         <div class="settings-content">
-            @yield('settings-content')
+            <div class="unified-settings">
+                <h2 style="color: #475B35; margin-bottom: 12px;">General Settings</h2>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px;">
+                    <div>
+                        <h4 style="margin:0 0 6px 0;">In-app Notifications</h4>
+                        <p style="margin:0;color:#666;">When turned off, in-app notifications (the pop-ups/alerts) are suppressed — messages and data are still saved and visible in the Messages page.</p>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="in_app_notifications" style="width:36px;height:20px;" {{ (isset($preferences) && isset($preferences->in_app_notifications)) ? ($preferences->in_app_notifications ? 'checked' : '') : 'checked' }} />
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;">
+                    <button id="exportDataBtn" class="menu-item" style="padding:12px 18px;">⬇ Download my data</button>
+
+                    <form id="logoutForm" method="POST" action="{{ route('logout') }}" style="display:inline">
+                        @csrf
+                        <button type="submit" class="menu-item" style="padding:12px 18px;">🔒 Logout</button>
+                    </form>
+
+                    <button id="deleteAccountBtn" class="menu-item delete-account" style="padding:12px 18px;">🗑 Delete account</button>
+                </div>
+
+                <script>
+                    (function(){
+                        const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                        const csrf = tokenMeta ? tokenMeta.getAttribute('content') : '';
+
+                        document.getElementById('in_app_notifications').addEventListener('change', async function(){
+                            const enabled = this.checked ? 1 : 0;
+                            try{
+                                const res = await fetch('{{ route("client.settings.notifications.update") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': csrf
+                                    },
+                                    body: JSON.stringify({ in_app_notifications: enabled })
+                                });
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.message || 'Failed');
+                                // small inline confirmation
+                                const el = document.createElement('div');
+                                el.textContent = data.message || 'Saved';
+                                el.style.position = 'fixed'; el.style.bottom = '24px'; el.style.right = '24px'; el.style.background = '#fff'; el.style.padding = '10px 14px'; el.style.border = '1px solid #ddd'; el.style.borderRadius = '8px';
+                                document.body.appendChild(el);
+                                setTimeout(()=>el.remove(),2200);
+                            }catch(e){
+                                alert('Could not save preference: ' + (e.message||e));
+                            }
+                        });
+
+                        document.getElementById('exportDataBtn').addEventListener('click', function(){
+                            window.location.href = '{{ route("client.settings.export") }}';
+                        });
+
+                        document.getElementById('deleteAccountBtn').addEventListener('click', function(){
+                            if (!confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) return;
+
+                            const passwd = prompt('To confirm account deletion please enter your password:');
+                            if (!passwd) { alert('Password required to delete account'); return; }
+
+                            fetch('{{ route("client.settings.delete") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrf
+                                },
+                                body: JSON.stringify({ confirmation: true, password: passwd })
+                            }).then(r=>r.json()).then(j=>{
+                                if (j.success) window.location.href = '{{ route("home") }}'; else alert(j.message||'Failed');
+                            }).catch(e=>alert('Failed to delete account'));
+                        });
+                    })();
+                </script>
+            </div>
         </div>
     </div>
 </div>
