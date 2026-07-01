@@ -694,24 +694,36 @@ body {
     text-transform: uppercase;
 }
 
-.event-status-badge.draft {
-    background: rgba(149, 165, 166, 0.15);
-    color: #95A5A6;
-}
-
-.event-status-badge.pending {
-    background: rgba(245, 166, 35, 0.15);
-    color: #F5A623;
-}
-
 .event-status-badge.confirmed {
-    background: rgba(126, 211, 33, 0.15);
-  
+    background: color-mix(in srgb, #2196F3 45%, transparent) !important;
+    border: 2px solid #2196F3 !important;
+    color: white !important;
+}
+
+.event-status-badge.in_progress {
+    background: color-mix(in srgb, #FF9800 45%, transparent) !important;
+    border: 2px solid #FF9800 !important;
+    color: white !important;
+}
+
+.event-status-badge.completed,
+.event-status-badge.done {
+    background: color-mix(in srgb, var(--green) 45%, transparent) !important;
+    border: 2px solid var(--green) !important;
+    color: white !important;
+}
+
+.event-status-badge.cancelled,
+.event-status-badge.canceled {
+    background: color-mix(in srgb, #F44336 45%, transparent) !important;
+    border: 2px solid #F44336 !important;
+    color: white !important;
 }
 
 .event-status-badge.declined {
-    background: rgba(208, 2, 27, 0.15);
-    color: #D0021B;
+    background: color-mix(in srgb, var(--vampire) 45%, transparent) !important;
+    border: 2px solid var(--vampire) !important;
+    color: white !important;
 }
 
 .event-card {
