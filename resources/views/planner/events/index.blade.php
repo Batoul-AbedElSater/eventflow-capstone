@@ -318,4 +318,111 @@
     });
 </script>
 <script src="{{ asset('js/planner-events.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+{{-- your sortable drag/drop script --}}
+
+<script src="{{ asset('js/planner-events.js') }}"></script>
+
+{{-- your custom functional calendar script goes AFTER planner-events.js --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarGrid = document.getElementById('calendarGrid');
+    const currentMonthTitle = document.getElementById('currentMonth');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    const calendarButton = document.querySelector('[data-view="calendar"]');
+
+    if (!calendarGrid || !currentMonthTitle || !prevMonthBtn || !nextMonthBtn) return;
+
+    const calendarUrl = @json(route('planner.monthly-calendar.index'));
+    let activeDate = new Date();
+
+    function monthParam(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function statusClass(status) {
+        return String(status || 'default').toLowerCase().replaceAll('-', '_').replaceAll(' ', '_');
+    }
+
+    async function loadCalendar() {
+        calendarGrid.innerHTML = '<div class="calendar-loading">Loading calendar...</div>';
+
+        try {
+            const response = await fetch(`${calendarUrl}?month=${monthParam(activeDate)}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Calendar could not load');
+            }
+
+            renderCalendar(result.data);
+        } catch (error) {
+            console.error(error);
+            calendarGrid.innerHTML = '<div class="calendar-error">Calendar could not load</div>';
+        }
+    }
+
+    function renderCalendar(data) {
+        currentMonthTitle.textContent = `${data.month_name} ${data.year}`;
+
+        const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        calendarGrid.innerHTML = `
+            ${weekDays.map(day => `<div class="calendar-weekday">${day}</div>`).join('')}
+            ${data.calendar_days.map(day => {
+                const level = Math.min(day.events_count, 4);
+
+                const events = (day.events || []).map(event => `
+                    <a class="calendar-event-chip ${statusClass(event.status)}"
+                       href="${event.url}"
+                       title="${event.full_name}"
+                       style="--event-color:${event.color}">
+                        <span class="calendar-event-chip-dot"></span>
+                        <span class="calendar-event-chip-text">${event.name}</span>
+                    </a>
+                `).join('');
+
+                return `
+                    <div class="calendar-day-luxury level-${level}
+                                ${day.is_today ? 'is-today' : ''}
+                                ${day.is_current_month ? '' : 'is-outside-month'}">
+                        <div class="calendar-day-number">${Number(day.day_number)}</div>
+
+                        <div class="calendar-day-events-list">
+                            ${events}
+                            ${day.more_count > 0 ? `<span class="calendar-more-count">+${day.more_count} more</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        `;
+    }
+
+    prevMonthBtn.addEventListener('click', function () {
+        activeDate.setMonth(activeDate.getMonth() - 1);
+        loadCalendar();
+    });
+
+    nextMonthBtn.addEventListener('click', function () {
+        activeDate.setMonth(activeDate.getMonth() + 1);
+        loadCalendar();
+    });
+
+    calendarButton?.addEventListener('click', function () {
+        setTimeout(loadCalendar, 50);
+    });
+
+    setTimeout(loadCalendar, 100);
+});
+</script>
+
 @endpush

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Assistant\AssistantController;
+use App\Http\Controllers\Planner\MonthlyCalendarController;
 use App\Http\Controllers\Planner\TaskController;
 
 // ============================================
@@ -50,6 +51,9 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
     Route::post('/requests/{id}/accept', [App\Http\Controllers\Planner\EventRequestController::class, 'accept'])->name('requests.accept');
     Route::post('/requests/{id}/decline', [App\Http\Controllers\Planner\EventRequestController::class, 'decline'])->name('requests.decline');
 
+
+    Route::get('/monthly-calendar', [MonthlyCalendarController::class, 'index'])
+    ->name('monthly-calendar.index');
     // Vendor Routes
     Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function () {
         Route::get('/', [App\Http\Controllers\Planner\VendorController::class, 'index'])->name('index');
