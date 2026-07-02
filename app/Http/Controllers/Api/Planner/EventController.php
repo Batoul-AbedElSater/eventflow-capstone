@@ -23,6 +23,7 @@ class EventController extends Controller
 
             $events = Event::where('planner_id', $plannerId)
                 ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
+                ->where('is_archived',false)
                 ->with(['client:id,name,email', 'eventType:id,name'])
                 ->orderBy('start_date', 'desc')
                 ->get()
@@ -280,5 +281,86 @@ class EventController extends Controller
                         return ['date' => $item->date, 'revenue' => $item->revenue];
                     });
         }
+    }
+
+    // archive event
+    public function archive(Request $request,$id){
+        try{
+            $event=Event::where('planner_id',$request->user()->id)->findOrFail($id);
+            $event->update(['is_archived'=>true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Event archived',
+        ]);
+        }
+        catch (\Exception $e) {
+        Log::error('API Planner event archive error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to archive event',
+        ], 500);
+    }
+    }
+
+    // unarchive event
+    public function unarchive(Request $request,$id){
+        try{
+            $event=Event::where('planner_id',$request->user()->id)->findOrFail($id);
+            $event->update(['is_archived'=>false]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Event unarchived',
+        ]);
+        }
+        catch (\Exception $e) {
+        Log::error('API Planner event unarchive error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to unarchive event',
+        ], 500);
+    }
+    }
+
+    // get archived events
+
+    public function getArchivedEvents(Request $request){
+        try{
+            $plannerId=$request->user()->id;
+             $events = Event::where('planner_id', $plannerId)
+            ->where('is_archived', true)
+            ->with(['client:id,name,email', 'eventType:id,name'])
+            ->orderBy('start_date', 'desc')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'client_name' => $event->client->name ?? 'N/A',
+                    'event_type' => $event->eventType->name ?? 'N/A',
+                    'start_date' => $event->start_date->format('Y-m-d'),
+                    'start_date_iso' => $event->start_date->toISOString(),
+                    'location' => $event->location_text,
+                    'guest_estimate' => $event->guest_estimate,
+                    'budget' => $event->budget_overall,
+                    'status' => $event->status,
+                    'description' => $event->description,
+                ];
+            });
+            return response()->json([
+            'success' => true,
+            'data' => [
+                'events' => $events,
+            ]
+        ]);
+        }
+        catch (\Exception $e) {
+        Log::error('API Planner archived events error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to load archived events',
+        ], 500);
+    }
     }
 }
