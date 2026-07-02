@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\RsvpController;
 use App\Http\Controllers\Api\Client\MessageController;
 use App\Http\Controllers\Api\Client\NotificationController;
 use App\Http\Controllers\Api\Planner\DashboardController as PlannerDashboardController;
+use App\Http\Controllers\Api\Planner\EventController as PlannerEventController;
 use App\Http\Controllers\Api\Planner\EventRequestController;
 use App\Http\Controllers\Api\Planner\VendorController as VendorController;
 use App\Http\Controllers\Planner\AnalyticsController;
@@ -114,11 +115,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('events/{event}/vendors/{vendor}/favorite', [VendorController::class, 'removeFavorite']);
 
     // event controller
-    Route::get('/events', [App\Http\Controllers\Api\Planner\EventController::class, 'index']);
-    Route::get('/events/{event}', [App\Http\Controllers\Api\Planner\EventController::class, 'show']);
-    Route::put('/events/{event}/status', [App\Http\Controllers\Api\Planner\EventController::class, 'updateStatus']);
-    Route::delete('/events/{event}', [App\Http\Controllers\Api\Planner\EventController::class, 'destroy']);
-    Route::get('/events/analytics', [App\Http\Controllers\Api\Planner\EventController::class, 'analytics']);
+
+    Route::get('/events', [PlannerEventController::class, 'index']);
+   Route::get('/events/archived',[PlannerEventController::class,'getArchivedEvents']);
+    Route::get('/events/{event}', [PlannerEventController::class, 'show']);
+     Route::put('/events/{event}/status', [PlannerEventController::class, 'updateStatus']);
+Route::post('/events/{event}/archive', [PlannerEventController::class, 'archive']);
+Route::post('/events/{event}/unarchive', [PlannerEventController::class, 'unarchive']);
+     Route::delete('/events/{event}', [PlannerEventController::class, 'destroy']);
+    Route::get('/events/analytics', [PlannerEventController::class, 'analytics']);
 
     Route::get('/events/{event}/tasks', [App\Http\Controllers\Api\Planner\TaskController::class, 'index']);
     Route::post('/events/{event}/tasks', [App\Http\Controllers\Api\Planner\TaskController::class, 'store']);

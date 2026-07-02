@@ -29,6 +29,7 @@ class Event extends Model
         'event_photo',
         'cancelled_at',
         'completed_at',
+        'is_archived',
     ];
 
 
@@ -43,6 +44,7 @@ class Event extends Model
         'budget_overall' => 'decimal:2',
         'cancelled_at' => 'datetime',
         'completed_at' => 'datetime',
+        'is_archived'=>'boolean',
     ];
 
     // ========================================
