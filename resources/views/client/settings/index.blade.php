@@ -1,291 +1,577 @@
 @extends('layouts.client')
 
 @section('content')
-<div class="settings-wrapper">
-    <!-- Luxury Navigation Bar -->
-    <nav class="settings-navbar">
-        <div class="settings-header">
-            <h1 class="settings-title" style="color: #475B35;">Settings & Preferences</h1>
-            <p class="settings-subtitle">Manage your account and customize your experience</p>
-        </div>
-    </nav>
+<div class="settings-shell">
+    <div class="settings-grid">
 
-    <div class="settings-container">
-        <!-- Left Sidebar Navigation -->
-        <div class="settings-sidebar">
-            <div class="sidebar-menu">
-                <a href="{{ route('client.settings.account') }}" class="menu-item active">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <span>Account</span>
-                </a>
+        <section class="settings-card settings-card-header">
+            <span class="settings-chip">Client Settings</span>
+            <h1>Client Settings</h1>
+            <p>
+                Manage your notifications, account security, and personal preferences
+                from one elegant dashboard designed to give you complete control over
+                your event planning experience.
+            </p>
+        </section>
 
-                <a href="{{ route('client.settings.notifications') }}" class="menu-item">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                    </svg>
-                    <span>Notifications</span>
-                </a>
+        <section class="settings-card settings-card-panel settings-card-notification">
+            <div class="card-row">
+                <div>
+                    <span class="panel-tag">Notifications</span>
+                    <h2>In-app alerts</h2>
+                </div>
 
-                <a href="{{ route('client.settings.privacy') }}" class="menu-item">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                    <span>Privacy</span>
-                </a>
+                <label class="toggle-wrap">
+                    <input
+                        type="checkbox"
+                        id="in_app_notifications"
+                        {{ (isset($preferences) && isset($preferences->in_app_notifications))
+                            ? ($preferences->in_app_notifications ? 'checked' : '')
+                            : 'checked' }}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
 
-                <a href="{{ route('client.settings.appearance') }}" class="menu-item">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                    </svg>
-                    <span>Appearance</span>
-                </a>
+            <p class="panel-copy">
+                Enable or disable client notifications instantly.
+                Your preference is saved automatically, and if an update
+                fails the switch will safely return to its previous state.
+            </p>
+        </section>
 
-                <a href="{{ route('client.settings.preferences') }}" class="menu-item">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                    </svg>
-                    <span>Preferences</span>
-                </a>
+        <section class="settings-card settings-card-panel settings-card-actions">
 
-                <div class="sidebar-divider"></div>
+            <div class="card-row">
+                <div>
+                    <span class="panel-tag">Account</span>
+                    <h2>Account actions</h2>
+                </div>
+            </div>
 
-                <a href="{{ route('client.settings.export') }}" class="menu-item">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0 0L7 9m5-5l5 5"></path>
-                    </svg>
-                    <span>Download Data</span>
-                </a>
+            <div class="account-actions">
 
-                <button class="menu-item delete-account" data-action="deleteAccount">
-                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    <span>Delete Account</span>
+              
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="button button-secondary">
+                        Logout
+                    </button>
+                </form>
+
+                <button
+                    id="deleteAccountBtn"
+                    class="button button-danger">
+                    Delete Account
                 </button>
+
             </div>
-        </div>
 
-        <!-- Main Content Area -->
-        <div class="settings-content">
-            <div class="unified-settings">
-                <h2 style="color: #475B35; margin-bottom: 12px;">General Settings</h2>
+            <p class="panel-copy">
+                Sign out securely or permanently delete your client
+                account after confirmation.
+            </p>
 
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px;">
-                    <div>
-                        <h4 style="margin:0 0 6px 0;">In-app Notifications</h4>
-                        <p style="margin:0;color:#666;">When turned off, in-app notifications (the pop-ups/alerts) are suppressed — messages and data are still saved and visible in the Messages page.</p>
-                    </div>
-                    <div>
-                        <input type="checkbox" id="in_app_notifications" style="width:36px;height:20px;" {{ (isset($preferences) && isset($preferences->in_app_notifications)) ? ($preferences->in_app_notifications ? 'checked' : '') : 'checked' }} />
-                    </div>
-                </div>
+        </section>
 
-                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;">
-                    <button id="exportDataBtn" class="menu-item" style="padding:12px 18px;">⬇ Download my data</button>
-
-                    <form id="logoutForm" method="POST" action="{{ route('logout') }}" style="display:inline">
-                        @csrf
-                        <button type="submit" class="menu-item" style="padding:12px 18px;">🔒 Logout</button>
-                    </form>
-
-                    <button id="deleteAccountBtn" class="menu-item delete-account" style="padding:12px 18px;">🗑 Delete account</button>
-                </div>
-
-                <script>
-                    (function(){
-                        const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-                        const csrf = tokenMeta ? tokenMeta.getAttribute('content') : '';
-
-                        document.getElementById('in_app_notifications').addEventListener('change', async function(){
-                            const enabled = this.checked ? 1 : 0;
-                            try{
-                                const res = await fetch('{{ route("client.settings.notifications.update") }}', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': csrf
-                                    },
-                                    body: JSON.stringify({ in_app_notifications: enabled })
-                                });
-                                const data = await res.json();
-                                if (!res.ok) throw new Error(data.message || 'Failed');
-                                // small inline confirmation
-                                const el = document.createElement('div');
-                                el.textContent = data.message || 'Saved';
-                                el.style.position = 'fixed'; el.style.bottom = '24px'; el.style.right = '24px'; el.style.background = '#fff'; el.style.padding = '10px 14px'; el.style.border = '1px solid #ddd'; el.style.borderRadius = '8px';
-                                document.body.appendChild(el);
-                                setTimeout(()=>el.remove(),2200);
-                            }catch(e){
-                                alert('Could not save preference: ' + (e.message||e));
-                            }
-                        });
-
-                        document.getElementById('exportDataBtn').addEventListener('click', function(){
-                            window.location.href = '{{ route("client.settings.export") }}';
-                        });
-
-                        document.getElementById('deleteAccountBtn').addEventListener('click', function(){
-                            if (!confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) return;
-
-                            const passwd = prompt('To confirm account deletion please enter your password:');
-                            if (!passwd) { alert('Password required to delete account'); return; }
-
-                            fetch('{{ route("client.settings.delete") }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': csrf
-                                },
-                                body: JSON.stringify({ confirmation: true, password: passwd })
-                            }).then(r=>r.json()).then(j=>{
-                                if (j.success) window.location.href = '{{ route("home") }}'; else alert(j.message||'Failed');
-                            }).catch(e=>alert('Failed to delete account'));
-                        });
-                    })();
-                </script>
-            </div>
-        </div>
     </div>
 </div>
 
+<script>
+(function(){
+
+    const csrf =
+        document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') || '';
+
+    const toggle =
+        document.getElementById('in_app_notifications');
+
+    let previousValue = toggle.checked;
+
+    function toast(message, error = false){
+
+        const toast = document.createElement('div');
+
+        toast.className =
+            'toast ' +
+            (error ? 'toast-error' : 'toast-success');
+
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        },3200);
+    }
+
+    async function savePreference(value){
+
+        try{
+
+            const response = await fetch(
+                '{{ route("client.settings.notifications.update") }}',
+                {
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'Accept':'application/json',
+                        'X-CSRF-TOKEN':csrf
+                    },
+                    body:JSON.stringify({
+                        in_app_notifications:value
+                    })
+                }
+            );
+
+            let data = {};
+
+            try{
+                data = await response.json();
+            }catch(e){}
+
+            if(!response.ok){
+                throw new Error(
+                    data.message || 'Unable to save preferences.'
+                );
+            }
+
+            previousValue = value;
+
+            toast(
+                data.message || 'Preferences saved successfully.'
+            );
+
+        }catch(error){
+
+            toggle.checked = previousValue;
+
+            toast(
+                error.message || 'Save failed.',
+                true
+            );
+
+        }
+
+    }
+
+    toggle.addEventListener('change',function(){
+        savePreference(this.checked);
+    });
+
+    document
+        .getElementById('deleteAccountBtn')
+        .addEventListener('click', async ()=>{
+
+            if(!confirm(
+                'Are you sure you want to permanently delete your account?'
+            )){
+                return;
+            }
+
+            const password = prompt(
+                'Enter your password to continue:'
+            );
+
+            if(!password){
+                return;
+            }
+
+            try{
+
+                const response = await fetch(
+                    '{{ route("client.settings.delete") }}',
+                    {
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json',
+                            'Accept':'application/json',
+                            'X-CSRF-TOKEN':csrf
+                        },
+                        body:JSON.stringify({
+                            confirmation:true,
+                            password:password
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if(!response.ok){
+                    throw new Error(
+                        data.message || 'Delete failed.'
+                    );
+                }
+
+                window.location =
+                    '{{ url("/") }}';
+
+            }catch(error){
+
+                toast(
+                    error.message || 'Delete failed.',
+                    true
+                );
+
+            }
+
+        });
+
+})();
+</script>
+
 <style>
-    :root {
-        --garden-green: #475B35;
-        --amnesiac-white: #F5F9E5;
-        --coral-haze: #E19184;
-        --calypso-berry: #C63E4E;
-        --vampire-hunter: #620607;
-        --cream: #EFE7DA;
+    :root{
+    --bg:#F8F4EE;
+    --surface:rgba(255,255,255,.96);
+    --border:rgba(98,6,7,.14);
+    --text:#1C2230;
+    --muted:#5F6A72;
+    --accent:#C63E4E;
+    --accent-soft:rgba(198,62,78,.12);
+    --success:#4B6F42;
+    --danger:#620607;
+}
+
+.settings-shell{
+    max-width:1140px;
+    margin:0 auto;
+    padding:48px 30px 80px;
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+}
+
+.settings-grid{
+    display:grid;
+    gap:24px;
+}
+
+.settings-card{
+    border-radius:32px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    box-shadow:0 26px 78px rgba(98,6,7,.08);
+}
+
+.settings-card-header{
+    padding:38px 34px;
+    background:linear-gradient(180deg,
+        rgba(255,250,245,.96),
+        rgba(238,224,214,.96));
+}
+
+.settings-chip{
+    display:inline-flex;
+    padding:10px 16px;
+    border-radius:999px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-weight:800;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-size:.8rem;
+}
+
+.settings-card-header h1{
+    margin:22px 0 14px;
+    font-size:2.8rem;
+    line-height:1.05;
+}
+
+.settings-card-header p{
+    margin:0;
+    color:var(--muted);
+    line-height:1.9;
+    max-width:720px;
+}
+
+.settings-card-panel{
+    padding:32px;
+    display:grid;
+    gap:20px;
+}
+
+.card-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.panel-tag{
+    display:inline-flex;
+    padding:10px 14px;
+    border-radius:999px;
+    background:rgba(91,112,81,.1);
+    color:#3B5A40;
+    font-weight:700;
+    font-size:.82rem;
+    text-transform:uppercase;
+}
+
+.settings-card-panel h2{
+    margin:12px 0 0;
+    font-size:1.7rem;
+}
+
+.panel-copy{
+    margin:0;
+    color:var(--muted);
+    line-height:1.85;
+}
+
+.toggle-wrap{
+    position:relative;
+    width:122px;
+    height:56px;
+}
+
+.toggle-wrap input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.toggle-slider{
+    position:absolute;
+    inset:0;
+    border-radius:999px;
+    background:linear-gradient(
+        90deg,
+        rgba(91,112,81,.08),
+        rgba(198,62,78,.08)
+    );
+    box-shadow:inset 0 10px 30px rgba(98,6,7,.06);
+    transition:background .3s ease;
+}
+
+.toggle-slider::before{
+    content:'';
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 16px 40px rgba(28,34,48,.12);
+    transition:transform .3s ease;
+}
+
+.toggle-wrap input:checked + .toggle-slider{
+    background:linear-gradient(
+        135deg,
+        var(--accent),
+        #E19184
+    );
+}
+
+.toggle-wrap input:checked + .toggle-slider::before{
+    transform:translateX(56px);
+}
+
+.account-actions{
+    display:grid;
+    gap:16px;
+    margin-top:18px;
+}
+
+.button{
+    width:100%;
+    border:none;
+    border-radius:18px;
+    padding:16px 18px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:1rem;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.button:hover{
+    transform:translateY(-1px);
+}
+
+.button-primary{
+    background:linear-gradient(
+        135deg,
+        var(--accent),
+        #E19184
+    );
+    color:#fff;
+    box-shadow:0 18px 46px rgba(198,62,78,.18);
+}
+
+.button-secondary{
+    background:#fff;
+    color:var(--text);
+    border:1px solid rgba(98,6,7,.12);
+    box-shadow:0 18px 46px rgba(98,6,7,.08);
+}
+
+.button-danger{
+    background:linear-gradient(
+        135deg,
+        var(--danger),
+        #A22430
+    );
+    color:#fff;
+    box-shadow:0 18px 46px rgba(98,6,7,.18);
+}
+.toast{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    padding:14px 18px;
+    border-radius:16px;
+    color:#fff;
+    box-shadow:0 18px 40px rgba(15,23,42,.16);
+    z-index:9999;
+    animation:fadeIn .25s ease;
+}
+
+.toast-success{
+    background:linear-gradient(135deg,var(--success),#2D4F32);
+}
+
+.toast-error{
+    background:linear-gradient(135deg,var(--accent),var(--danger));
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(12px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.settings-card{
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.settings-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 34px 90px rgba(98,6,7,.10);
+}
+
+.button-primary:hover{
+    box-shadow:0 22px 54px rgba(198,62,78,.22);
+}
+
+.button-danger:hover{
+    box-shadow:0 22px 54px rgba(98,6,7,.22);
+}
+
+.button-secondary:hover{
+    background:#fafafa;
+}
+
+.button:active{
+    transform:scale(.98);
+}
+
+.settings-card-header,
+.settings-card-panel{
+    overflow:hidden;
+}
+
+.settings-card-panel::after{
+    content:"";
+    display:block;
+    width:100%;
+    height:1px;
+    margin-top:4px;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(198,62,78,.08),
+        transparent
+    );
+}
+
+@media (max-width:980px){
+
+    .settings-shell{
+        padding:36px 20px 60px;
     }
 
-    .settings-wrapper {
-        min-height: 100vh;
-        background: linear-gradient(135deg, var(--amnesiac-white) 0%, var(--cream) 100%);
+    .settings-grid{
+        display:grid;
+        gap:20px;
     }
 
-    .settings-navbar {
-        background: var(--coral-haze);
-        color: white;
-        padding: 40px;
-        box-shadow: 0 10px 30px rgba(71, 91, 53, 0.15);
+    .settings-card-header h1{
+        font-size:2.3rem;
     }
 
-    .settings-header {
-        max-width: 1400px;
-        margin: 0 auto;
+    .card-row{
+        flex-direction:column;
+        align-items:flex-start;
     }
 
-    .settings-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 48px;
-        font-weight: 900;
-        margin-bottom: 8px;
-        letter-spacing: -1px;
+    .toggle-wrap{
+        margin-top:10px;
     }
 
-    .settings-subtitle {
-        font-size: 16px;
-        opacity: 0.9;
+    .button{
+        font-size:.95rem;
     }
 
-    .settings-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 40px;
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 40px;
+}
+
+@media (max-width:600px){
+
+    .settings-shell{
+        padding:28px 16px 50px;
     }
 
-    .settings-sidebar {
-        position: sticky;
-        top: 100px;
-        height: fit-content;
+    .settings-card{
+        border-radius:24px;
     }
 
-    .sidebar-menu {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(71, 91, 53, 0.08);
+    .settings-card-header{
+        padding:28px 24px;
     }
 
-    .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px 20px;
-        color: #555;
-        text-decoration: none;
-        border-left: 4px solid transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: none;
-        background: none;
-        width: 100%;
-        font-size: 14px;
-        font-weight: 500;
+    .settings-card-panel{
+        padding:24px;
     }
 
-    .menu-item:hover {
-        background: var(--amnesiac-white);
-        color: var(--calypso-berry);
-        border-left-color: var(--coral-haze);
+    .settings-card-header h1{
+        font-size:2rem;
     }
 
-    .menu-item.active {
-        background: linear-gradient(90deg, var(--coral-haze) 0%, var(--calypso-berry) 100%);
-        color: white;
-        border-left-color: white;
+    .settings-chip,
+    .panel-tag{
+        font-size:.72rem;
     }
 
-    .menu-icon {
-        width: 20px;
-        height: 20px;
+    .toggle-wrap{
+        width:110px;
+        height:52px;
     }
 
-    .sidebar-divider {
-        height: 1px;
-        background: #eee;
-        margin: 8px 0;
+    .toggle-slider::before{
+        width:32px;
+        height:32px;
+        top:10px;
+        left:10px;
     }
 
-    .delete-account {
-        color: var(--vampire-hunter);
+    .toggle-wrap input:checked + .toggle-slider::before{
+        transform:translateX(48px);
     }
 
-    .delete-account:hover {
-        background: #fee;
-    }
-
-    .settings-content {
-        background: white;
-        border-radius: 16px;
-        padding: 40px;
-        box-shadow: 0 4px 20px rgba(71, 91, 53, 0.08);
-    }
-
-    @media (max-width: 1024px) {
-        .settings-container {
-            grid-template-columns: 1fr;
-        }
-
-        .settings-sidebar {
-            position: static;
-        }
-
-        .sidebar-menu {
-            display: flex;
-            overflow-x: auto;
-            border-radius: 12px;
-        }
-
-        .menu-item {
-            white-space: nowrap;
-            flex: 0 0 auto;
-        }
-    }
+}
 </style>
 @endsection

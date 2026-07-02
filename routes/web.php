@@ -74,6 +74,8 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
     Route::get('/events/analytics', [App\Http\Controllers\Planner\EventController::class, 'analytics'])->name('events.analytics');
     Route::put('/events/{event}/status', [App\Http\Controllers\Planner\EventController::class, 'updateStatus'])->name('events.status');
 
+    // Monthly Calendar
+    Route::get('/monthly-calendar', [App\Http\Controllers\Planner\MonthlyCalendarController::class, 'index'])->name('monthly-calendar.index');
 
     // TASKS - ADD THESE ROUTES
     Route::prefix('tasks')->name('tasks.')->group(function () {
@@ -133,21 +135,39 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
     Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
 
     // New simplified settings endpoints for planners (NewSettings branch)
-    Route::get('/settings/unified', [App\Http\Controllers\Planner\SettingsController::class, 'index'])->name('planner.settings.index');
-    Route::post('/settings/notifications', [App\Http\Controllers\Planner\SettingsController::class, 'updateNotifications'])->name('planner.settings.notifications.update');
-    Route::get('/settings/export', [App\Http\Controllers\Planner\SettingsController::class, 'exportData'])->name('planner.settings.export');
-    Route::post('/settings/delete', [App\Http\Controllers\Planner\SettingsController::class, 'deleteAccount'])->name('planner.settings.delete');
+    Route::get('/settings/unified', [App\Http\Controllers\Planner\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/notifications', [App\Http\Controllers\Planner\SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::get('/settings/export', [App\Http\Controllers\Planner\SettingsController::class, 'exportData'])->name('settings.export');
+    Route::post('/settings/delete', [App\Http\Controllers\Planner\SettingsController::class, 'deleteAccount'])->name('settings.delete');
 
 });
 
 Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assistant'])->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Assistant\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Assistant\AssistantController::class, 'dashboard'])->name('dashboard');
+    Route::get('/tasks', [App\Http\Controllers\Assistant\AssistantController::class, 'tasks'])->name('tasks');
+    Route::get('/tasks/{task}/vendors', [App\Http\Controllers\Assistant\AssistantController::class, 'taskVendors'])->name('tasks.vendors');
+    Route::patch('/tasks/{task}/complete', [App\Http\Controllers\Assistant\AssistantController::class, 'completeTask'])->name('tasks.complete');
+    Route::get('/tasks/{task}/vendors/{vendor}', [App\Http\Controllers\Assistant\AssistantController::class, 'vendorShow'])->name('vendor.show');
+    Route::get('/tasks/{task}/vendors/{vendor}/order', [App\Http\Controllers\Assistant\AssistantController::class, 'orderForm'])->name('vendor.order');
+    Route::post('/tasks/{task}/vendors/{vendor}/order', [App\Http\Controllers\Assistant\AssistantController::class, 'submitOrder'])->name('vendor.order.submit');
+    Route::get('/orders', [App\Http\Controllers\Assistant\AssistantController::class, 'myOrders'])->name('orders');
+    Route::post('/orders/{order}/delete', [App\Http\Controllers\Assistant\AssistantController::class, 'deleteOrder'])->name('orders.delete');
+
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Assistant\NotificationController::class, 'index'])->name('index');
+        Route::post('/{id}/read', [App\Http\Controllers\Assistant\NotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/{id}/archive', [App\Http\Controllers\Assistant\NotificationController::class, 'archive'])->name('archive');
+        Route::post('/read-all', [App\Http\Controllers\Assistant\NotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::post('/archive-all', [App\Http\Controllers\Assistant\NotificationController::class, 'archiveAll'])->name('archive-all');
+        Route::get('/stats', [App\Http\Controllers\Assistant\NotificationController::class, 'stats'])->name('stats');
+    });
 
     // New simplified settings endpoints for assistants (NewSettings branch)
-    Route::get('/settings/unified', [App\Http\Controllers\Assistant\SettingsController::class, 'index'])->name('assistant.settings.index');
-    Route::post('/settings/notifications', [App\Http\Controllers\Assistant\SettingsController::class, 'updateNotifications'])->name('assistant.settings.notifications.update');
-    Route::get('/settings/export', [App\Http\Controllers\Assistant\SettingsController::class, 'exportData'])->name('assistant.settings.export');
-    Route::post('/settings/delete', [App\Http\Controllers\Assistant\SettingsController::class, 'deleteAccount'])->name('assistant.settings.delete');
+    Route::get('/settings/unified', [App\Http\Controllers\Assistant\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/notifications', [App\Http\Controllers\Assistant\SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::get('/settings/export', [App\Http\Controllers\Assistant\SettingsController::class, 'exportData'])->name('settings.export');
+    Route::post('/settings/delete', [App\Http\Controllers\Assistant\SettingsController::class, 'deleteAccount'])->name('settings.delete');
 });
 
 // ============================================
@@ -224,10 +244,10 @@ Route::post('/events/{event}/rating', [App\Http\Controllers\Client\EventControll
     Route::put('/settings', [App\Http\Controllers\Client\ProfileController::class, 'updateSettings'])->name('settings.update');
 
     // New simplified settings endpoints (used by NewSettings branch)
-    Route::get('/settings/unified', [App\Http\Controllers\Client\SettingsController::class, 'index'])->name('client.settings.index');
-    Route::post('/settings/notifications', [App\Http\Controllers\Client\SettingsController::class, 'updateNotifications'])->name('client.settings.notifications.update');
-    Route::get('/settings/export', [App\Http\Controllers\Client\SettingsController::class, 'exportData'])->name('client.settings.export');
-    Route::post('/settings/delete', [App\Http\Controllers\Client\SettingsController::class, 'deleteAccount'])->name('client.settings.delete');
+    Route::get('/settings/unified', [App\Http\Controllers\Client\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/notifications', [App\Http\Controllers\Client\SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::get('/settings/export', [App\Http\Controllers\Client\SettingsController::class, 'exportData'])->name('settings.export');
+    Route::post('/settings/delete', [App\Http\Controllers\Client\SettingsController::class, 'deleteAccount'])->name('settings.delete');
 });
 
 // ============================================

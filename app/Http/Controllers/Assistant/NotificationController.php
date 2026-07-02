@@ -12,9 +12,9 @@ class NotificationController extends Controller
     public function index()
     {
         $notifications = Notification::where('user_id', Auth::id())
-            ->where('type', 'task')
-            ->where('is_archived', false)
-            ->orderBy('created_at', 'desc')
+            ->active()
+            ->latest()
+            ->limit(50)
             ->get();
 
         return response()->json([
@@ -26,56 +26,56 @@ class NotificationController extends Controller
     public function markAsRead($id)
     {
         $notification = Notification::where('user_id', Auth::id())->findOrFail($id);
-        $notification->is_read = true;
-        $notification->read_at = now();
-        $notification->save();
+        $notification->markAsRead();
+
         return response()->json(['success' => true]);
     }
 
     public function archive($id)
     {
         $notification = Notification::where('user_id', Auth::id())->findOrFail($id);
-        $notification->is_archived = true;
-        $notification->save();
+        $notification->archive();
+
         return response()->json(['success' => true]);
     }
 
     public function markAllAsRead()
     {
         Notification::where('user_id', Auth::id())
-            ->where('type', 'task')
-            ->where('is_read', false)
+            ->active()
+            ->unread()
             ->update(['is_read' => true, 'read_at' => now()]);
+
         return response()->json(['success' => true]);
     }
 
     public function archiveAll()
     {
         Notification::where('user_id', Auth::id())
-            ->where('type', 'task')
-            ->where('is_archived', false)
+            ->active()
             ->update(['is_archived' => true]);
+
         return response()->json(['success' => true]);
     }
 
     public function stats()
     {
         $userId = Auth::id();
-        
-        $stats = [
+
+        return response()->json([
             'total_today' => Notification::where('user_id', $userId)
-                ->where('type', 'task')
+                ->active()
                 ->whereDate('created_at', today())
-                ->where('is_archived', false)
                 ->count(),
             'unread' => Notification::where('user_id', $userId)
-                ->where('type', 'task')
+                ->active()
                 ->where('is_read', false)
-                ->where('is_archived', false)
                 ->count(),
-            'urgent' => 0,
-        ];
-
-        return response()->json($stats);
+            'urgent' => Notification::where('user_id', $userId)
+                ->active()
+                ->where('is_read', false)
+                ->whereIn('priority', ['high', 'urgent'])
+                ->count(),
+        ]);
     }
 }
