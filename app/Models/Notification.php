@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Notification extends Model
 {
@@ -93,4 +94,22 @@ class Notification extends Model
         default => 'fas fa-bell'
     };
 }
+
+    protected static function booted()
+    {
+        static::creating(function ($notification) {
+            // If the target user has disabled in-app notifications, prevent creation.
+            try {
+                if (isset($notification->user_id)) {
+                    $user = User::find($notification->user_id);
+                    if ($user && $user->preferences && isset($user->preferences->in_app_notifications) && !$user->preferences->in_app_notifications) {
+                        // Halt creation
+                        return false;
+                    }
+                }
+            } catch (\Exception $e) {
+                // If something goes wrong, allow the notification to be created to avoid silent failures.
+            }
+        });
+    }
 }

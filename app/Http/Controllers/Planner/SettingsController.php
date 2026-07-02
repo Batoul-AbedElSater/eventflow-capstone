@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
-    // ========== MAIN SETTINGS (redirect) ==========
+    // ========== MAIN SETTINGS ==========
     public function index()
     {
-        return redirect()->route('planner.settings.account');
+        $user = auth()->user();
+        $preferences = $user->preferences ?? new UserPreference();
+        $businessStats = method_exists($this, 'getBusinessStats') ? $this->getBusinessStats($user) : null;
+        return view('planner.settings.index', compact('user', 'preferences', 'businessStats'));
     }
 
     // ========== ACCOUNT SETTINGS ==========
@@ -201,50 +204,26 @@ $user->update(['profile_photo_path' => $path]);
     // ========== NOTIFICATION SETTINGS ==========
     public function notifications()
     {
-        $user = auth()->user();
-        $preferences = $user->preferences ?? new UserPreference();
-        $businessStats = $this->getBusinessStats($user);
-
-        return view('planner.settings.notifications', compact('user', 'preferences', 'businessStats'));
+        // show unified settings page
+        return $this->index();
     }
 
     public function updateNotifications(Request $request)
     {
         $validated = $request->validate([
-            'email_new_inquiries' => 'nullable|boolean',
-            'email_client_messages' => 'nullable|boolean',
-            'email_assistant_updates' => 'nullable|boolean',
-            'email_vendor_responses' => 'nullable|boolean',
-            'email_event_reminders' => 'nullable|boolean',
-            'push_notifications' => 'nullable|boolean',
-            'sms_notifications' => 'nullable|boolean',
             'in_app_notifications' => 'nullable|boolean',
-            'notification_frequency' => 'nullable|in:instant,daily,weekly',
-            'enable_quiet_hours' => 'nullable|boolean',
-            'quiet_hours_start' => 'nullable|string',
-            'quiet_hours_end' => 'nullable|string',
-            'client_responses' => 'nullable|boolean',
-            'team_messages' => 'nullable|boolean',
-            'task_reminders' => 'nullable|boolean',
-            'vendor_messages' => 'nullable|boolean',
-            'vendor_availability' => 'nullable|boolean',
-            'price_updates' => 'nullable|boolean',
-            'deadline_alerts' => 'nullable|boolean',
         ]);
 
         $user = auth()->user();
         $preferences = $user->preferences ?? new UserPreference();
 
-        foreach ($validated as $key => $value) {
-            $preferences->$key = $value;
-        }
-
+        $preferences->in_app_notifications = $validated['in_app_notifications'] ?? false;
         $preferences->user_id = $user->id;
         $preferences->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification settings updated!'
+            'message' => 'Notification preference saved!'
         ]);
     }
 
@@ -256,6 +235,19 @@ $user->update(['profile_photo_path' => $path]);
         $businessStats = $this->getBusinessStats($user);
 
         return view('planner.settings.appearance', compact('user', 'preferences', 'businessStats'));
+    }
+
+    // ========== EXPORT DATA ==========
+    public function exportData()
+    {
+        $user = auth()->user();
+        $data = [
+            'user' => $user,
+            'events' => $user->plannerEvents,
+            'preferences' => $user->preferences,
+        ];
+
+        return response()->json($data)->download('my-data.json');
     }
 
     public function updateAppearance(Request $request)

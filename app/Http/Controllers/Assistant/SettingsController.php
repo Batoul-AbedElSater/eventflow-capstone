@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
-    // ========== MAIN SETTINGS (redirect) ==========
+    // ========== MAIN SETTINGS ==========
     public function index()
     {
-        return redirect()->route('assistant.settings.account');
+        $user = auth()->user();
+        $preferences = $user->preferences ?? new UserPreference();
+        $stats = method_exists($this, 'getStats') ? $this->getStats($user) : null;
+        return view('assistant.settings.index', compact('user', 'preferences', 'stats'));
     }
 
     // ========== ACCOUNT SETTINGS ==========
@@ -156,36 +159,25 @@ $user->update(['profile_photo_path' => $path]);
     // ========== NOTIFICATION SETTINGS ==========
     public function notifications()
     {
-        $user = auth()->user();
-        $preferences = $user->preferences ?? new UserPreference();
-        $stats = $this->getStats($user);
-
-        return view('assistant.settings.notifications', compact('user', 'preferences', 'stats'));
+        return $this->index();
     }
 
     public function updateNotifications(Request $request)
     {
         $validated = $request->validate([
-            'email_task_assignments' => 'nullable|boolean',
-            'email_task_reminders' => 'nullable|boolean',
-            'email_planner_messages' => 'nullable|boolean',
-            'push_notifications' => 'nullable|boolean',
-            'sms_notifications' => 'nullable|boolean',
+            'in_app_notifications' => 'nullable|boolean',
         ]);
 
         $user = auth()->user();
         $preferences = $user->preferences ?? new UserPreference();
 
-        foreach ($validated as $key => $value) {
-            $preferences->$key = $value;
-        }
-
+        $preferences->in_app_notifications = $validated['in_app_notifications'] ?? false;
         $preferences->user_id = $user->id;
         $preferences->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification settings updated!'
+            'message' => 'Notification preference saved!'
         ]);
     }
 
@@ -197,6 +189,19 @@ $user->update(['profile_photo_path' => $path]);
         $stats = $this->getStats($user);
 
         return view('assistant.settings.appearance', compact('user', 'preferences', 'stats'));
+    }
+
+    // ========== EXPORT DATA ==========
+    public function exportData()
+    {
+        $user = auth()->user();
+        $data = [
+            'user' => $user,
+            'tasks' => method_exists($user, 'assignedTasks') ? $user->assignedTasks()->get() : [],
+            'preferences' => $user->preferences,
+        ];
+
+        return response()->json($data)->download('my-data.json');
     }
 
     public function updateAppearance(Request $request)

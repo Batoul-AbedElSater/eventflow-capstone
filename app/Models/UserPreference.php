@@ -45,6 +45,7 @@ class UserPreference extends Model
         'push_notifications',
         'sms_notifications',
         'notification_frequency',
+        'in_app_notifications',
     ];
 
     protected $casts = [
@@ -62,6 +63,7 @@ class UserPreference extends Model
         'email_reminders' => 'boolean',
         'email_newsletters' => 'boolean',
         'push_notifications' => 'boolean',
+        'in_app_notifications' => 'boolean',
         'sms_notifications' => 'boolean',
         'animations' => 'boolean',
         'show_email' => 'boolean',

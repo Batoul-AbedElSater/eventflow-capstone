@@ -113,10 +113,11 @@ document.addEventListener('DOMContentLoaded', function() {
             item.className = 'notif-modal-item ' + (notification.is_read ? 'read' : 'unread');
             
             const timeAgo = getTimeAgo(notification.created_at);
+            const iconClass = notification.icon || getNotificationIcon(notification.type);
             
             item.innerHTML = `
-                <div class="notif-item-icon notification-red">
-                    <i class="fas fa-tasks"></i>
+                <div class="notif-item-icon">
+                    <i class="${iconClass}"></i>
                 </div>
                 <div class="notif-item-content">
                     <h4>${escapeHtml(notification.title)}</h4>
@@ -228,6 +229,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    function getNotificationIcon(type) {
+        switch (type) {
+            case 'task': return 'fas fa-tasks';
+            case 'order': return 'fas fa-shopping-cart';
+            case 'event': return 'fas fa-calendar';
+            case 'message': return 'fas fa-envelope';
+            case 'urgent': return 'fas fa-exclamation-circle';
+            default: return 'fas fa-bell';
+        }
     }
 
     async function markNotificationAsRead(id) {

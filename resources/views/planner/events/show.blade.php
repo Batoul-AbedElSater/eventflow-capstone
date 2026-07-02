@@ -24,8 +24,8 @@
                     <i class="fas fa-sync"></i> Update Status
                 </button>
                 <a href="/planner/events/{{ $event->id }}/vendors" class="action-btn-magic vendors">
-    <i class="fas fa-store"></i> Vendors
-</a>
+                    <i class="fas fa-store"></i> Vendors
+                </a>
             </div>
         </div>
 
@@ -263,7 +263,7 @@
 
 /* Hero Section */
 .event-hero-magic {
-    background: linear-gradient(135deg, #475B35, #2C3821);
+    background: linear-gradient(135deg, #E19184, #E19184);
     border-radius: 25px;
     padding: 50px;
     margin-bottom: 30px;
@@ -283,7 +283,7 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.2);
+    background: #C63E4E;
     border-radius: 20px;
     font-size: 14px;
     font-weight: 700;
@@ -312,8 +312,8 @@
 .action-btn-magic {
     padding: 14px 28px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: white;
+    color: #620607;
     border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -325,8 +325,8 @@
 }
 
 .action-btn-magic:hover {
-    background: white;
-    color: #475B35;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
     border-color: white;
     transform: translateY(-3px);
 }
@@ -338,7 +338,7 @@
 }
 
 .status-mega-card {
-    background: rgba(255, 255, 255, 0.15);
+    background:#475B35;
     backdrop-filter: blur(10px);
     padding: 25px 35px;
     border-radius: 20px;
@@ -365,7 +365,7 @@
 }
 
 .budget-mega-card {
-    background: linear-gradient(135deg, #E19184, #C63E4E);
+    background: linear-gradient(135deg, #C63E4E, #C63E4E);
     padding: 25px 35px;
     border-radius: 20px;
     text-align: center;
@@ -436,7 +436,7 @@
 .client-avatar-large {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #475B35, #2C3821);
+    background: linear-gradient(135deg, #620607, #620607);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -450,7 +450,7 @@
 .client-details-magic h4 {
     font-size: 24px;
     font-weight: 900;
-    color: #475B35;
+    color:#620607;
     margin: 0 0 10px 0;
 }
 
@@ -691,7 +691,7 @@
     display: flex;
     justify-content: space-between;
     padding: 15px 0;
-    border-bottom: 1px solid #EFE7DA;
+    border-bottom: 1px solid #620607;
 }
 
 .financial-item:last-child {
@@ -700,7 +700,7 @@
 
 .financial-item.total {
     padding-top: 20px;
-    border-top: 2px solid #EFE7DA;
+    border-top: 2px solid #620607;
     font-size: 18px;
 }
 

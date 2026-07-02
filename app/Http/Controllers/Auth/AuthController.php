@@ -62,7 +62,7 @@ class AuthController extends Controller
         return match ($user->role) {
             'client' => redirect()->route('client.dashboard'),
             'planner' => redirect()->route('planner.dashboard'),
-            'assistant' => redirect()->route('assistant.tasks'),
+            'assistant' => redirect()->route('assistant.dashboard'),
             default => redirect()->route('login'),
         };
     }
@@ -87,12 +87,12 @@ class AuthController extends Controller
             $request->session()->regenerate(); // Security: prevent session fixation
 
             $user = Auth::user();
-
+            
             // Redirect based on role
             return match ($user->role) {
                 'client' => redirect()->route('client.dashboard'),
                 'planner' => redirect()->route('planner.dashboard'),
-                'assistant' => redirect()->route('assistant.tasks'),
+                'assistant' => redirect()->route('assistant.dashboard'),
                 default => redirect()->route('login'),
             };
         }

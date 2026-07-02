@@ -15,7 +15,9 @@ class SettingsController extends Controller
     // ========== MAIN SETTINGS ==========
     public function index()
     {
-        return redirect()->route('client.settings.account');
+        $user = auth()->user();
+        $preferences = $user->preferences ?? new UserPreference();
+        return view('client.settings.index', compact('user', 'preferences'));
     }
 
     // ========== ACCOUNT SETTINGS ==========
@@ -125,48 +127,42 @@ class SettingsController extends Controller
     // ========== NOTIFICATIONS ==========
     public function notifications()
     {
-        $user = auth()->user();
-        $preferences = $user->preferences ?? new UserPreference();
-        return view('client.settings.notifications', compact('user', 'preferences'));
+        // keep backward compatibility by showing the unified settings page
+        return $this->index();
     }
 
-   public function updateNotifications(Request $request)
-{
-    try {
-        $validated = $request->validate([
-            'email_planner_updates' => 'nullable|boolean',
-            'email_reminders' => 'nullable|boolean',
-            'email_event_updates' => 'nullable|boolean',
-        ]);
+    public function updateNotifications(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'in_app_notifications' => 'nullable|boolean',
+            ]);
 
-        $user = auth()->user();
-        $preferences = $user->preferences ?? new UserPreference();
+            $user = auth()->user();
+            $preferences = $user->preferences ?? new UserPreference();
 
-        foreach ($validated as $key => $value) {
-            $preferences->$key = $value;
+            $preferences->in_app_notifications = $validated['in_app_notifications'] ?? false;
+            $preferences->user_id = $user->id;
+            $preferences->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification preference saved!'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Notification update error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
         }
-
-        $preferences->user_id = $user->id;
-        $preferences->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Notification settings updated!'
-        ]);
-    } catch (ValidationException $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation failed',
-            'errors' => $e->errors()
-        ], 422);
-    } catch (\Exception $e) {
-        \Log::error('Notification update error: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Server error: ' . $e->getMessage()
-        ], 500);
     }
-}
 
     // ========== PRIVACY ==========
     public function privacy()
