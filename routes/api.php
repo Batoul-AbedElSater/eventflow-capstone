@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Planner\VendorController as VendorController;
 use App\Http\Controllers\Planner\AnalyticsController;
 use App\Http\Controllers\Planner\NotificationController as PlannerNotificationController;
 use App\Http\Controllers\Api\Planner\MonthlyCalendarController;
+use App\Http\Controllers\Api\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::put('/profile/password', [AuthController::class, 'updatePassword']);
+  //shared setting
+    Route::prefix('settings')->name("settings.")->group(function () {
+    Route::get('/', [SettingController::class, 'index']);
+    Route::patch('/notifications', [SettingController::class, 'updateNotifications']);
+    Route::post('/logout', [SettingController::class, 'logout']);
+    Route::delete('/account', [SettingController::class, 'deleteAccount']);
+});
 
     // ============================================
     // CLIENT API ROUTES
@@ -179,6 +187,7 @@ Route::get('/analytics',[AnalyticsController::class,'index']);
     Route::post('/read-all', [App\Http\Controllers\Assistant\NotificationController::class, 'markAllAsRead']);
     Route::post('/archive-all', [App\Http\Controllers\Assistant\NotificationController::class, 'archiveAll']);
 });
+
         });
 
 
