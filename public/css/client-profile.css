@@ -19,6 +19,104 @@
     --danger: #D0021B;
     --transition: all 0.3s ease;
 }
+.profile-avatar-wrapper{
+    display:flex;
+    justify-content:center;
+    margin-bottom:20px;
+}
+
+.profile-avatar-large{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    overflow:hidden;
+    position:relative;
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#C63E4E;
+}
+
+.profile-avatar-large img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.avatar-initials{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:42px;
+    font-weight:bold;
+    color:white;
+}
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: #888;
+    transition: 0.2s;
+}
+
+.toggle-password:hover {
+    color: #C63E4E;
+}
+
+.avatar-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    opacity:0;
+    transition:.3s;
+}
+
+.profile-avatar-large:hover .avatar-overlay{
+    opacity:1;
+}
+
+.avatar-overlay i{
+    font-size:24px;
+    margin-bottom:6px;
+}
+.profile-avatar-large {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #C63E4E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+.profile-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .profile-container,
 .settings-container {

@@ -765,6 +765,9 @@
     <a href="{{ route('planner.settings.index') }}" class="sidebar-link {{ request()->routeIs('planner.settings*') ? 'active' : '' }}">
         <i class="fas fa-cog"></i> Settings
     </a>
+     <a href="{{ route('planner.profile') }}" class="sidebar-link {{ request()->routeIs('profile*') ? 'active' : '' }}">
+        <i class="fas fa-user"></i> Profile
+    </a>
 </aside>
             <!-- Voice Commander Button -->
             <button class="voice-commander-btn" id="voiceCommanderBtn"><i class="fas fa-microphone"></i></button>
@@ -776,24 +779,49 @@
             </div>
 
             <!-- Profile Dropdown (click toggle) -->
-            <div class="profile-dropdown" id="profileDropdownBtn">
-                 <img src="{{ Auth::user()->avatar_url }}" alt="Profile">                <span>{{ Auth::user()->name }}</span>
-                <i class="fas fa-chevron-down"></i>
-                <div class="dropdown-menu" id="profileDropdownMenu">
-                    <div class="dropdown-header">
-                        <img src="{{ Auth::user()->avatar_url }}" alt="Profile">
-                        <div><strong>{{ Auth::user()->name }}</strong><span>{{ Auth::user()->email }}</span></div>
-                    </div>
-                    <hr>
-                    <a href="#"><i class="fas fa-user"></i> My Profile</a>
-                    <a href="{{ route('planner.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
-                    <hr>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                    </form>
-                </div>
-            </div>
+           @php
+    $avatar = Auth::user()->avatar_url
+        ? asset('storage/' . Auth::user()->avatar_url)
+        : asset('images/default-avatar.png');
+@endphp
+
+<div class="profile-dropdown" id="profileDropdownBtn">
+
+    <!-- NAVBAR IMAGE -->
+    <img src="{{ $avatar }}" alt="Profile">
+    <span>{{ Auth::user()->name }}</span>
+    <i class="fas fa-chevron-down"></i>
+
+    <!-- DROPDOWN -->
+    <div class="dropdown-menu" id="profileDropdownMenu">
+
+        <!-- INSIDE MENU PROFILE (optional smaller preview) -->
+        <div class="dropdown-profile">
+            <img src="{{ $avatar }}" alt="Profile">
+            <span>{{ Auth::user()->name }}</span>
+        </div>
+
+        <hr>
+
+        <a href="{{ route('planner.profile') }}">
+            <i class="fas fa-user"></i> My Profile
+        </a>
+
+        <a href="{{ route('planner.settings.index') }}">
+            <i class="fas fa-cog"></i> Settings
+        </a>
+
+        <hr>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+
+    </div>
+</div>
         </div>
     </header>
 

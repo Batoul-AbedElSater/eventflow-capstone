@@ -131,8 +131,9 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
     });
 
     // Profile & Settings
-    Route::get('/profile', [App\Http\Controllers\client\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile', [App\Http\Controllers\Planner\ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [App\Http\Controllers\Planner\ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\Planner\ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // New simplified settings endpoints for planners (NewSettings branch)
     Route::get('/settings/unified', [App\Http\Controllers\Planner\SettingsController::class, 'index'])->name('settings.index');
@@ -168,6 +169,17 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
     Route::post('/settings/notifications', [App\Http\Controllers\Assistant\SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
     Route::get('/settings/export', [App\Http\Controllers\Assistant\SettingsController::class, 'exportData'])->name('settings.export');
     Route::post('/settings/delete', [App\Http\Controllers\Assistant\SettingsController::class, 'deleteAccount'])->name('settings.delete');
+
+
+    // Profile
+        Route::get('/profile', [App\Http\Controllers\Assistant\ProfileController::class, 'index'])
+            ->name('profile');
+
+        Route::put('/profile', [App\Http\Controllers\Assistant\ProfileController::class, 'updateProfile'])
+            ->name('profile.update');
+
+        Route::put('/profile/password', [App\Http\Controllers\Assistant\ProfileController::class, 'updatePassword'])
+            ->name('profile.password');
 });
 
 // ============================================
