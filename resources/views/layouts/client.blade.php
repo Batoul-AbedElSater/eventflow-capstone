@@ -624,75 +624,151 @@ background-color: var(--cream);
 </head>
 <body>
 
-    <div class="main-content">
-        @include('partials.client.header')
-        @yield('content')
+@php
+    $user = Auth::user();
+
+    // SAFE USER CHECK
+    $avatar = $user && $user->avatar_url
+        ? asset('storage/' . $user->avatar_url)
+        : 'https://ui-avatars.com/api/?name=' . urlencode($user?->name ?? 'User') . '&background=C63E4E&color=F5F9E5';
+
+    $name = $user?->name ?? 'User';
+@endphp
+
+<div class="main-content">
+    @include('partials.client.header')
+    @yield('content')
+</div>
+
+<!-- HEADER -->
+<header class="header">
+
+    <div class="header-left">
+        <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900;">
+            <span style="color:#620607;">Event</span>
+            <span style="color:#C63E4E;">Flow</span>
+        </h1>
     </div>
 
-    <header class="header">
-        <div class="header-left">
+    <div class="header-right">
 
-             <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s;">
-                <span style="color:#620607;">Event</span><span style="color:#C63E4E;">Flow</span>
-            </h1>
+        <!-- VOICE -->
+        <button class="voice-commander-btn" id="voiceCommanderBtn">
+            <i class="fas fa-microphone"></i>
+        </button>
 
+        <!-- NOTIFICATIONS -->
+        <div class="notifications" id="notificationBellBtn">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="headerNotifBadge">0</span>
         </div>
 
-        <div class="header-right">
-            <!-- Voice Commander Button -->
-             <button class="voice-commander-btn" id="voiceCommanderBtn">
-                    <i class="fas fa-microphone"></i>
-                </button>
+        <!-- PROFILE DROPDOWN -->
+        <div class="profile-dropdown" id="profileDropdownBtn">
 
-            <!-- Notifications Bell -->
-            <div class="notifications" id="notificationBellBtn">
-                <i class="fas fa-bell"></i>
-                <span class="badge" id="headerNotifBadge">0</span>
-            </div>
+            <!-- NAVBAR AVATAR -->
+            <img class="profile-avatar" src="{{ $avatar }}" alt="Profile">
 
-            <!-- Profile Dropdown (click toggle) -->
-            <div class="profile-dropdown" id="profileDropdownBtn">
-              <img src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=C63E4E&color=F5F9E5' }}" alt="Profile">                <span>{{ Auth::user()->name }}</span>
-                <i class="fas fa-chevron-down"></i>
-                <div class="dropdown-menu" id="profileDropdownMenu">
-                    <a href="{{ route('client.profile') }}"><i class="fas fa-user"></i> Profile</a>
-                    <a href="{{ route('client.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
-                    <hr>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                    </form>
+            <span>{{ $name }}</span>
+            <i class="fas fa-chevron-down"></i>
+
+            <!-- DROPDOWN -->
+            <div class="dropdown-menu" id="profileDropdownMenu">
+
+                <div class="dropdown-profile">
+                    <img class="profile-avatar-large" src="{{ $avatar }}" alt="Profile">
+                    <div>
+                        <strong>{{ $name }}</strong>
+                        <div style="font-size:12px; opacity:0.7;">Client Account</div>
+                    </div>
                 </div>
+
+                <hr>
+
+                <a href="{{ route('client.profile') }}">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+
+                <a href="{{ route('client.settings.index') }}">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+
+                <hr>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+
             </div>
         </div>
-    </header>
 
-   <aside class="client-sidebar">
-    <a href="{{ route('client.dashboard') }}" class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+    </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="client-sidebar">
+
+    <a href="{{ route('client.dashboard') }}"
+       class="sidebar-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
         <i class="fas fa-home"></i> Dashboard
     </a>
-    <a href="{{ route('client.events.index') }}" class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
+
+    <a href="{{ route('client.events.index') }}"
+       class="sidebar-link {{ request()->is('client/events*') ? 'active' : '' }}">
         <i class="fas fa-calendar-alt"></i> My Events
     </a>
-    <a href="{{ route('client.messages') }}" class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
+
+    <a href="{{ route('client.messages') }}"
+       class="sidebar-link {{ request()->routeIs('client.messages*') ? 'active' : '' }}">
         <i class="fas fa-comments"></i> Messages
     </a>
-    <a href="{{ route('client.profile') }}" class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
+
+    <a href="{{ route('client.profile') }}"
+       class="sidebar-link {{ request()->routeIs('client.profile*') ? 'active' : '' }}">
         <i class="fas fa-user"></i> Profile
     </a>
-    <!-- ✅ ADD/UPDATE THIS SETTINGS LINK -->
-    <a href="{{ route('client.settings.index') }}" class="sidebar-link {{ request()->routeIs('client.settings*') ? 'active' : '' }}">
+
+    <a href="{{ route('client.settings.index') }}"
+       class="sidebar-link {{ request()->routeIs('client.settings*') ? 'active' : '' }}">
         <i class="fas fa-cog"></i> Settings
     </a>
+
 </aside>
 
-    <script src="{{ asset('js/client-dashboard.js') }}"></script>
-    
-    <script src="{{ asset('js/client-notification.js') }}"></script>
-    @stack('scripts')
+<!-- SCRIPTS -->
+<script src="{{ asset('js/client-dashboard.js') }}"></script>
+<script src="{{ asset('js/client-notification.js') }}"></script>
 
+@stack('scripts')
 
-    <div class="notification-modal" id="notificationModal">
+<!-- PROFILE DROPDOWN SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const btn = document.getElementById('profileDropdownBtn');
+    const menu = document.getElementById('profileDropdownMenu');
+
+    if (!btn || !menu) return;
+
+    const chevron = btn.querySelector('i');
+
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const open = menu.classList.toggle('show');
+        chevron.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    document.addEventListener('click', function () {
+        menu.classList.remove('show');
+        chevron.style.transform = 'rotate(0deg)';
+    });
+
+});
+</script>
+ <div class="notification-modal" id="notificationModal">
         <div class="notification-modal-overlay"></div>
         <div class="notification-modal-content">
             <button class="notif-close-btn" id="notifCloseBtn"><i class="fas fa-times"></i></button>
@@ -749,62 +825,6 @@ background-color: var(--cream);
         </div>
     </div>
 
-    <!-- Mood modal (optional – kept but button removed) -->
-    <div class="mood-modal" id="moodModal">...</div>
 
-    <script src="{{ asset('js/mood-voice-common.js') }}"></script>
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const voiceIconPulse = document.getElementById('voiceIconPulse');
-    const voiceToggleBtn = document.getElementById('voiceToggleBtn');
-    const voiceCloseBtn = document.getElementById('voiceCloseBtn');
-    const voiceModalOverlay = document.querySelector('.voice-modal-overlay');
-
-    if (!voiceIconPulse || !voiceToggleBtn) return;
-
-    function stopRing() {
-        voiceIconPulse.classList.remove('listening');
-    }
-
-    voiceToggleBtn.addEventListener('click', function () {
-        voiceIconPulse.classList.toggle('listening');
-    });
-
-    if (voiceCloseBtn) {
-        voiceCloseBtn.addEventListener('click', stopRing);
-    }
-
-    if (voiceModalOverlay) {
-        voiceModalOverlay.addEventListener('click', stopRing);
-    }
-});
-</script>
-
-    <!-- Click-toggle for profile dropdown -->
-    <script>
-     document.addEventListener('DOMContentLoaded', function() {
-    const dropdownBtn = document.getElementById('profileDropdownBtn');
-    const dropdownMenu = document.getElementById('profileDropdownMenu');
-    if (dropdownBtn && dropdownMenu) {
-        const chevron = dropdownBtn.querySelector('i'); // the chevron icon
-        dropdownBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const isOpen = dropdownMenu.classList.toggle('show');
-            // Rotate chevron based on open/close state
-            if (isOpen) {
-                chevron.style.transform = 'rotate(180deg)';
-            } else {
-                chevron.style.transform = 'rotate(0deg)';
-            }
-        });
-        document.addEventListener('click', function(e) {
-            if (!dropdownBtn.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
-                chevron.style.transform = 'rotate(0deg)';
-            }
-        });
-    }
-});
-    </script>
 </body>
 </html>

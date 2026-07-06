@@ -612,7 +612,16 @@
         </div>
 
         <div class="profile-dropdown" id="profileDropdownBtn">
-         <img src="{{ Auth::user()->avatar_url }}" alt="Profile">            <span>{{ Auth::user()->name }}</span>
+           @php
+                $user = \App\Models\User::find(Auth::id());
+
+                $avatar = $user && $user->avatar_url
+                    ? asset('storage/' . $user->avatar_url)
+                    : asset('images/default-avatar.png');
+            @endphp
+
+            <img src="{{ $avatar }}" alt="Profile">
+                    <span>{{ Auth::user()->name }}</span>
             <i class="fas fa-chevron-down"></i>
             <div class="dropdown-menu" id="profileDropdownMenu">
                 <hr>
@@ -651,7 +660,7 @@
 
     <div class="sidebar-section-label">Account</div>
 
-    <a href="#" class="sidebar-link">
+    <a href="{{ route('assistant.profile') }}" class="sidebar-link {{ request()->routeIs('assistant.profile') ? 'active' : '' }}">
         <i class="fas fa-user"></i> Profile
     </a>
 

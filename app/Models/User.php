@@ -21,8 +21,8 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
+        'avatar_url',
         'notification_preferences',
-        'avatar',
         'bio',
         'theme',
         'language',
@@ -33,7 +33,6 @@ class User extends Authenticatable
         'marketing_emails',
         'two_factor_enabled',
         'is_active',
-        'profile_photo_path',
     ];
 
     /**
@@ -381,16 +380,15 @@ class User extends Authenticatable
     /**
      * Get the user's avatar URL.
      */
-  public function getAvatarUrlAttribute()
+public function getAvatarUrlAttribute($value)
 {
-    // Check if a profile photo exists
-    if ($this->profile_photo_path) {
-        return asset('storage/' . $this->profile_photo_path);
+    // If there is an uploaded image in the avatar_url column,
+    // return only its stored path.
+    if (!empty($value)) {
+        return $value;
     }
-    // Fallback to avatar column or avatar generator
-    if ($this->avatar) {
-        return $this->avatar;
-    }
-    return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=C63E4E&color=F5F9E5';
+
+    // Otherwise, no uploaded image.
+    return null;
 }
 }
