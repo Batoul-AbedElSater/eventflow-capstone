@@ -26,22 +26,23 @@
 
             <div class="form-grid">
                 <!-- Event Type -->
-                <div class="form-group full-width">
-                    <label for="event_type_id">
-                        Event Type <span class="required">*</span>
-                    </label>
-                    <select name="event_type_id" id="event_type_id" required>
-                        <option value="">Select event type...</option>
-                        @foreach($eventTypes as $type)
-                            <option value="{{ $type->id }}" {{ old('event_type_id') == $type->id ? 'selected' : '' }}>
-                                {{ $type->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('event_type_id')
-                        <span class="error">{{ $message }}</span>
-                    @enderror
-                </div>
+               <!-- Event Type -->
+<div class="form-group full-width">
+    <label for="event_type">
+        Event Type <span class="required">*</span>
+    </label>
+    <select name="event_type" id="event_type" required>
+        <option value="">Select event type...</option>
+        @foreach(['wedding' => 'Wedding', 'birthday' => 'Birthday', 'corporate' => 'Corporate', 'engagement' => 'Engagement', 'graduation' => 'Graduation', 'other' => 'Other'] as $value => $label)
+            <option value="{{ $value }}" {{ old('event_type') == $value ? 'selected' : '' }}>
+                {{ $label }}
+            </option>
+        @endforeach
+    </select>
+    @error('event_type')
+        <span class="error">{{ $message }}</span>
+    @enderror
+</div>
 
                 <!-- Event Name -->
                 <div class="form-group full-width">

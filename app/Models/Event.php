@@ -15,7 +15,7 @@ class Event extends Model
     protected $fillable = [
         'client_id',
         'planner_id',
-        'event_type_id',
+        'event_type',
         'name',
         'description',
         'start_date',
@@ -69,14 +69,7 @@ class Event extends Model
         return $this->belongsTo(User::class, 'planner_id');
     }
 
-    /**
-     * Get the event type.
-     * Many-to-One: Event -> EventType
-     */
-    public function eventType()
-    {
-        return $this->belongsTo(EventType::class, 'event_type_id');
-    }
+
 
     /**
      * Get guests for this event.

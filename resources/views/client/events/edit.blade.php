@@ -332,7 +332,7 @@ body:has(.create-event-container) {
 </style>
 
 <div class="create-event-container">
-    
+
     <div class="create-header">
         <div class="breadcrumb">
             <a href="{{ route('client.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a>
@@ -350,7 +350,7 @@ body:has(.create-event-container) {
         @method('PUT')
 
         <div class="form-sections">
-            
+
             {{-- Basic Information --}}
             <div class="form-section">
                 <div class="section-header">
@@ -371,21 +371,20 @@ body:has(.create-event-container) {
                             <span class="error-message">{{ $message }}</span>
                         @enderror
                     </div>
-
-                    <div class="form-group">
-                        <label for="event_type_id">Event Type *</label>
-                        <select id="event_type_id" name="event_type_id" required>
-                            <option value="">Select type...</option>
-                            @foreach($eventTypes as $type)
-                                <option value="{{ $type->id }}" {{ $event->event_type_id == $type->id ? 'selected' : '' }}>
-                                    {{ $type->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('event_type_id')
-                            <span class="error-message">{{ $message }}</span>
-                        @enderror
-                    </div>
+<div class="form-group">
+    <label for="event_type">Event Type *</label>
+    <select id="event_type" name="event_type" required>
+        <option value="">Select type...</option>
+        @foreach(['wedding' => 'Wedding', 'birthday' => 'Birthday', 'corporate' => 'Corporate', 'engagement' => 'Engagement', 'graduation' => 'Graduation', 'other' => 'Other'] as $value => $label)
+            <option value="{{ $value }}" {{ old('event_type', $event->event_type) == $value ? 'selected' : '' }}>
+                {{ $label }}
+            </option>
+        @endforeach
+    </select>
+    @error('event_type')
+        <span class="error-message">{{ $message }}</span>
+    @enderror
+</div>
 
                     <div class="form-group full-width">
                         <label for="description">Description</label>

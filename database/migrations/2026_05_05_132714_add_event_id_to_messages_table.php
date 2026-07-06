@@ -5,13 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
-{/*
-    public function up(): void
-    {
-        Schema::table('messages', function (Blueprint $table) {
-            $table->foreignId('event_id')->nullable()->after('id')->constrained('events')->onDelete('cascade');
-        });
-    }*/
+{
         public function up(): void
 {
     Schema::table('messages', function (Blueprint $table) {

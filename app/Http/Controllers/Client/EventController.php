@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
-use App\Models\EventType;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +16,9 @@ class EventController extends Controller
    public function index()
         {
             $clientId = Auth::id();
-            
+
             $events = Event::where('client_id', $clientId)
-                ->with(['eventType', 'planner'])   // client doesn't need 'client' relation – it's themselves
+                ->with(['planner'])   // client doesn't need 'client' relation – it's themselves
                 ->orderBy('start_date', 'desc')
                 ->get();
 
@@ -32,7 +31,7 @@ class EventController extends Controller
                 'completed' => $events->where('status', 'completed')->count(),
                 'total_budget' => $events->sum('budget_overall'),
             ];
-            
+
             $stats = $summary; // if your blade uses $stats
 
             // Top clients doesn't make sense for a client page – you can remove or keep empty
@@ -44,19 +43,19 @@ class EventController extends Controller
 
     public function create()
     {
-        $eventTypes = EventType::all();
+
         $planners = \App\Models\User::where('role', 'planner')
             ->with('plannerProfile')
             ->get();
 
-        return view('client.events.create', compact('eventTypes', 'planners'));
+        return view('client.events.create', compact('planners'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'event_type_id' => 'required|exists:event_types,id',
+            'event_type' => 'required|in:wedding,birthday,corporate,engagement,graduation,other',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -99,7 +98,7 @@ class EventController extends Controller
     public function show($id)
         {
             $event = Event::where('client_id', Auth::id())
-                ->with('eventType', 'planner', 'guests') // CHANGED: invitations -> guests
+                ->with('planner', 'guests') // CHANGED: invitations -> guests
                 ->findOrFail($id);
 
             return view('client.events.show', compact('event'));
@@ -108,9 +107,8 @@ class EventController extends Controller
     public function edit($id)
     {
         $event = Event::where('client_id', Auth::id())->findOrFail($id);
-        $eventTypes = EventType::all();
 
-        return view('client.events.edit', compact('event', 'eventTypes'));
+        return view('client.events.edit', compact('event'));
     }
 
     public function storeRating(Request $request, $eventId)
@@ -143,7 +141,7 @@ class EventController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'event_type_id' => 'required|exists:event_types,id',
+            'event_type' => 'required|in:wedding,birthday,corporate,engagement,graduation,other',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
