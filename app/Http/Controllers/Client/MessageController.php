@@ -51,6 +51,7 @@ class MessageController extends Controller
 
     return view('client.messages', compact('events'));
 }
+
 public function index($eventId)
 {
     try {
@@ -59,21 +60,17 @@ public function index($eventId)
 
         $messages = Message::where('event_id', $eventId)
             ->where(function ($query) use ($userId) {
+                // Messages where client is the sender → only show if not deleted_by_sender
                 $query->where(function ($q) use ($userId) {
                     $q->where('sender_id', $userId)->where('deleted_by_sender', false);
                 })->orWhere(function ($q) use ($userId) {
+                    // Messages where client is the receiver → only show if not deleted_by_receiver
                     $q->where('receiver_id', $userId)->where('deleted_by_receiver', false);
                 });
             })
             ->with(['sender:id,name'])
             ->orderBy('created_at', 'asc')
             ->get();
-
-        // ✅ Mark this client's incoming messages as read
-        Message::where('event_id', $eventId)
-            ->where('receiver_id', $userId)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
 
         return response()->json([
             'success' => true,
@@ -94,6 +91,7 @@ public function index($eventId)
         return response()->json(['success' => false], 500);
     }
 }
+
     public function store(Request $request, $eventId)
         {
             try {

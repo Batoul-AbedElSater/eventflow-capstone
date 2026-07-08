@@ -19,11 +19,6 @@ window.loadMessagesFromCard = function(element) {
     const eventName = element.dataset.eventName;
     const plannerName = element.dataset.plannerName;
     
-   const badge = element.querySelector('[data-unread-badge]');
-    if (badge) {
-        badge.remove();
-    }
-    
     loadMessages(eventId, eventName, plannerName);
 }
 

@@ -89,7 +89,7 @@
                 </div>
                 
                 <div class="vendor_card_actions">
-                  <a href="{{ route('assistant.vendor.show', ['task' => $task->id, 'vendor' => $vendor->id]) }}" class="btn_view">View Details</a>
+                    <a href="{{ route('assistant.vendor.show', $vendor->id) }}" class="btn_view">View Details</a>
                     <a href="{{ route('assistant.vendor.order', ['task' => $task->id, 'vendor' => $vendor->id]) }}" class="btn_book">
                         {{ $order ? 'Edit Order' : 'Place Order' }}
                     </a>

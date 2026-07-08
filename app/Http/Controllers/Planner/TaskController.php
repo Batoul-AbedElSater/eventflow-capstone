@@ -107,7 +107,7 @@ class TaskController extends Controller
                 Notification::create([
                     'user_id' => $assistant->id,
                     'type' => 'task',
-                    'priority' => $task->priority,
+                    'priority' => 'high',
                     'title' => 'New Task Assigned to You',
                     'message' => "{$planner->name} assigned you a task for event: {$eventName}",
                     'icon' => 'fas fa-tasks',
@@ -204,7 +204,7 @@ class TaskController extends Controller
                     Notification::create([
                         'user_id' => $assistant->id,
                         'type' => 'task',
-                       'priority' => $task->priority,
+                        'priority' => 'high',
                         'title' => 'New Task Assigned to You',
                         'message' => "{$planner->name} assigned you a task for event: {$eventName}",
                         'icon' => 'fas fa-tasks',
@@ -291,7 +291,7 @@ class TaskController extends Controller
             Notification::create([
                 'user_id' => $assistant->id,
                 'type' => 'task',
-               'priority' => $task->priority,
+                'priority' => 'high',
                 'title' => 'New Task Assigned to You',
                 'message' => "{$planner->name} assigned you a task for event: {$eventName}",
                 'icon' => 'fas fa-tasks',

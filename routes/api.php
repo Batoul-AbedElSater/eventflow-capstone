@@ -17,9 +17,6 @@ use App\Http\Controllers\Planner\AnalyticsController;
 use App\Http\Controllers\Planner\NotificationController as PlannerNotificationController;
 use App\Http\Controllers\Api\Planner\MonthlyCalendarController;
 use App\Http\Controllers\Api\SettingController;
-use App\Http\Controllers\Api\Client\ProfileController as ApiClientProfileController;
-use App\Http\Controllers\Api\Planner\ProfileController as ApiPlannerProfileController;
-use App\Http\Controllers\Api\Assistant\ProfileController as ApiAssistantProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,11 +34,10 @@ Route::post('/rsvp/{token}', [RsvpController::class, 'submit']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-   Route::post('/logout', [AuthController::class, 'logout']);
-
-Route::get('/me', [ApiClientProfileController::class, 'show']);
-Route::put('/profile', [ApiClientProfileController::class, 'updateProfile']);
-Route::put('/profile/password', [ApiClientProfileController::class, 'updatePassword']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/profile/password', [AuthController::class, 'updatePassword']);
   //shared setting
     Route::prefix('settings')->name("settings.")->group(function () {
     Route::get('/', [SettingController::class, 'index']);
@@ -101,10 +97,7 @@ Route::put('/profile/password', [ApiClientProfileController::class, 'updatePassw
             Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
             Route::post('/archive-all', [NotificationController::class, 'archiveAll'])->name('archive-all');
         });
-
-
-       
-         });
+    });
 
 
     // PLANNER API ROUTES - CORRECTED
@@ -167,12 +160,6 @@ Route::post('/events/{eventId}/messages', [\App\Http\Controllers\Planner\Message
 Route::delete('/events/{eventId}/messages', [\App\Http\Controllers\Planner\MessageController::class, 'deleteAll']);
 Route::post('/messages/events/{event}/read', [\App\Http\Controllers\Planner\MessageController::class, 'markEventMessagesAsRead']);
 
-
-Route::get('/me', [ApiPlannerProfileController::class, 'show']);
-Route::put('/profile', [ApiPlannerProfileController::class, 'updateProfile']);
-Route::put('/profile/password', [ApiPlannerProfileController::class, 'updatePassword']);
-
-
 //analytics
 Route::get('/analytics',[AnalyticsController::class,'index']);
 });
@@ -200,11 +187,6 @@ Route::get('/analytics',[AnalyticsController::class,'index']);
     Route::post('/read-all', [App\Http\Controllers\Assistant\NotificationController::class, 'markAllAsRead']);
     Route::post('/archive-all', [App\Http\Controllers\Assistant\NotificationController::class, 'archiveAll']);
 });
-Route::get('/me', [ApiAssistantProfileController::class, 'show']);
-Route::put('/profile', [ApiAssistantProfileController::class, 'updateProfile']);
-Route::put('/profile/password', [ApiAssistantProfileController::class, 'updatePassword']);
-
-
 
         });
 

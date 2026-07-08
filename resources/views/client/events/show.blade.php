@@ -554,8 +554,8 @@ body:has(.event-show-container) {
                             <div class="planner-details">
                                 <h4>{{ $event->planner->name }}</h4>
                                 <p>{{ $event->planner->email }}</p>
-                               <a href="#" onclick="document.querySelector('.event-tab[data-tab=\'messages\']').click(); return false;" class="btn-message-planner">
-                                     <i class="fas fa-comment"></i> Send Message
+                                <a href="{{ route('client.events.messages.index', $event->id) }}" class="btn-message-planner">
+                                    <i class="fas fa-comment"></i> Send Message
                                 </a>
                             </div>
                         </div>
@@ -896,7 +896,7 @@ async function loadMessages() {
         
     } catch (error) {
         console.error('Error loading messages:', error);
-        document.getElementById('messagesBox').innerHTML = `
+        document.getElementById('messagesContainer').innerHTML = `
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
                 <p>Failed to load messages. Please refresh the page.</p>
@@ -906,7 +906,7 @@ async function loadMessages() {
 }
 
 function displayMessages(messages) {
-    const container = document.getElementById('messagesBox');
+    const container = document.getElementById('messagesContainer');
     container.innerHTML = '';
     
     if (messages.length === 0) {

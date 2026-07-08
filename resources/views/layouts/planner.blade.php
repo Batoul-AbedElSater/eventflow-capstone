@@ -770,7 +770,7 @@
     </a>
 </aside>
             <!-- Voice Commander Button -->
-          <button type="button" class="voice-commander-btn" id="voiceCommanderBtn"><i class="fas fa-microphone"></i></button>
+            <button class="voice-commander-btn" id="voiceCommanderBtn"><i class="fas fa-microphone"></i></button>
 
             <!-- Notifications Bell -->
             <div class="notifications" id="notificationBellBtn">
@@ -795,7 +795,14 @@
     <!-- DROPDOWN -->
     <div class="dropdown-menu" id="profileDropdownMenu">
 
-       
+        <!-- INSIDE MENU PROFILE (optional smaller preview) -->
+        <div class="dropdown-profile">
+            <img src="{{ $avatar }}" alt="Profile">
+            <span>{{ Auth::user()->name }}</span>
+        </div>
+
+        <hr>
+
         <a href="{{ route('planner.profile') }}">
             <i class="fas fa-user"></i> My Profile
         </a>
@@ -830,7 +837,7 @@
         <div class="voice-modal-content">
             <button class="voice-close-btn" id="voiceCloseBtn"><i class="fas fa-times"></i></button>
             <div class="voice-header">
-              <div class="voice-icon-pulse" id="voiceIconPulse">
+               <div class="voice-icon-pulse listening" id="voiceIconPulse">
                     <div class="pulse-ring"></div><div class="pulse-ring"></div>
                     <i class="fas fa-microphone"></i>
                 </div>
@@ -865,14 +872,13 @@
                 <div class="notif-stat-card unread"><div class="stat-icon"><i class="fas fa-envelope"></i></div><div class="stat-info"><strong id="modalStatUnread">0</strong><span>Unread</span></div></div>
                 <div class="notif-stat-card urgent"><div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div><div class="stat-info"><strong id="modalStatUrgent">0</strong><span>Urgent</span></div></div>
             </div>
-       <div class="notif-filter-tabs">
-    <button class="notif-tab active" data-filter="all"><i class="fas fa-inbox"></i> All</button>
-    <button class="notif-tab" data-filter="request"><i class="fas fa-calendar-plus"></i> Requests</button>
-    <button class="notif-tab" data-filter="message"><i class="fas fa-envelope"></i> Messages</button>
-    <button class="notif-tab" data-filter="order"><i class="fas fa-shopping-cart"></i> Orders</button>
-    <button class="notif-tab" data-filter="task"><i class="fas fa-tasks"></i> Tasks</button>
-    <button class="notif-tab" data-filter="urgent"><i class="fas fa-exclamation-triangle"></i> Urgent</button>
-</div>
+            <div class="notif-filter-tabs">
+                <button class="notif-tab active" data-filter="all"><i class="fas fa-inbox"></i> All</button>
+                <button class="notif-tab" data-filter="request"><i class="fas fa-calendar-plus"></i> Requests</button>
+                <button class="notif-tab" data-filter="message"><i class="fas fa-envelope"></i> Messages</button>
+                <button class="notif-tab" data-filter="task"><i class="fas fa-tasks"></i> Tasks</button>
+                <button class="notif-tab" data-filter="urgent"><i class="fas fa-exclamation-triangle"></i> Urgent</button>
+            </div>
             <div class="notif-list" id="notifModalList"></div>
             <div class="notif-modal-actions">
                 <button class="notif-action-btn primary" id="modalMarkAllRead"><i class="fas fa-check-double"></i> Mark All Read</button>
@@ -882,7 +888,7 @@
     </div>
     <!-- JavaScript -->
     <script src="{{ asset('js/planner-dashboard.js') }}"></script>
-   
+    <script src="{{ asset('js/mood-voice-common.js') }}"></script>
 
     <!-- Dropdown chevron rotation (click toggle) -->
     <script>
@@ -923,130 +929,6 @@
                 }
             })();
 
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const voiceBtn = document.getElementById('voiceCommanderBtn');
-    const voiceModal = document.getElementById('voiceCommanderModal');
-    const closeBtn = document.getElementById('voiceCloseBtn');
-    const overlay = voiceModal?.querySelector('.voice-modal-overlay');
-    const toggleBtn = document.getElementById('voiceToggleBtn');
-    const status = document.getElementById('voiceStatus');
-    const transcript = document.getElementById('voiceTranscript');
-    const voiceIcon = document.getElementById('voiceIconPulse');
-
-    if (!voiceBtn || !voiceModal || !toggleBtn || !voiceIcon) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    let isListening = false;
-
-    function setStopped(message = 'Click Start Listening') {
-        isListening = false;
-        voiceIcon.classList.remove('listening');
-        toggleBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Listening';
-        status.textContent = message;
-    }
-
-    function resetVoice() {
-        transcript.textContent = '';
-        setStopped('Click Start Listening');
-    }
-
-    resetVoice();
-
-    voiceBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        resetVoice();
-        voiceModal.classList.add('active');
-    });
-
-    function stopListening(message = 'Stopped. Click Start Listening') {
-        if (recognition) {
-            try {
-                recognition.stop();
-            } catch (error) {}
-        }
-
-        setStopped(message);
-    }
-
-    function closeVoiceModal() {
-        stopListening('Click Start Listening');
-        voiceModal.classList.remove('active');
-    }
-
-    closeBtn?.addEventListener('click', closeVoiceModal);
-    overlay?.addEventListener('click', closeVoiceModal);
-
-    if (!SpeechRecognition) {
-        setStopped('Voice recognition is not supported. Use Chrome or Edge.');
-        toggleBtn.disabled = true;
-        return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-
-    toggleBtn.addEventListener('click', function () {
-        if (isListening) {
-            stopListening();
-        } else {
-            startListening();
-        }
-    });
-
-    function startListening() {
-        transcript.textContent = '';
-        status.textContent = 'Starting...';
-
-        try {
-            recognition.start();
-        } catch (error) {
-            setStopped('Could not start listening. Try again.');
-        }
-    }
-
-    recognition.onstart = function () {
-        isListening = true;
-        voiceIcon.classList.add('listening');
-        status.textContent = 'Listening...';
-        toggleBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Listening';
-    };
-
-    recognition.onend = function () {
-        isListening = false;
-        voiceIcon.classList.remove('listening');
-        toggleBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Listening';
-
-        if (status.textContent === 'Listening...' || status.textContent === 'Starting...') {
-            status.textContent = 'Click Start Listening';
-        }
-    };
-
-    recognition.onerror = function (event) {
-        if (event.error === 'not-allowed') {
-            setStopped('Microphone permission was blocked.');
-        } else if (event.error === 'no-speech') {
-            setStopped('No speech detected. Try again.');
-        } else {
-            setStopped('Voice error: ' + event.error);
-        }
-    };
-
-    recognition.onresult = function (event) {
-        let text = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            text += event.results[i][0].transcript;
-        }
-
-        transcript.textContent = text;
-    };
-});
 </script>
 </body>
 </html>

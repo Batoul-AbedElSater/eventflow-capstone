@@ -619,16 +619,6 @@ background-color: var(--cream);
     transform: translateY(-3px);
     box-shadow: 0 15px 40px rgba(225,145,132,0.7);
 }
-
-.header::after {
-    pointer-events: none;
-}
-
-.header-left,
-.header-right {
-    position: relative;
-    z-index: 1;
-}
     </style>
     @stack('styles')
 </head>
@@ -663,7 +653,7 @@ background-color: var(--cream);
     <div class="header-right">
 
         <!-- VOICE -->
-   <button type="button" class="voice-commander-btn" id="voiceCommanderBtn">
+        <button class="voice-commander-btn" id="voiceCommanderBtn">
             <i class="fas fa-microphone"></i>
         </button>
 
@@ -685,8 +675,15 @@ background-color: var(--cream);
             <!-- DROPDOWN -->
             <div class="dropdown-menu" id="profileDropdownMenu">
 
+                <div class="dropdown-profile">
+                    <img class="profile-avatar-large" src="{{ $avatar }}" alt="Profile">
+                    <div>
+                        <strong>{{ $name }}</strong>
+                        <div style="font-size:12px; opacity:0.7;">Client Account</div>
+                    </div>
+                </div>
 
-              
+                <hr>
 
                 <a href="{{ route('client.profile') }}">
                     <i class="fas fa-user"></i> Profile
@@ -804,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="voice-modal-content">
             <button class="voice-close-btn" id="voiceCloseBtn"><i class="fas fa-times"></i></button>
             <div class="voice-header">
-          <div class="voice-icon-pulse" id="voiceIconPulse">
+           <div class="voice-icon-pulse listening" id="voiceIconPulse">
                     <div class="pulse-ring"></div>
                     <div class="pulse-ring"></div>
                     <i class="fas fa-microphone"></i>
@@ -821,151 +818,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     <span class="chip">"Show guests"</span>
                 </div>
             </div>
-            <div  class="voice-transcript" id="voiceTranscript"></div>
+            <div class="voice-transcript" id="voiceTranscript"></div>
             <button class="btn-voice-toggle" id="voiceToggleBtn">
                 <i class="fas fa-microphone"></i> Start Listening
             </button>
         </div>
     </div>
 
- <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const voiceBtn = document.getElementById('voiceCommanderBtn');
-    const voiceModal = document.getElementById('voiceCommanderModal');
-    const closeBtn = document.getElementById('voiceCloseBtn');
-    const overlay = voiceModal?.querySelector('.voice-modal-overlay');
-    const toggleBtn = document.getElementById('voiceToggleBtn');
-    const status = document.getElementById('voiceStatus');
-    const transcript = document.getElementById('voiceTranscript');
-    const voiceIcon = document.getElementById('voiceIconPulse');
-
-    if (!voiceBtn || !voiceModal || !toggleBtn) return;
-
-    voiceIcon?.classList.remove('listening');
-
-    voiceBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        voiceModal.classList.add('active');
-    });
-
-    function closeVoiceModal() {
-        stopListening();
-        voiceModal.classList.remove('active');
-    }
-
-    closeBtn?.addEventListener('click', closeVoiceModal);
-    overlay?.addEventListener('click', closeVoiceModal);
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-        status.textContent = 'Voice recognition is not supported in this browser. Use Chrome or Edge.';
-        toggleBtn.disabled = true;
-        return;
-    }
-
-    const routes = {
-        dashboard: @json(route('client.dashboard')),
-        events: @json(route('client.events.index')),
-        messages: @json(route('client.messages')),
-        profile: @json(route('client.profile')),
-        settings: @json(route('client.settings.index')),
-        createEvent: @json(url('/client/events/create')),
-        guests: @json(url('/client/guests'))
-    };
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-
-    let isListening = false;
-
-    toggleBtn.addEventListener('click', function () {
-        if (isListening) {
-            stopListening();
-        } else {
-            startListening();
-        }
-    });
-
-    function startListening() {
-        transcript.textContent = '';
-        status.textContent = 'Listening... allow microphone access if asked.';
-        recognition.start();
-    }
-
-    function stopListening() {
-        if (isListening) {
-            recognition.stop();
-        }
-    }
-
-    recognition.onstart = function () {
-        isListening = true;
-        voiceIcon?.classList.add('listening');
-        toggleBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Listening';
-    };
-
-    recognition.onend = function () {
-        isListening = false;
-        voiceIcon?.classList.remove('listening');
-        toggleBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Listening';
-        if (status.textContent === 'Listening... allow microphone access if asked.') {
-            status.textContent = 'Click Start Listening';
-        }
-    };
-
-    recognition.onerror = function (event) {
-        status.textContent = 'Voice error: ' + event.error;
-    };
-
-    recognition.onresult = function (event) {
-        let finalText = '';
-        let interimText = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            const text = event.results[i][0].transcript;
-
-            if (event.results[i].isFinal) {
-                finalText += text;
-            } else {
-                interimText += text;
-            }
-        }
-
-        transcript.innerHTML = `
-            <div class="transcript-final">${finalText}</div>
-            <div class="transcript-interim">${interimText}</div>
-        `;
-
-        if (finalText.trim()) {
-            handleVoiceCommand(finalText.toLowerCase());
-        }
-    };
-
-    function handleVoiceCommand(command) {
-        let target = null;
-
-        if (command.includes('dashboard')) target = routes.dashboard;
-        else if (command.includes('event') && command.includes('create')) target = routes.createEvent;
-        else if (command.includes('event')) target = routes.events;
-        else if (command.includes('message')) target = routes.messages;
-        else if (command.includes('guest')) target = routes.guests;
-        else if (command.includes('profile')) target = routes.profile;
-        else if (command.includes('settings')) target = routes.settings;
-
-        if (target) {
-            status.textContent = 'Opening...';
-            setTimeout(() => {
-                window.location.href = target;
-            }, 600);
-        } else {
-            status.textContent = 'Command not recognized. Try: show my events.';
-        }
-    }
-});
-</script>
 
 </body>
 </html>

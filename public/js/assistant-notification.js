@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const notifModalList = document.getElementById('notifModalList');
 
     let notifications = [];
-    let currentFilter = 'all';
 
     // Fetch notifications
     async function fetchNotifications() {
@@ -61,17 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             notificationModal.classList.remove('active');
         });
     }
-    document.querySelectorAll('.notif-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-        document.querySelectorAll('.notif-tab').forEach(function(item) {
-            item.classList.remove('active');
-        });
-
-        this.classList.add('active');
-        currentFilter = this.dataset.filter || 'all';
-        renderModalNotifications();
-    });
-});
 
     // Click outside to close
     if (notificationModal) {
@@ -103,26 +91,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Render modal notifications
-  function renderModalNotifications() {
-    if (!notifModalList) return;
+    function renderModalNotifications() {
+        if (!notifModalList) return;
 
-    const visibleNotifications = notifications.filter(matchesNotificationFilter);
+        console.log('Rendering notifications, count:', notifications.length);
 
-    console.log('Rendering notifications, count:', notifications.length);
+        if (notifications.length === 0) {
+            notifModalList.innerHTML = `
+                <div class="notif-empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No task assignments yet</p>
+                </div>
+            `;
+            return;
+        }
 
-    if (visibleNotifications.length === 0) {
-        notifModalList.innerHTML = `
-            <div class="notif-empty-state">
-                <i class="fas fa-inbox"></i>
-                <p>${getEmptyNotificationMessage()}</p>
-            </div>
-        `;
-        return;
-    }
+        notifModalList.innerHTML = '';
 
-    notifModalList.innerHTML = '';
-
-    visibleNotifications.forEach(function(notification) {
+        notifications.forEach(function(notification) {
             const item = document.createElement('div');
             item.className = 'notif-modal-item ' + (notification.is_read ? 'read' : 'unread');
             
@@ -277,27 +263,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
         }
     }
-
-function matchesNotificationFilter(notification) {
-    var type = (notification.type || '').toLowerCase();
-    var priority = (notification.priority || '').toLowerCase();
-
-    if (currentFilter === 'task') {
-        return type.includes('task');
-    }
-
-    if (currentFilter === 'urgent') {
-        return priority === 'urgent';
-    }
-
-    return true;
-}
-
-function getEmptyNotificationMessage() {
-    if (currentFilter === 'task') return 'No task notifications found';
-    if (currentFilter === 'urgent') return 'No urgent notifications found';
-    return 'No notifications found';
-}
 
     async function archiveNotification(id) {
         try {

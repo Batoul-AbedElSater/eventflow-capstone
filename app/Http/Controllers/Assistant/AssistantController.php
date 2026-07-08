@@ -111,7 +111,7 @@ class AssistantController extends Controller
     return view('assistant.task-vendors', compact('task'));
 }
 
-public function vendorShow($taskId, $vendorId)
+public function vendorShow($vendorId)
 {
     $vendor = \App\Models\Vendor::findOrFail($vendorId);
     return view('assistant.vendor-details', compact('vendor'));
