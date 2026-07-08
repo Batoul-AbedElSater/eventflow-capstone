@@ -83,7 +83,7 @@
     <div class="card time-machine-card">
         <div class="card-header">
             <h3><i class="fas fa-history"></i> Time Machine - Your Journey</h3>
-            <span class="badge green">{{ date('Y') }}</span>
+           
         </div>
         <div class="card-body">
             <div class="time-machine-timeline">
@@ -132,44 +132,12 @@
 
     <div style="height: 50px;"></div>
 
-    {{-- RAPID FIRE MODE --}}
-       
-<div class="card rapid-fire-card">
-    <div class="card-header">
-        <h3><i class="fas fa-bolt"></i> Rapid Fire Mode</h3>
-        <span class="badge hunter">Complete tasks super fast!</span>
-    </div>
-    <div class="card-body">
-        @if($todayTasks->count() > 0)
-            <div id="rapidFireContainer" data-tasks='@json($todayTasks->values())' data-csrf="{{ csrf_token() }}">
-                <div class="rapid-fire-task">
-                    <div class="task-counter">TASK 1 of {{ $todayTasks->count() }}</div>
-                    <h4 id="taskTitle">{{ $todayTasks[0]->title }}</h4>
-                    <p class="task-event-name"><i class="fas fa-calendar"></i> {{ $todayTasks[0]->event->name }}</p>
-                    <div class="rapid-fire-actions">
-                        <button class="rapid-btn done" id="doneBtn"><i class="fas fa-check"></i> Done</button>
-                        <button class="rapid-btn skip" id="skipBtn"><i class="fas fa-arrow-right"></i> Skip</button>
-                        <button class="rapid-btn remind" id="remindBtn"><i class="fas fa-clock"></i> Remind Later</button>
-                    </div>
-                </div>
-                <div class="rapid-fire-progress">
-                    <div class="progress-bar-rapid"><div class="progress-fill-rapid" style="width: 0%"></div></div>
-                    <span class="progress-text">Progress: 0/{{ $todayTasks->count() }} tasks</span>
-                </div>
-                <div class="rapid-fire-streak"><i class="fas fa-fire"></i><span>Streak: 0 tasks in a row!</span></div>
-            </div>
-        @else
-            <div class="empty-state-small"><i class="fas fa-check-circle"></i><p>All tasks completed! Enjoy your productive day! 🎉</p></div>
-        @endif
-    </div>
-</div>
-
-    <div style="height: 50px;"></div>
+   
 
     {{-- CONFLICT DETECTOR --}}
     @if(count($conflicts) > 0)
         <div class="card">
-            <div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Conflict Detector</h3><span class="badge hunter">{{ count($conflicts) }} detected</span></div>
+            <div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Conflict Detector</h3></div>
             <div class="card-body">
                 @foreach($conflicts as $conflict)
                     <div class="conflict-alert">
@@ -190,7 +158,7 @@
     {{-- EVENT HEALTH MONITOR --}}
     @if(count($eventHealth) > 0)
         <div class="card">
-            <div class="card-header"><h3><i class="fas fa-heartbeat"></i> Event Health Monitor</h3><span class="badge green">AI Powered</span></div>
+           <div class="card-header"><h3><i class="fas fa-heartbeat"></i> Event Health Monitor</h3></div>
             <div class="card-body">
                 <div class="health-grid">
                     @foreach($eventHealth as $health)
@@ -273,7 +241,7 @@
 
     {{-- CLIENT HAPPINESS METER (always visible) --}}
 <div class="card">
-    <div class="card-header"><h3><i class="fas fa-smile"></i> Client Happiness</h3><span class="badge berry">AI Insights</span></div>
+<div class="card-header"><h3><i class="fas fa-smile"></i> Client Happiness</h3></div>
     <div class="card-body">
         @if(count($clientHappiness) > 0)
             <div class="happiness-grid">

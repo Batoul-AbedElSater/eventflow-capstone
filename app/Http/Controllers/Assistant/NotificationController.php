@@ -74,7 +74,7 @@ class NotificationController extends Controller
             'urgent' => Notification::where('user_id', $userId)
                 ->active()
                 ->where('is_read', false)
-                ->whereIn('priority', ['high', 'urgent'])
+             ->where('priority', 'urgent')
                 ->count(),
         ]);
     }
