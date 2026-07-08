@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let recognition = null;
     let isListening = false;
 
+
     // Check if browser supports speech recognition
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -498,15 +499,39 @@ function processVoiceCommand(command) {
     function renderModalNotifications() {
         if (!notifModalList) return;
 
-        let filteredNotifs = notifications;
-        
-        if (currentFilter !== 'all') {
-            if (currentFilter === 'urgent') {
-                filteredNotifs = notifications.filter(n => n.priority === 'urgent');
-            } else {
-                filteredNotifs = notifications.filter(n => n.type === currentFilter);
-            }
+let filteredNotifs = notifications;
+
+if (currentFilter !== 'all') {
+    filteredNotifs = notifications.filter(function(n) {
+        const type = (n.type || '').toLowerCase();
+        const priority = (n.priority || '').toLowerCase();
+        const title = (n.title || '').toLowerCase();
+        const message = (n.message || '').toLowerCase();
+
+        const isOrder =
+            type.includes('order') ||
+            title.includes('order') ||
+            message.includes('order');
+
+        if (currentFilter === 'urgent') {
+            return priority === 'urgent';
         }
+
+        if (currentFilter === 'order') {
+            return isOrder;
+        }
+
+        if (currentFilter === 'task') {
+            return !isOrder && (
+                type.includes('task') ||
+                title.includes('task')
+            );
+        }
+
+        return type.includes(currentFilter) ||
+               title.includes(currentFilter);
+    });
+}
 
         if (filteredNotifs.length === 0) {
             notifModalList.innerHTML = `

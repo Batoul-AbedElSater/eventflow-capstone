@@ -12,24 +12,43 @@
                 <h3><i class="fas fa-calendar-alt"></i> Your Events</h3>
             </div>
             <div class="events-list-epic">
-                     @forelse($events as $event)
-                        <div class="event-card-epic"
-                            data-event-id="{{ $event->id }}"
-                            data-event-name="{{ $event->name }}"
-                            data-planner-name="{{ $event->planner->name ?? 'Planner' }}"
-                            onclick="loadMessagesFromCard(this)">
-                            <div class="event-card-content">
-                                <div class="event-icon">
-                                    <i class="fas fa-calendar-check"></i>
-                                </div>
-                                <div class="event-details">
-                                    <h4>{{ Str::limit($event->name, 25) }}</h4>
-                                    <p><i class="fas fa-user-tie"></i> {{ $event->planner->name ?? 'Planner' }}</p>
-                                    <span class="event-date">{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        @empty
+             @forelse($events as $event)
+ <div class="event-card-epic"
+    data-event-id="{{ $event->id }}"
+    data-event-name="{{ $event->name }}"
+    data-planner-name="{{ $event->planner->name ?? 'Planner' }}"
+    onclick="loadMessagesFromCard(this)">
+    <div class="event-card-content" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="event-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="event-details">
+                <h4>{{ Str::limit($event->name, 25) }}</h4>
+                <p><i class="fas fa-user-tie"></i> {{ $event->planner->name ?? 'Planner' }}</p>
+                <span class="event-date">{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</span>
+            </div>
+        </div>
+       @if($event->unread_count > 0)
+    <span data-unread-badge="{{ $event->id }}" style="
+        background: #C63E4E;
+        color: #FFFFFF;
+        min-width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 0 4px;
+        flex-shrink: 0;
+        margin-left: auto;
+    ">{{ $event->unread_count }}</span>
+@endif
+    </div>
+</div>
+@empty
                 <div class="empty-state">
                     <i class="fas fa-calendar-times"></i>
                     <p>No events yet</p>
