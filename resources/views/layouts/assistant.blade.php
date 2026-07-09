@@ -691,7 +691,6 @@
         <div class="notif-filter-tabs">
             <button class="notif-tab active" data-filter="all"><i class="fas fa-inbox"></i> All</button>
             <button class="notif-tab" data-filter="task"><i class="fas fa-tasks"></i> Tasks</button>
-            <button class="notif-tab" data-filter="order"><i class="fas fa-shopping-cart"></i> Orders</button>
             <button class="notif-tab" data-filter="urgent"><i class="fas fa-exclamation-triangle"></i> Urgent</button>
         </div>
         <div class="notif-list" id="notifModalList"></div>

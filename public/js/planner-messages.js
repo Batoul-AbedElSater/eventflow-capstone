@@ -15,6 +15,9 @@ window.loadMessagesFromCard = function(element) {
     const eventName = element.dataset.eventName;
     const clientName = element.dataset.clientName;
     
+    const badge = element.querySelector('[data-unread-badge]');
+    if (badge) badge.remove();
+    
     loadMessages(eventId, eventName, clientName);
 }
 

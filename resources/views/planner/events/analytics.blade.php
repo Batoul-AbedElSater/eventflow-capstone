@@ -157,7 +157,7 @@
     <div class="card predictions-card">
         <div class="card-header">
             <h3><i class="fas fa-brain"></i> Predictions & Insights</h3>
-            <span class="badge green">Remeber</span>
+         
         </div>
         <div class="card-body">
             <div class="predictions-grid">
