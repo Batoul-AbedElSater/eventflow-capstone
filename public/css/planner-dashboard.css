@@ -650,37 +650,7 @@ body::before {
     padding: 28px;
 }
 
-/* ============================================
-   BADGES
-   ============================================ */
-.badge {
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
 
-.badge.coral {
-    background: rgba(225, 145, 132, 0.15);
-    color: var(--coral-haze);
-}
-
-.badge.berry {
-    background: rgba(198, 62, 78, 0.15);
-    color: var(--calypso-berry);
-}
-
-.badge.green {
-    background: rgba(71, 91, 53, 0.15);
-    color: var(--garden-green);
-}
-
-.badge.hunter {
-    background: rgba(98, 6, 7, 0.15);
-    color: var(--vampire-hunter);
-}
 
 /* ============================================
    TASK ITEMS
@@ -2516,25 +2486,9 @@ body::before {
 /* ============================================
    RAPID FIRE MODE
    ============================================ */
-.rapid-fire-card {
-    background: linear-gradient(135deg, var(--white), var(--peach-cream));
-    border: 2px solid var(--calypso-berry);
-}
 
-.rapid-fire-container {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
 
-.rapid-fire-task {
-    background: var(--white);
-    border-radius: 18px;
-    padding: 35px;
-    text-align: center;
-    border: 3px solid var(--coral-haze);
-    box-shadow: var(--shadow-md);
-}
+
 
 .task-counter {
     display: inline-block;
@@ -5058,3 +5012,4 @@ body.mood-sleepy .voice-modal-content {
     font-size: 14px;
     color: #475B35;
 }
+

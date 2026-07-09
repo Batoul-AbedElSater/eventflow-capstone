@@ -8,6 +8,7 @@ use App\Models\UserPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class SettingsController extends Controller
 {
@@ -281,6 +282,43 @@ $user->update(['profile_photo_path' => $path]);
         ]);
     }
 
+    // ========== DELETE ACCOUNT ==========
+    public function deleteAccount(Request $request)
+    {
+        try {
+            $request->validate([
+                'confirmation' => 'required|accepted',
+                'password' => 'required|current_password',
+            ]);
+
+            $user = auth()->user();
+
+            if ($user->profile_photo_path) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+            }
+
+            auth()->logout();
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Account deleted permanently!'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Account deletion error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     // ========== PRIVATE HELPER ==========
     private function getBusinessStats($user)
     {
@@ -291,4 +329,6 @@ $user->update(['profile_photo_path' => $path]);
             'total_revenue' => $user->plannerEvents()->sum('budget_overall'),
         ];
     }
+
+    
 }
