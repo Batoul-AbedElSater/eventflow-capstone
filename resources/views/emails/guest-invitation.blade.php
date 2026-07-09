@@ -19,19 +19,11 @@ style="background:#FFFFFF; border-radius:24px; overflow:hidden; box-shadow:0 18p
 <!-- HERO -->
 <tr>
 <td style="background: linear-gradient(135deg, #C63E4E 0%, #C63E4E 100%);
-           padding:65px 40px; text-align:center;">
+           padding:15px 10px; text-align:center;">
 
-    <div style="font-size:12px; letter-spacing:3px; color:rgba(255,255,255,0.8);">
-        A PERSONAL INVITATION
-    </div>
-
-    <h1 style="margin:18px 0 10px; font-size:46px; color:#fff; font-weight:900;">
+    <h1 style="margin:18px 0 10px;font-style: italic; font-size:30px;font-family:'DM Serif Display',serif; color:#fff; font-weight:900;">
         Something Beautiful Awaits
     </h1>
-
-    <p style="margin:0; font-size:16px; color:rgba(255,255,255,0.9); line-height:1.6;">
-        Not just an event — but a moment made to be remembered.
-    </p>
 
 </td>
 </tr>
@@ -41,26 +33,22 @@ style="background:#FFFFFF; border-radius:24px; overflow:hidden; box-shadow:0 18p
 <td style="padding:42px;">
 
     <!-- INTRO -->
-    <p style="font-size:18px; color:#2C3E50; margin:0 0 12px;">
+    <p style="font-size:18px; color:#2C3E50; margin:2px 0 5px 0;">
         Dear <strong>{{ $guest->name }}</strong>,
     </p>
 
-    <p style="font-size:15px; color:#666; margin:0 0 28px; line-height:1.8;">
-        Some invitations are ordinary. This one is not.
+    <p style="font-size:14px; color:#666; margin:0 0 24px; line-height:1.5;">
+
         You are warmly invited to join us for a carefully crafted experience filled with moments, memories, and meaning.
     </p>
 
     <!-- EVENT TITLE BLOCK -->
-    <div style="text-align:center; margin-bottom:25px;">
-        <div style="display:inline-block; padding:8px 18px; background:#F8F9FA; border-radius:50px; font-size:12px; color:#C63E4E; letter-spacing:2px;">
-            EVENT DETAILS
-        </div>
+    <div style="text-align:center; margin-bottom:20px;">
 
-        <h2 style="margin:18px 0 0; font-size:28px; color:#620607; font-weight:900;">
+        <h2 style="margin:10px 0 0; font-size:28px; color:#620607; font-weight:900;">
             {{ $event->name }}
         </h2>
 
-        <div style="width:70px; height:3px; background:#C63E4E; margin:12px auto 0; border-radius:5px;"></div>
     </div>
 
     <!-- DETAILS BLOCK -->
@@ -101,39 +89,25 @@ style="background:#FFFFFF; border-radius:24px; overflow:hidden; box-shadow:0 18p
         <tr>
             <td style="color:#888; font-weight:600;">Plus One</td>
             <td style="color:#C63E4E; font-weight:800;">
-                ✨ Welcome to bring someone special
+                 Welcome to bring someone special
             </td>
         </tr>
         @endif
 
     </table>
 
-    <!-- DESCRIPTION -->
-    @if($event->description)
-    <div style="margin-top:25px; padding:18px; border-left:4px solid #E19184; background:#FFFFFF; border-radius:10px;">
-        <p style="margin:0; font-size:14px; color:#555; line-height:1.8;">
-            <strong style="color:#620607;">A little note from us:</strong><br>
-            {{ $event->description }}
-        </p>
-    </div>
-    @endif
-
     <!-- CTA -->
-    <div style="text-align:center; margin:40px 0 20px;">
-
-        <p style="margin:0 0 15px; font-size:14px; color:#777;">
-            Your presence would mean everything.
-        </p>
+    <div style="text-align:center; margin:30px 0 20px;">
 
         <a href="{{ $rsvpUrl }}"
            style="display:inline-block;
-                  padding:17px 52px;
-                  background:linear-gradient(135deg,#475B35,#475B35);
+                  padding:15px 20px;
+                  background:#C63E4E;
                   color:#fff;
                   text-decoration:none;
                   border-radius:60px;
-                  font-size:16px;
-                  font-weight:800;
+                  font-size:14px;
+                  font-weight:600;
                   box-shadow:0 12px 30px rgba(198,62,78,0.35);">
 
             Reserve Your Spot
@@ -142,23 +116,13 @@ style="background:#FFFFFF; border-radius:24px; overflow:hidden; box-shadow:0 18p
 
     </div>
 
-    <!-- LINK -->
-    <div style="text-align:center; margin-top:10px;">
-        <p style="font-size:12px; color:#999;">
-            If the button doesn’t work, copy this link:
-        </p>
-        <p style="font-size:12px; color:#C63E4E; word-break:break-all;">
-            {{ $rsvpUrl }}
-        </p>
-    </div>
-
     <!-- SIGNATURE -->
-    <div style="margin-top:45px;">
+    <div style="margin-top:30px;">
         <p style="margin:0; font-size:15px; color:#2C3E50;">
-            With anticipation and warmth,
+            With love,
         </p>
 
-        <p style="margin:10px 0 0; font-size:16px; font-weight:800; color:#620607;">
+        <p style="margin:5px 0 0; font-size:16px; font-weight:800; color:#620607;">
             {{ $event->client->name }}
         </p>
     </div>

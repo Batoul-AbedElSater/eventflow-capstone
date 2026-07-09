@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="dashboard-container">
-    
+
     {{-- Flash Messages --}}
     @if(session('success'))
         <div class="alert alert-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
@@ -83,7 +83,7 @@
     <div class="card time-machine-card">
         <div class="card-header">
             <h3><i class="fas fa-history"></i> Time Machine - Your Journey</h3>
-            <span class="badge green">{{ date('Y') }}</span>
+
         </div>
         <div class="card-body">
             <div class="time-machine-timeline">
@@ -133,11 +133,10 @@
     <div style="height: 50px;"></div>
 
     {{-- RAPID FIRE MODE --}}
-       
+
 <div class="card rapid-fire-card">
     <div class="card-header">
         <h3><i class="fas fa-bolt"></i> Rapid Fire Mode</h3>
-        <span class="badge hunter">Complete tasks super fast!</span>
     </div>
     <div class="card-body">
         @if($todayTasks->count() > 0)
@@ -190,7 +189,7 @@
     {{-- EVENT HEALTH MONITOR --}}
     @if(count($eventHealth) > 0)
         <div class="card">
-            <div class="card-header"><h3><i class="fas fa-heartbeat"></i> Event Health Monitor</h3><span class="badge green">AI Powered</span></div>
+            <div class="card-header"><h3><i class="fas fa-heartbeat"></i> Event Health Monitor</h3></div>
             <div class="card-body">
                 <div class="health-grid">
                     @foreach($eventHealth as $health)
@@ -273,7 +272,7 @@
 
     {{-- CLIENT HAPPINESS METER (always visible) --}}
 <div class="card">
-    <div class="card-header"><h3><i class="fas fa-smile"></i> Client Happiness</h3><span class="badge berry">AI Insights</span></div>
+    <div class="card-header"><h3><i class="fas fa-smile"></i> Client Happiness</h3></div>
     <div class="card-body">
         @if(count($clientHappiness) > 0)
             <div class="happiness-grid">
@@ -355,7 +354,7 @@ if (rapidContainer) {
     const doneBtn = document.getElementById('doneBtn');
     const skipBtn = document.getElementById('skipBtn');
     const remindBtn = document.getElementById('remindBtn');
-    
+
     function updateDisplay() {
         if (currentIndex < tasks.length) {
             const task = tasks[currentIndex];
@@ -372,7 +371,7 @@ if (rapidContainer) {
         if (progressText) progressText.textContent = `Progress: ${completedCount}/${tasks.length} tasks`;
         if (streakSpan) streakSpan.textContent = `Streak: ${streak} tasks in a row!`;
     }
-    
+
   async function completeTask(taskId) {
     try {
         const response = await fetch(`/planner/tasks/${taskId}/status`, {
@@ -395,7 +394,7 @@ if (rapidContainer) {
         alert('Could not update task. Please refresh and try again.');
     }
 }
-    
+
     doneBtn?.addEventListener('click', () => {
         const taskId = doneBtn.getAttribute('data-task-id');
         completeTask(taskId);

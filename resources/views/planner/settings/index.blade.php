@@ -3,11 +3,6 @@
 @section('content')
 <div class="settings-shell">
     <div class="settings-grid">
-        <section class="settings-card settings-card-header">
-            <span class="settings-chip">Planner Settings</span>
-            <h1>Planner Settings</h1>
-            <p>A premium planner control panel that keeps notification settings and account actions clear, polished, and easy to manage.</p>
-        </section>
 
         <section class="settings-card settings-card-panel settings-card-notification">
             <div class="card-row">
@@ -102,6 +97,15 @@
         --accent-soft: rgba(198,62,78,.12);
         --success: #4B6F42;
         --danger: #620607;
+
+         --coral: #E19184;
+        --berry: #C63E4E;
+        --vampire: #620607;
+        --cream: #EFE7DA;
+        --white: #FFFFFF;
+        --amnesiac: #F5F9E5;
+        --green: #475B35;
+        --green-dark: #2C3821;
     }
 
     .settings-shell{
@@ -110,7 +114,7 @@
         padding: 48px 30px 80px;
         font-family: 'Inter', system-ui, sans-serif;
         color: var(--text);
-        background: var(--bg);
+        background: var(--cream);
     }
 
     .settings-grid{
@@ -120,32 +124,9 @@
 
     .settings-card{
         border-radius: 32px;
-        background: var(--surface);
+        background: var(--white);
         border: 1px solid var(--border);
         box-shadow: 0 26px 78px rgba(98,6,7,.08);
-    }
-
-    .settings-card-header{
-        padding: 38px 34px;
-        background: linear-gradient(180deg, rgba(255,250,245,.96), rgba(238,224,214,.96));
-    }
-
-    .settings-chip{
-        display: inline-flex;
-        padding: 10px 16px;
-        border-radius: 999px;
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-weight: 800;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-        font-size: .8rem;
-    }
-
-    .settings-card-header h1{
-        margin: 22px 0 14px;
-        font-size: 2.8rem;
-        line-height: 1.05;
     }
 
     .settings-card-header p{
@@ -182,11 +163,12 @@
     .settings-card-panel h2{
         margin: 12px 0 0;
         font-size: 1.7rem;
+        color:var(--vampire);
     }
 
     .panel-copy{
         margin: 0;
-        color: var(--muted);
+        color: var(--green);
         line-height: 1.85;
     }
 
@@ -261,9 +243,9 @@
     }
 
     .button-danger{
-        background: linear-gradient(135deg, var(--danger), #A22430);
+        background: var(--vampire);
         color: #fff;
-        box-shadow: 0 18px 46px rgba(98,6,7,.18);
+
     }
 
     .toast{
@@ -284,4 +266,4 @@
         .settings-grid{ display: grid; }
     }
 </style>
-@endsection   
+@endsection

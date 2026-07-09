@@ -129,31 +129,31 @@
 }
     /* ===== VOICE COMMANDER BUTTON (circle, green border, only icon) ===== */
     .voice-commander-btn {
-        background: white;
-        border: 3px solid var(--green);
-        cursor: pointer;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      background: white;
+    border: 3px solid var(--vampire);
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
     .voice-commander-btn i {
-        font-size: 20px;
-        color: var(--green);
-        transition: all 0.3s;
+       font-size: 20px;
+    color: var(--vampire);
+    transition: all 0.3s;
     }
     .voice-commander-btn:hover {
         transform: translateY(-2px);
-        border-color: var(--green);
-        box-shadow: 0 8px 20px rgba(71,91,53,0.4);
+    border-color: var(--vampire);
+    box-shadow: 0 8px 20px rgba(71, 91, 53, 0.4);
     }
     .voice-commander-btn:hover i {
-        color: var(--green);
-        animation: micPulse 0.8s ease-in-out;
+        color: var(--vampire);
+    animation: micPulse 0.8s ease-in-out;
     }
     @keyframes micPulse {
         0%, 100% { transform: scale(1); }
@@ -182,7 +182,7 @@
     }
     .notifications i {
         font-size: 20px;
-        color: var(--green);
+        color: var(--vampire);
         transition: all 0.3s;
     }
     .notifications:hover i {
@@ -198,7 +198,7 @@
         position: absolute;
         top: -5px;
         right: -5px;
-        background: linear-gradient(135deg, var(--berry), var(--vampire));
+        background:var(--vampire);
         color: white;
         border-radius: 50%;
         width: 22px;
@@ -229,46 +229,39 @@
         background: white;
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        border: 3px solid var(--berry);
+        border: 3px solid var(--vampire);
     }
-    .profile-dropdown:hover {
-        transform: translateY(-2px);
-        border-color: var(--berry);
-        box-shadow: 0 10px 24px rgba(198,62,78,0.35);
-    }
+
     .profile-dropdown img {
         width: 42px;
         height: 42px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid var(--green);
+        border: 3px solid var(--vampire);
         transition: all 0.3s;
     }
-    .profile-dropdown:hover img {
-        border-color: var(--vampire);
-        transform: scale(1.05);
-    }
+
     .profile-dropdown span {
         font-family: 'Raleway', sans-serif;
         font-size: 15px;
         font-weight: 700;
-        color: var(--green);
+        color: var(--vampire);
         transition: all 0.3s;
     }
     .profile-dropdown:hover span {
-        color: var(--berry);
+        color: var(--vampire);
     }
     .profile-dropdown i {
         font-size: 13px;
-        color: var(--green);
+        color: var(--vampire);
         transition: transform 0.3s ease;
     }
     .profile-dropdown:hover i {
-        color: var(--berry);
+        color: var(--vampire);
     }
     .profile-dropdown.open i {
         transform: rotate(180deg);
-        color: var(--berry);
+        color: var(--vampire);
     }
 
     /* ===== DROPDOWN MENU (berry border) ===== */
@@ -282,7 +275,7 @@
         min-width: 240px;
         display: none;
         z-index: 1000;
-        border: 3px solid var(--berry);
+        border: 3px solid var(--vampire);
         overflow: hidden;
         animation: dropdownSlide 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -794,15 +787,6 @@
 
     <!-- DROPDOWN -->
     <div class="dropdown-menu" id="profileDropdownMenu">
-
-        <!-- INSIDE MENU PROFILE (optional smaller preview) -->
-        <div class="dropdown-profile">
-            <img src="{{ $avatar }}" alt="Profile">
-            <span>{{ Auth::user()->name }}</span>
-        </div>
-
-        <hr>
-
         <a href="{{ route('planner.profile') }}">
             <i class="fas fa-user"></i> My Profile
         </a>

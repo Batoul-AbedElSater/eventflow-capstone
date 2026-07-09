@@ -14,21 +14,21 @@ return new class extends Migration
         Schema::create('event_types', function (Blueprint $table) {
             // Primary Key
             $table->id();
-            
+
             // ✅ REQUIRED: Event type name (must be unique)
             // Examples: "Wedding", "Birthday", "Corporate Event"
             $table->string('name')->unique();
-            
+
             // ✅ NULLABLE: Default tasks for this event type
             // Stored as JSON array: ["Book venue", "Send invitations", "Arrange catering"]
             // Why nullable? New event types might not have default tasks defined yet
             $table->json('default_tasks')->nullable();
-            
+
             // ✅ NULLABLE: Description of the event type
             // Example: "Perfect for celebrating milestone birthdays with family and friends"
             // Why nullable? Admin can add this later
             $table->text('description')->nullable();
-            
+
             $table->timestamps();
         });
     }
