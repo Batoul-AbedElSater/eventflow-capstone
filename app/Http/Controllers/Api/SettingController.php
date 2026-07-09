@@ -4,40 +4,47 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\UserPreference;
 
 class SettingController extends Controller
 {
-     public function index(Request $request){
-$user=$request->user();
-return response()->json([
-    "success"=>true,
-    "data"=>[
-        "notifications"=>[
-'in_app_alerts'=>(bool)$user->in_app_alerts,
+public function index(Request $request)
+{
+    $user = $request->user();
+    $preferences = $user->preferences ?? new UserPreference();
+
+    return response()->json([
+        "success" => true,
+        "data" => [
+            "notifications" => [
+                "in_app_alerts" => (bool) ($preferences->in_app_notifications ?? true),
+            ],
         ],
-    ],
-]);
-    }
+    ]);
+}
     //update app_alerts
 
-    public function updateNotifications(Request $request){
-         $validated = $request->validate([
-            'in_app_alerts' => ['required', 'boolean'],
-        ]);
+   public function updateNotifications(Request $request)
+{
+    $validated = $request->validate([
+        'in_app_alerts' => ['required', 'boolean'],
+    ]);
 
-        $user = $request->user();
-        $user->update([
-            'in_app_alerts' => $validated['in_app_alerts'],
-        ]);
+    $user = $request->user();
+    $preferences = $user->preferences ?? new UserPreference();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Notification settings updated.',
-            'data' => [
-                'in_app_alerts' => (bool) $user->in_app_alerts,
-            ],
-        ]);
-    }
+    $preferences->user_id = $user->id;
+    $preferences->in_app_notifications = $validated['in_app_alerts'];
+    $preferences->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Notification settings updated.',
+        'data' => [
+            'in_app_alerts' => (bool) $preferences->in_app_notifications,
+        ],
+    ]);
+}
 // logout user
      public function logout(Request $request)
     {
