@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\Client\ProfileController as ApiClientProfileController;
 use App\Http\Controllers\Api\Planner\ProfileController as ApiPlannerProfileController;
 use App\Http\Controllers\Api\Assistant\ProfileController as ApiAssistantProfileController;
+use App\Http\Controllers\Api\Planner\BudgetAiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -175,6 +176,16 @@ Route::put('/profile/password', [ApiPlannerProfileController::class, 'updatePass
 
 //analytics
 Route::get('/analytics',[AnalyticsController::class,'index']);
+
+
+
+// budget ai
+Route::get('/events/{event}/budget/ai-draft', [BudgetAiController::class, 'show']);
+Route::post('/events/{event}/budget/generate', [BudgetAiController::class, 'generate']);
+
+
+
+
 });
 
 //Asistant

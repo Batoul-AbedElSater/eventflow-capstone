@@ -240,4 +240,9 @@ class Event extends Model
             'pending' => $this->guests()->where('rsvp_status', 'pending')->count(),
         ];
     }
+
+    public function aiBudgetDraft()
+{
+    return $this->hasOne(AiBudgetDraft::class);
+}
 }
