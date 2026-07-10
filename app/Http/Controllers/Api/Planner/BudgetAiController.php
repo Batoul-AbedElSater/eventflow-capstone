@@ -128,9 +128,13 @@ class BudgetAiController extends Controller
             'error' => $e->getMessage(),
         ]);
 
+        $message = app()->environment('local')
+            ? 'Failed to generate budget suggestions: ' . $e->getMessage()
+            : 'Failed to generate budget suggestions. Please try again.';
+
         return response()->json([
             'success' => false,
-            'message' => 'Failed to generate budget suggestions. Please try again.',
+            'message' => $message,
         ], 500);
     }
 }

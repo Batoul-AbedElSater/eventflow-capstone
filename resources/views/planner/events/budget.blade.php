@@ -383,9 +383,18 @@ function budgetGenerator(eventId) {
                     credentials: 'include',
                 });
 
-                const data = await response.json();
+                const contentType = response.headers.get('content-type') || '';
+                const isJson = contentType.includes('application/json');
+                const data = isJson ? await response.json() : null;
 
-                if (!data.success) {
+                if (!response.ok) {
+                    const serverMessage = data?.message
+                        || (isJson ? null : await response.text())
+                        || `Request failed with status ${response.status}`;
+                    throw new Error(serverMessage);
+                }
+
+                if (!data || !data.success) {
                     throw new Error(data.message || 'Failed to generate budget');
                 }
 
