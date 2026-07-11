@@ -4,22 +4,16 @@
 
 @section('content')
 <div class="planner-events-page">
-    
-    {{-- Ultra Luxury Header with Analytics --}}
+
     <div class="events-header-supreme">
         <div class="header-content-left">
-            <div class="header-icon-cosmic">
-                <i class="fas fa-calendar-star"></i>
-            </div>
             <div class="header-text">
                 <h1>Event Command Center</h1>
-                <p>Manage your events with style and precision</p>
             </div>
         </div>
-        
+
         <div class="header-stats-mini">
             <div class="stat-mini-card confirmed">
-                <div class="stat-mini-icon"><i class="fas fa-check-circle"></i></div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-number">{{ $stats['confirmed'] }}</span>
                     <span class="stat-mini-label">Confirmed</span>
@@ -27,15 +21,13 @@
             </div>
 
             <div class="stat-mini-card in-progress">
-                <div class="stat-mini-icon"><i class="fas fa-tasks"></i></div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-number">{{ $stats['in_progress'] }}</span>
                     <span class="stat-mini-label">In Progress</span>
                 </div>
             </div>
-            
+
             <div class="stat-mini-card revenue">
-                <div class="stat-mini-icon"><i class="fas fa-dollar-sign"></i></div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-number">${{ number_format($stats['total_revenue'], 0) }}</span>
                     <span class="stat-mini-label">Revenue</span>
@@ -57,13 +49,13 @@
                 <i class="fas fa-chart-line"></i> Analytics
             </button>
         </div>
-        
+
         <div class="filter-controls">
             <div class="search-box-luxury">
                 <i class="fas fa-search"></i>
                 <input type="text" id="eventSearch" placeholder="Search events...">
             </div>
-            
+
             <select class="filter-select-luxury" id="filterType">
                 <option value="">All Types</option>
                 <option value="wedding">Wedding</option>
@@ -71,10 +63,6 @@
                 <option value="corporate">Corporate</option>
                 <option value="conference">Conference</option>
             </select>
-            
-            <button class="btn-filter-advanced" id="advancedFiltersBtn">
-                <i class="fas fa-sliders-h"></i> Advanced
-            </button>
         </div>
     </div>
 
@@ -163,7 +151,7 @@
     {{-- ANALYTICS DASHBOARD VIEW --}}
     <div class="view-container" id="analyticsView" style="display: none;">
         <div class="analytics-dashboard-supreme">
-            
+
             <div class="analytics-card revenue-chart-card">
                 <div class="analytics-card-header">
                     <h3><i class="fas fa-chart-line"></i> Revenue Trends</h3>
@@ -241,28 +229,6 @@
     </div>
 
 </div>
-
-{{-- Quick Actions FAB --}}
-<div class="quick-actions-fab" id="quickActionsFab">
-    <button class="fab-main-btn">
-        <i class="fas fa-bolt"></i>
-    </button>
-    <div class="fab-menu">
-        <button class="fab-action-btn" data-action="export">
-            <i class="fas fa-file-export"></i>
-            <span>Export Events</span>
-        </button>
-        <button class="fab-action-btn" data-action="analytics">
-            <i class="fas fa-chart-bar"></i>
-            <span>View Analytics</span>
-        </button>
-        <button class="fab-action-btn" data-action="messages">
-            <i class="fas fa-envelope"></i>
-            <span>Messages</span>
-        </button>
-    </div>
-</div>
-
 @endsection
 
 @push('styles')
@@ -424,5 +390,4 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(loadCalendar, 100);
 });
 </script>
-
 @endpush

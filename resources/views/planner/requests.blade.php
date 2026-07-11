@@ -4,30 +4,26 @@
 
 @section('content')
 <div class="requests-page-container">
-    
+
     {{-- Page Header --}}
     <div class="requests-page-header">
         <div class="header-left">
-            <h1><i class="fas fa-inbox"></i> Event Requests</h1>
-            <p class="header-subtitle">Review and manage incoming event requests</p>
+            <h1> Event Requests</h1>
         </div>
         <div class="header-stats">
             <div class="header-stat-card pending">
-                <div class="stat-icon"><i class="fas fa-clock"></i></div>
                 <div class="stat-info">
                     <strong>{{ $pendingRequests->count() }}</strong>
                     <span>Pending</span>
                 </div>
             </div>
             <div class="header-stat-card accepted">
-                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                 <div class="stat-info">
                     <strong>{{ $acceptedToday ?? 0 }}</strong>
                     <span>Accepted Today</span>
                 </div>
             </div>
             <div class="header-stat-card declined">
-                <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
                 <div class="stat-info">
                     <strong>{{ $declinedToday ?? 0 }}</strong>
                     <span>Declined Today</span>
@@ -37,18 +33,14 @@
     </div>
 
     {{-- Filter Bar --}}
-      
+
             <div class="requests-filter-bar">
                 <div class="filter-left">
-                    <a href="{{ route('planner.requests') }}" 
+                    <a href="{{ route('planner.requests') }}"
                     class="filter-btn {{ !request('filter') ? 'active' : '' }}">
                         <i class="fas fa-inbox"></i> All Requests
                     </a>
-                    <a href="{{ route('planner.requests', ['filter' => 'this-week']) }}" 
-                    class="filter-btn {{ request('filter') === 'this-week' ? 'active' : '' }}">
-                        <i class="fas fa-calendar-week"></i> This Week
-                    </a>
-                    <a href="{{ route('planner.requests', ['filter' => 'high-budget']) }}" 
+                    <a href="{{ route('planner.requests', ['filter' => 'high-budget']) }}"
                     class="filter-btn {{ request('filter') === 'high-budget' ? 'active' : '' }}">
                         <i class="fas fa-dollar-sign"></i> High Budget
                     </a>
@@ -74,25 +66,12 @@
         <div class="requests-creative-grid">
             @foreach($pendingRequests as $request)
                 <div class="request-creative-card" data-request-id="{{ $request->id }}">
-                    
+
                     {{-- Card Header --}}
                     <div class="request-card-header">
-                        <div class="request-event-icon">
-                            @if($request->eventType->name === 'Wedding')
-                                💒
-                            @elseif($request->eventType->name === 'Birthday')
-                                🎂
-                            @elseif($request->eventType->name === 'Corporate')
-                                💼
-                            @else
-                                🎉
-                            @endif
-                        </div>
+
                         <div class="request-card-title">
                             <h3>{{ $request->name }}</h3>
-                            <span class="event-type-badge {{ strtolower($request->eventType->name) }}">
-                                {{ $request->eventType->name }}
-                            </span>
                         </div>
                         <div class="request-urgency">
                           @php
@@ -108,8 +87,8 @@
 
                     {{-- Client Info --}}
                     <div class="request-client-info">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($request->client->name) }}&background=E19184&color=fff" 
-                             alt="{{ $request->client->name }}" 
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($request->client->name) }}&background=E19184&color=fff"
+                             alt="{{ $request->client->name }}"
                              class="client-avatar">
                         <div class="client-details">
                             <strong>{{ $request->client->name }}</strong>
@@ -144,10 +123,7 @@
                             <i class="fas fa-dollar-sign"></i>
                             <div>
                                 <span class="detail-label">Budget</span>
-                                <strong>{{ number_format($request->budget_overall, 0) }} SAR</strong>
-                                <span class="commission-badge">
-                                    +{{ number_format($request->budget_overall * 0.15, 0) }} SAR commission
-                                </span>
+                                <strong>{{ number_format($request->budget_overall, 0) }}</strong>
                              </div>
                         </div>
                     </div>
@@ -166,27 +142,11 @@
                         <span>Requested {{ $request->created_at->diffForHumans() }}</span>
                     </div>
 
-                    {{-- Quick Actions --}}
-                    <div class="request-quick-actions">
-                        <button class="quick-action-btn" onclick="toggleDetails({{ $request->id }})">
-                            <i class="fas fa-info-circle"></i>
-                            More Details
-                            </button>
-                        <button class="quick-action-btn">
-                            <i class="fas fa-envelope"></i>
-                            Message Client
-                        </button>
-                        <button class="quick-action-btn">
-                            <i class="fas fa-calendar-alt"></i>
-                            Check Availability
-                        </button>
-                    </div>
-
                     {{-- Expandable Details --}}
                     <div class="request-expandable" id="details-{{ $request->id }}" style="display: none;">
                         <div class="expandable-content">
                             <h5><i class="fas fa-clipboard-list"></i> Additional Information</h5>
-                            
+
                             <div class="info-grid">
                                 <div class="info-item">
                                     <span class="info-label">Event Duration:</span>
@@ -207,7 +167,7 @@
                     </div>
 
                     {{-- Main Action Buttons --}}
-                        
+
                             <div class="request-main-actions">
                                 <form method="POST" action="{{ route('planner.requests.accept', $request->id) }}" class="action-form accept-form">
                                     @csrf
@@ -216,7 +176,7 @@
                                         <span>Accept Request</span>
                                     </button>
                                 </form>
-                                
+
                                 <form method="POST" action="{{ route('planner.requests.decline', $request->id) }}" class="action-form decline-form">
                                     @csrf
                                     <button type="submit" class="btn-decline-creative" onclick="return confirm('Are you sure you want to decline this event?')">
@@ -237,9 +197,8 @@
     @else
         {{-- Empty State --}}
         <div class="empty-state-creative">
-            <div class="empty-icon">📭</div>
+<div class="empty-icon"><i class="fas fa-calendar-check"></i></div>
             <h3>All Caught Up!</h3>
-            <p>No pending event requests at the moment.</p>
             <p class="empty-subtext">New requests will appear here when clients submit them.</p>
         </div>
     @endif
