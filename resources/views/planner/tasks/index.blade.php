@@ -4,25 +4,18 @@
 
 @section('content')
 <div class="tasks-page-epic">
-    
+
     <!-- Hero Header -->
     <div class="tasks-header-epic">
         <div class="header-content-epic">
-            <div class="header-icon-power">
-                <i class="fas fa-tasks"></i>
-            </div>
             <div class="header-text-epic">
                 <h1>Tasks Command Center</h1>
-                <p>Level {{ $gamification['level'] }} • {{ $gamification['current_xp'] }}/{{ $gamification['next_level_xp'] }} XP</p>
             </div>
         </div>
-        
+
         <div class="header-actions-epic">
             <button class="action-btn-epic power-mode-btn" id="powerModeBtn" type="button">
                 <i class="fas fa-bolt"></i> Power Mode
-            </button>
-            <button class="action-btn-epic timer-btn" id="focusTimerBtn" type="button">
-                <i class="fas fa-clock"></i> Focus Timer
             </button>
             <button class="action-btn-epic create-btn" id="createTaskBtn" type="button">
                 <i class="fas fa-plus"></i> New Task
@@ -51,13 +44,6 @@
             <div class="wave-card-content">
                 <span class="wave-card-number">{{ $stats['completed_today'] }}</span>
                 <span class="wave-card-label">Completed Today</span>
-            </div>
-        </div>
-        <div class="wave-card productivity">
-            <div class="wave-card-icon"><i class="fas fa-chart-line"></i></div>
-            <div class="wave-card-content">
-                <span class="wave-card-number">{{ $stats['productivity_score'] }}%</span>
-                <span class="wave-card-label">Productivity</span>
             </div>
         </div>
     </div>
@@ -155,18 +141,18 @@
 
 <div class="form-group-epic">
     <label>Select Vendors</label>
-    
+
     {{-- Custom Select Box --}}
     <div class="vendor-select-box" id="vendorSelectBox" style="border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; min-height: 42px; padding: 8px 12px; position: relative;" onclick="event.stopPropagation(); toggleVendorDropdown()">
         <span id="vendorSelectText" style="color: #999; font-size: 14px;">No vendors selected</span>
         <span style="position: absolute; right: 12px; top: 12px; color: #999;">▼</span>
     </div>
-    
+
     {{-- Dropdown List --}}
     <div id="vendorDropdown" class="vendor-dropdown hidden" style="border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; background: white; max-height: 150px; overflow-y: auto; position: absolute; z-index: 1000; width: calc(100% - 40px);">
         @foreach($vendors as $vendor)
-            <div class="vendor-list-item" 
-                 data-vendor-id="{{ $vendor->id }}" 
+            <div class="vendor-list-item"
+                 data-vendor-id="{{ $vendor->id }}"
                  data-vendor-name="{{ $vendor->name }}"
                  style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
                 <span class="vendor-check-icon" style="width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;">✓</span>
@@ -188,7 +174,7 @@
             </div>
             <div class="form-actions-epic">
                 <button type="button" class="btn-secondary-epic" id="cancelTaskBtn">Cancel</button>
-                <button type="submit" class="btn-primary-epic"><i class="fas fa-save"></i> Save Task</button>
+                <button type="submit" class="btn-primary-epic"> Save Task</button>
             </div>
         </form>
     </div>
@@ -205,32 +191,7 @@
     </div>
 </div>
 
-<!-- FOCUS TIMER MODAL (new) -->
-<div class="focus-timer-modal" id="focusTimerModal">
-    <div class="focus-modal-overlay"></div>
-    <div class="focus-modal-content">
-        <button class="focus-modal-close" id="closeFocusModal"><i class="fas fa-times"></i></button>
-        <div class="focus-modal-header">
-            <div class="focus-modal-icon"><i class="fas fa-hourglass-half"></i></div>
-            <h2>Set Focus Session</h2>
-            <p>Customize your timer</p>
-        </div>
-        <div class="focus-modal-body">
-            <div class="focus-field">
-                <label>Session Title</label>
-                <input type="text" id="focusTitle" placeholder="e.g., Work on Task #123" class="focus-input">
-            </div>
-            <div class="focus-field">
-                <label>Duration (minutes)</label>
-                <input type="number" id="focusMinutesPopup" value="25" min="1" max="180" step="1" class="focus-input">
-            </div>
-        </div>
-        <div class="focus-modal-actions">
-            <button class="focus-cancel-btn" id="cancelFocusModal">Cancel</button>
-            <button class="focus-start-btn" id="startFocusBtn">Start Timer</button>
-        </div>
-    </div>
-</div>
+
 
 <link rel="stylesheet" href="{{ asset('css/planner-tasks.css') }}">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>

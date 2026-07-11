@@ -8,10 +8,10 @@
     {{-- Page Header --}}
     <div class="analytics-header">
         <div>
-            <h1><i class="fas fa-chart-line"></i> Analytics & Insights</h1>
-            <p>Track your performance and growth</p>
+            <h1>Analytics & Insights</h1>
+
         </div>
-        <div class="header-actions">
+       <!-- <div class="header-actions">
             <select class="filter-select">
                 <option>Last 12 Months</option>
                 <option>Last 6 Months</option>
@@ -20,7 +20,7 @@
             <button class="btn-secondary">
                 <i class="fas fa-download"></i> Export Report
             </button>
-        </div>
+        </div>-->
     </div>
 
     {{-- Key Stats Grid --}}
@@ -80,7 +80,7 @@
 
     {{-- Charts Section --}}
     <div class="charts-grid">
-        
+
         {{-- Events Over Time Chart --}}
         <div class="chart-card">
             <div class="chart-header">
@@ -107,7 +107,7 @@
 
     {{-- Event Type Breakdown --}}
     <div class="two-column-charts">
-        
+
         <div class="chart-card">
             <div class="chart-header">
                 <h3><i class="fas fa-chart-pie"></i> Event Types</h3>
@@ -157,7 +157,7 @@
     <div class="card predictions-card">
         <div class="card-header">
             <h3><i class="fas fa-brain"></i> Predictions & Insights</h3>
-         
+
         </div>
         <div class="card-body">
             <div class="predictions-grid">

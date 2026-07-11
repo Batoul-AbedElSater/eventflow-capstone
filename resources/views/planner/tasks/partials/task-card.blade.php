@@ -1,46 +1,29 @@
-<div class="task-card-epic" 
-     data-task-id="{{ $task->id }}" 
+<div class="task-card-epic"
+     data-task-id="{{ $task->id }}"
      data-priority="{{ $task->priority ?? 'medium' }}"
      data-status="{{ $task->status }}"
      draggable="true">
-    
+
     <div class="task-card-header">
         <div class="task-checkbox-container">
-            <input type="checkbox" 
-                   class="task-checkbox-epic" 
+            <input type="checkbox"
+                   class="task-checkbox-epic"
                    id="task-{{ $task->id }}"
                    {{ in_array($task->status, ['done', 'completed']) ? 'checked' : '' }}
                    onchange="quickComplete({{ $task->id }}, this.checked)">
             <label for="task-{{ $task->id }}" class="checkbox-label-epic"></label>
         </div>
-
-        <div class="priority-indicator {{ $task->priority ?? 'medium' }}">
-            @if(($task->priority ?? 'medium') === 'urgent')
-                <i class="fas fa-exclamation-circle"></i>
-            @elseif(($task->priority ?? 'medium') === 'high')
-                <i class="fas fa-arrow-up"></i>
-            @elseif(($task->priority ?? 'medium') === 'medium')
-                <i class="fas fa-minus"></i>
-            @else
-                <i class="fas fa-arrow-down"></i>
-            @endif
-        </div>
-
-        <button class="task-menu-btn" onclick="openTaskMenu({{ $task->id }}, event)">
-            <i class="fas fa-ellipsis-h"></i>
-        </button>
+        <h4 class="task-title">{{ $task->title }}</h4>
     </div>
 
     <div class="task-card-body" onclick="openTaskDetails({{ $task->id }})">
-        <h4 class="task-title">{{ $task->title }}</h4>
-        
+
         @if($task->description)
             <p class="task-description">{{ Str::limit($task->description, 80) }}</p>
         @endif
 
         @if($task->event)
             <div class="task-event-tag">
-                <i class="fas fa-calendar"></i>
                 <span>{{ Str::limit($task->event->name, 20) }}</span>
             </div>
         @endif
@@ -48,19 +31,18 @@
  @if($task->assistants && $task->assistants->first())
     {{-- Show assigned assistant --}}
     <div class="task-assistant-tag">
-        <span class="assistant-avatar-small">
-            {{ strtoupper(substr($task->assistants->first()->name, 0, 1)) }}
-        </span>
+      <button class="assistant-icon">
+     <i class="fas fa-user"></i>
+</button>
         <span class="assistant-name">{{ $task->assistants->first()->name }}</span>
-        <button class="remove-assistant-btn" 
+        <button class="remove-assistant-btn"
                 onclick="event.stopPropagation(); removeAssistant({{ $task->id }}, {{ $task->assistants->first()->id }})"
                 title="Remove {{ $task->assistants->first()->name }}">
-            <i class="fas fa-times"></i>
         </button>
     </div>
 @else
     {{-- Opens the Edit Task modal to assign assistant --}}
-    <button class="assign-assistant-btn" 
+    <button class="assign-assistant-btn"
             onclick="event.stopPropagation(); openTaskModal({{ $task->id }})">
         <i class="fas fa-user-plus"></i> Assign Assistant
     </button>
@@ -101,9 +83,6 @@
         <div class="task-actions">
             <button class="task-action-btn edit" onclick="editTask({{ $task->id }})" title="Edit">
                 <i class="fas fa-edit"></i>
-            </button>
-            <button class="task-action-btn duplicate" onclick="duplicateTask({{ $task->id }})" title="Duplicate">
-                <i class="fas fa-copy"></i>
             </button>
             <button class="task-action-btn delete" onclick="deleteTask({{ $task->id }})" title="Delete">
                 <i class="fas fa-trash"></i>
