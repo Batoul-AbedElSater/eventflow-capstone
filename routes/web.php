@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Api\Planner\BudgetAiController;
 
 // ============================================
 // PUBLIC ROUTES
@@ -140,6 +141,13 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
     Route::post('/settings/notifications', [App\Http\Controllers\Planner\SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
     Route::get('/settings/export', [App\Http\Controllers\Planner\SettingsController::class, 'exportData'])->name('settings.export');
     Route::post('/settings/delete', [App\Http\Controllers\Planner\SettingsController::class, 'deleteAccount'])->name('settings.delete');
+
+
+Route::get('/events/{event}/budget', [App\Http\Controllers\Planner\BudgetController::class, 'index'])
+    ->name('events.budget');
+    Route::post('/events/{event}/budget/generate', [App\Http\Controllers\Api\Planner\BudgetAiController::class, 'generate'])
+    ->name('events.budget.generate');
+
 
 });
 
