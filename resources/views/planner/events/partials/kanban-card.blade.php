@@ -48,10 +48,10 @@
         </div>
 
         {{-- Budget Badge --}}
-        @if($event->budget)
+        @if($event->budget || $event->budget_overall)
         <div class="card-budget-badge">
             <i class="fas fa-dollar-sign"></i>
-            <span>${{ number_format($event->budget, 0) }}</span>
+            <span>${{ number_format((float) ($event->budget->total_client_budget ?? $event->budget_overall ?? 0), 0) }}</span>
         </div>
         @endif
     </div>

@@ -28,8 +28,8 @@
                 </a>
 
                 <a href="{{ route('planner.events.budget', $event->id) }}" class="action-btn-magic budget">
-    <i class="fas fa-robot"></i> Budget
-</a>
+                    <i class="fas fa-robot"></i> Budget Workspace
+                </a>
             </div>
         </div>
 

@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Api\Planner\BudgetAiController;
+use Illuminate\Support\Facades\Route;
 
 // ============================================
 // PUBLIC ROUTES
@@ -12,16 +10,17 @@ use App\Http\Controllers\Api\Planner\BudgetAiController;
 Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
-        return match($role) {
+
+        return match ($role) {
             'planner' => redirect()->route('planner.dashboard'),
-            'client'  => redirect()->route('client.dashboard'),
+            'client' => redirect()->route('client.dashboard'),
             'assistant' => redirect()->route('assistant.dashboard'),
-            default   => redirect()->route('login'),
+            default => redirect()->route('login'),
         };
     }
+
     return redirect()->route('login');
 })->name('home');
-
 
 // ============================================
 // AUTHENTICATION ROUTES
@@ -40,36 +39,32 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])->group(function () {
 
-
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Planner\DashboardController::class, 'index'])->name('dashboard');
 
     // Analytics
-     Route::get('/analytics', [App\Http\Controllers\Planner\AnalyticsController::class, 'index'])
-    ->name('events.analytics');
-
-
+    Route::get('/analytics', [App\Http\Controllers\Planner\AnalyticsController::class, 'index'])
+        ->name('events.analytics');
 
     // Event Requests
     Route::get('/requests', [App\Http\Controllers\Planner\EventRequestController::class, 'index'])->name('requests');
     Route::post('/requests/{id}/accept', [App\Http\Controllers\Planner\EventRequestController::class, 'accept'])->name('requests.accept');
     Route::post('/requests/{id}/decline', [App\Http\Controllers\Planner\EventRequestController::class, 'decline'])->name('requests.decline');
 
-
-//vendor routes
-// Vendor Routes
-Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function () {
-    Route::get('/', [App\Http\Controllers\Planner\VendorController::class, 'index'])
-        ->name('index');
-    Route::get('/favorites', [App\Http\Controllers\Planner\VendorController::class, 'favorites'])
-        ->name('favorites');
-    Route::get('/{vendor}', [App\Http\Controllers\Planner\VendorController::class, 'show'])
-        ->name('show');
-    Route::post('/{vendor}/favorite', [App\Http\Controllers\Planner\VendorController::class, 'toggleFavorite'])
-        ->name('toggleFavorite');
-    Route::post('/{vendor}/unfavorite', [App\Http\Controllers\Planner\VendorController::class, 'removeFavorite'])
-        ->name('removeFavorite');
-});
+    // vendor routes
+    // Vendor Routes
+    Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Planner\VendorController::class, 'index'])
+            ->name('index');
+        Route::get('/favorites', [App\Http\Controllers\Planner\VendorController::class, 'favorites'])
+            ->name('favorites');
+        Route::get('/{vendor}', [App\Http\Controllers\Planner\VendorController::class, 'show'])
+            ->name('show');
+        Route::post('/{vendor}/favorite', [App\Http\Controllers\Planner\VendorController::class, 'toggleFavorite'])
+            ->name('toggleFavorite');
+        Route::post('/{vendor}/unfavorite', [App\Http\Controllers\Planner\VendorController::class, 'removeFavorite'])
+            ->name('removeFavorite');
+    });
     // Events
     Route::resource('events', App\Http\Controllers\Planner\EventController::class);
     Route::get('/events/analytics', [App\Http\Controllers\Planner\EventController::class, 'analytics'])->name('events.analytics');
@@ -103,7 +98,6 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
         Route::put('/tasks/{task}/status', [App\Http\Controllers\Planner\TaskController::class, 'updateStatus'])->name('planner.tasks.status');
     });
 
-
     // Guests
     Route::prefix('events/{event}/guests')->name('events.guests.')->group(function () {
         Route::get('/', [App\Http\Controllers\Client\GuestController::class, 'index'])->name('index');
@@ -112,7 +106,6 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
         Route::delete('/{guest}', [App\Http\Controllers\client\GuestController::class, 'destroy'])->name('destroy');
     });
 
-
     // MESSAGES
     // Messages Routes - ADD THESE
     Route::get('/messages', [App\Http\Controllers\Planner\MessageController::class, 'showPage'])->name('messages');
@@ -120,7 +113,7 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
     Route::post('/messages/{event}', [App\Http\Controllers\Planner\MessageController::class, 'store'])->name('messages.store');
     Route::delete('/messages/{event}/{message}', [App\Http\Controllers\Planner\MessageController::class, 'destroy'])->name('messages.destroy');
     Route::delete('/events/{event}/messages', [App\Http\Controllers\Planner\MessageController::class, 'deleteAll'])
-    ->name('planner.events.messages.deleteAll');
+        ->name('planner.events.messages.deleteAll');
 
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -142,12 +135,24 @@ Route::prefix('events/{event}/vendors')->name('events.vendors.')->group(function
     Route::get('/settings/export', [App\Http\Controllers\Planner\SettingsController::class, 'exportData'])->name('settings.export');
     Route::post('/settings/delete', [App\Http\Controllers\Planner\SettingsController::class, 'deleteAccount'])->name('settings.delete');
 
-
-Route::get('/events/{event}/budget', [App\Http\Controllers\Planner\BudgetController::class, 'index'])
-    ->name('events.budget');
+    Route::get('/events/{event}/budget', [App\Http\Controllers\Planner\BudgetController::class, 'index'])
+        ->name('events.budget');
+    Route::get('/events/{event}/budget/draft', [App\Http\Controllers\Planner\BudgetController::class, 'draft'])
+        ->name('events.budget.draft');
+    Route::get('/events/{event}/budget/editor', [App\Http\Controllers\Planner\BudgetController::class, 'editor'])
+        ->name('events.budget.editor');
+    Route::post('/events/{event}/budget/import', [App\Http\Controllers\Planner\BudgetController::class, 'import'])
+        ->name('events.budget.import');
+    Route::put('/events/{event}/budget', [App\Http\Controllers\Planner\BudgetController::class, 'update'])
+        ->name('events.budget.update');
+    Route::post('/events/{event}/budget/items', [App\Http\Controllers\Planner\BudgetController::class, 'storeItem'])
+        ->name('events.budget.items.store');
+    Route::put('/events/{event}/budget/items/{item}', [App\Http\Controllers\Planner\BudgetController::class, 'updateItem'])
+        ->name('events.budget.items.update');
+    Route::delete('/events/{event}/budget/items/{item}', [App\Http\Controllers\Planner\BudgetController::class, 'destroyItem'])
+        ->name('events.budget.items.destroy');
     Route::post('/events/{event}/budget/generate', [App\Http\Controllers\Api\Planner\BudgetAiController::class, 'generate'])
-    ->name('events.budget.generate');
-
+        ->name('events.budget.generate');
 
 });
 
@@ -178,16 +183,15 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
     Route::get('/settings/export', [App\Http\Controllers\Assistant\SettingsController::class, 'exportData'])->name('settings.export');
     Route::post('/settings/delete', [App\Http\Controllers\Assistant\SettingsController::class, 'deleteAccount'])->name('settings.delete');
 
-
     // Profile
-        Route::get('/profile', [App\Http\Controllers\Assistant\ProfileController::class, 'index'])
-            ->name('profile');
+    Route::get('/profile', [App\Http\Controllers\Assistant\ProfileController::class, 'index'])
+        ->name('profile');
 
-        Route::put('/profile', [App\Http\Controllers\Assistant\ProfileController::class, 'updateProfile'])
-            ->name('profile.update');
+    Route::put('/profile', [App\Http\Controllers\Assistant\ProfileController::class, 'updateProfile'])
+        ->name('profile.update');
 
-        Route::put('/profile/password', [App\Http\Controllers\Assistant\ProfileController::class, 'updatePassword'])
-            ->name('profile.password');
+    Route::put('/profile/password', [App\Http\Controllers\Assistant\ProfileController::class, 'updatePassword'])
+        ->name('profile.password');
 });
 
 // ============================================
@@ -196,17 +200,13 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
 
 Route::prefix('client')->name('client.')->middleware(['auth', 'role:client'])->group(function () {
 
-Route::post('/events/{event}/rating', [App\Http\Controllers\Client\EventController::class, 'storeRating'])->name('rating.store');
+    Route::post('/events/{event}/rating', [App\Http\Controllers\Client\EventController::class, 'storeRating'])->name('rating.store');
 
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Client\DashboardController::class, 'index'])->name('dashboard');
 
     // Events - Full Resource Routes
-     Route::resource('events', App\Http\Controllers\Client\EventController::class);
-
-
-
-
+    Route::resource('events', App\Http\Controllers\Client\EventController::class);
 
     // Messages Page (Main view with all events)
     Route::get('/messages', [App\Http\Controllers\Client\MessageController::class, 'showPage'])->name('messages');
@@ -216,17 +216,12 @@ Route::post('/events/{event}/rating', [App\Http\Controllers\Client\EventControll
     Route::post('/events/{event}/messages', [App\Http\Controllers\Client\MessageController::class, 'store'])->name('events.messages.store');
     Route::delete('/events/{event}/messages/{message}', [App\Http\Controllers\Client\MessageController::class, 'destroy'])->name('events.messages.destroy');
     Route::delete('/events/{event}/messages', [App\Http\Controllers\Client\MessageController::class, 'deleteAll'])
-    ->name('client.events.messages.deleteAll');
-
+        ->name('client.events.messages.deleteAll');
 
     // Client Messages Routes - ADD THESE
     // Route::get('/events/{event}/messages', [App\Http\Controllers\Client\MessageController::class, 'index'])->name('events.messages.index');
     // Route::post('/events/{event}/messages', [App\Http\Controllers\Client\MessageController::class, 'store'])->name('events.messages.store');
     // Route::delete('/events/{event}/messages/{message}', [App\Http\Controllers\Client\MessageController::class, 'destroy'])->name('events.messages.destroy');
-
-
-
-
 
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -279,8 +274,6 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
     Route::post('/{token}', [App\Http\Controllers\RsvpController::class, 'update'])->name('update');
 });
 
-
-
 // ============================================
 // FALLBACK ROUTE
 // ============================================
@@ -288,8 +281,3 @@ Route::prefix('rsvp')->name('rsvp.')->group(function () {
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
 });
-
-
-
-
-

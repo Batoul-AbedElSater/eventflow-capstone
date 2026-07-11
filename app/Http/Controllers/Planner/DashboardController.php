@@ -13,7 +13,7 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -49,8 +49,9 @@ $activeEvents = $myEvents;
         ];
 
         // Calendar week
-        $requestedDate = request('date') ? Carbon::parse(request('date')) : Carbon::now();
+        $requestedDate = $request->filled('date') ? Carbon::parse($request->input('date')) : Carbon::now();
         $weekStart = $requestedDate->copy()->startOfWeek();
+        $weekEnd = $weekStart->copy()->endOfWeek();
         $calendarDays = [];
         for ($i = 0; $i < 7; $i++) {
             $day = $weekStart->copy()->addDays($i);
@@ -121,15 +122,30 @@ $activeEvents = $myEvents;
             }
         }
 
-        // Weather Guardian (outdoor events in next 2 weeks)
-        $outdoorEvents = $myEvents->filter(function($event) {
-            $isUpcoming = $event->start_date >= Carbon::now() && $event->start_date <= Carbon::now()->addWeeks(2);
-            $isOutdoor = stripos($event->location_text, 'outdoor') !== false ||
-                         stripos($event->location_text, 'garden') !== false ||
-                         stripos($event->location_text, 'park') !== false ||
-                         stripos($event->location_text, 'beach') !== false;
-            return $isUpcoming && $isOutdoor;
-        })->take(3);
+        // Weather Guardian (events in the currently viewed week)
+        $weekEvents = $myEvents->filter(function ($event) use ($weekStart, $weekEnd) {
+            return $event->start_date->between($weekStart, $weekEnd, true);
+        });
+
+        $outdoorEvents = $weekEvents->filter(function ($event) {
+            $location = mb_strtolower((string) ($event->location_text ?? ''));
+            $outdoorKeywords = ['outdoor', 'garden', 'park', 'beach', 'resort', 'farm', 'rooftop', 'pool', 'camp'];
+
+            foreach ($outdoorKeywords as $keyword) {
+                if (str_contains($location, $keyword)) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        // If location text does not include known outdoor keywords, still show week events.
+        if ($outdoorEvents->isEmpty()) {
+            $outdoorEvents = $weekEvents;
+        }
+
+        $outdoorEvents = $outdoorEvents->take(3);
 
         // Weather forecast (mock)
         $weatherForecast = [];
