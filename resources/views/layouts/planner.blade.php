@@ -787,13 +787,6 @@
 
     <!-- DROPDOWN -->
     <div class="dropdown-menu" id="profileDropdownMenu">
-
-        <!-- INSIDE MENU PROFILE (optional smaller preview) -->
-        <div class="dropdown-profile">
-            <img src="{{ $avatar }}" alt="Profile">
-            <span>{{ Auth::user()->name }}</span>
-        </div>
-
         <hr>
 
         <a href="{{ route('planner.profile') }}">
@@ -882,7 +875,7 @@
     </div>
     <!-- JavaScript -->
     <script src="{{ asset('js/planner-dashboard.js') }}"></script>
-   
+
 
     <!-- Dropdown chevron rotation (click toggle) -->
     <script>
