@@ -73,7 +73,14 @@ class BudgetAiController extends Controller
 
     try {
         // Load relationships
-        $event->load(['eventType:id,name,description', 'vendors:id,name,category,description']);
+        $event->load([
+            'eventType:id,name,description',
+            'vendors:id,name,category,description',
+            'budget.items:id,budget_id,category,title,estimated_cost,actual_cost,status,notes',
+        ]);
+
+        $existingBudget = $event->budget;
+        $budgetItems = $existingBudget?->items ?? collect();
 
         $payload = [
             'event_id' => $event->id,
@@ -97,9 +104,32 @@ class BudgetAiController extends Controller
                     'is_favorite' => (bool) ($vendor->pivot->is_favorite ?? false),
                 ];
             })->values(),
+            // Planner edits context from Budget Editor so AI generation can refine suggestions
+            'planner_budget_context' => [
+                'has_existing_budget' => (bool) $existingBudget,
+                'status' => $existingBudget?->status,
+                'total_client_budget' => $existingBudget?->total_client_budget ? (float) $existingBudget->total_client_budget : null,
+                'planner_fee' => $existingBudget?->planner_fee ? (float) $existingBudget->planner_fee : null,
+                'estimated_total' => $existingBudget?->estimated_total ? (float) $existingBudget->estimated_total : null,
+                'actual_total' => $existingBudget?->actual_total ? (float) $existingBudget->actual_total : null,
+                'planner_notes' => $existingBudget?->planner_notes,
+                'items' => $budgetItems->map(function ($item) {
+                    return [
+                        'category' => $item->category,
+                        'title' => $item->title,
+                        'estimated_cost' => $item->estimated_cost !== null ? (float) $item->estimated_cost : null,
+                        'actual_cost' => $item->actual_cost !== null ? (float) $item->actual_cost : null,
+                        'status' => $item->status,
+                        'notes' => $item->notes,
+                    ];
+                })->values(),
+                'instructions' => 'Use this planner-edited budget context to refine and align new AI suggestions. Treat planner edits as higher-priority constraints.',
+            ],
         ];
 
         $aiResponse = $this->aiService->generateSuggestions($payload);
+
+        $draftStatus = $existingBudget?->status ?? 'draft';
 
         $draft = AiBudgetDraft::updateOrCreate(
             [
@@ -108,7 +138,7 @@ class BudgetAiController extends Controller
             ],
             [
                 'ai_response' => $aiResponse,
-                'status' => 'draft',
+                'status' => $draftStatus,
             ]
         );
 

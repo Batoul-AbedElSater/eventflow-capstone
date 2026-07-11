@@ -32,9 +32,6 @@ class Event extends Model
         'is_archived',
     ];
 
-
-
-
     /**
      * The attributes that should be cast.
      */
@@ -44,7 +41,7 @@ class Event extends Model
         'budget_overall' => 'decimal:2',
         'cancelled_at' => 'datetime',
         'completed_at' => 'datetime',
-        'is_archived'=>'boolean',
+        'is_archived' => 'boolean',
     ];
 
     // ========================================
@@ -154,10 +151,12 @@ class Event extends Model
     {
         return $this->guests(); // Just returns the same as guests()
     }
+
     public function messages()
     {
         return $this->hasMany(Message::class);
     }
+
     public function isEditable()
     {
         return in_array($this->status, ['draft', 'pending', 'confirmed']);
@@ -204,7 +203,7 @@ class Event extends Model
      */
     public function hasPlanner(): bool
     {
-        return !is_null($this->planner_id);
+        return ! is_null($this->planner_id);
     }
 
     /**
@@ -242,7 +241,12 @@ class Event extends Model
     }
 
     public function aiBudgetDraft()
-{
-    return $this->hasOne(AiBudgetDraft::class);
-}
+    {
+        return $this->hasOne(AiBudgetDraft::class);
+    }
+
+    public function budget()
+    {
+        return $this->hasOne(Budget::class);
+    }
 }
