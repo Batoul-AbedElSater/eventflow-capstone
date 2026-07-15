@@ -16,36 +16,30 @@
     </div>
 @endif
 
-{{-- Welcome Banner --}}
+{{-- Welcome Banner (Command Center style, stats built into the header) --}}
 <div class="welcome-banner">
-    <div>
-        <h2>Welcome back, {{ $user->name }}! </h2>
+    <div class="banner-left">
+        <h2>Welcome back, {{ $user->name }}!</h2>
         <p>Here's everything assigned to you. Let's get things done.</p>
     </div>
-    <i class="fas fa-clipboard-check banner-icon"></i>
-</div>
 
-{{-- Stats --}}
-<div class="stats-row">
-    <div class="stat-card">
-        <div class="stat-label">Total Assigned</div>
-        <div class="stat-value">{{ $totalTasks }}</div>
-        <div class="stat-sub">all time</div>
-    </div>
-    <div class="stat-card urgent">
-        <div class="stat-label">Urgent</div>
-        <div class="stat-value">{{ $urgentTasks }}</div>
-        <div class="stat-sub">needs attention</div>
-    </div>
-    <div class="stat-card in-progress">
-        <div class="stat-label">In Progress</div>
-        <div class="stat-value">{{ $inProgressTasks }}</div>
-        <div class="stat-sub">ongoing</div>
-    </div>
-    <div class="stat-card completed">
-        <div class="stat-label">Completed</div>
-        <div class="stat-value">{{ $completedTasks }}</div>
-        <div class="stat-sub">well done</div>
+    <div class="banner-stats">
+        <div class="banner-stat">
+            <div class="banner-stat-value">{{ $totalTasks }}</div>
+            <div class="banner-stat-label">Total</div>
+        </div>
+        <div class="banner-stat urgent">
+            <div class="banner-stat-value">{{ $urgentTasks }}</div>
+            <div class="banner-stat-label">Urgent</div>
+        </div>
+        <div class="banner-stat in-progress">
+            <div class="banner-stat-value">{{ $inProgressTasks }}</div>
+            <div class="banner-stat-label">In Progress</div>
+        </div>
+        <div class="banner-stat completed">
+            <div class="banner-stat-value">{{ $completedTasks }}</div>
+            <div class="banner-stat-label">Completed</div>
+        </div>
     </div>
 </div>
 
@@ -118,12 +112,13 @@
                              style="width: {{ $task->progress }}%"></div>
                     </div>
                 </div>
+
+                @if($task->vendors && $task->vendors->count() > 0)
+                    <a href="{{ route('assistant.tasks.vendors', $task->id) }}" class="btn-vendors" style="margin-top: 8px; align-self: flex-start;">
+                        <i class="fas fa-store"></i> View Vendors ({{ $task->vendors->count() }})
+                    </a>
+                @endif
             </div>
-            @if($task->vendors && $task->vendors->count() > 0)
-    <a href="{{ route('assistant.tasks.vendors', $task->id) }}" style="display: inline-flex; align-items: center; gap: 5px; color: var(--berry); font-size: 12px; font-weight: 600; text-decoration: none; margin-top: 8px;">
-        <i class="fas fa-store"></i> View Vendors ({{ $task->vendors->count() }})
-    </a>
-@endif
 
             {{-- Right --}}
             <div class="task-right">

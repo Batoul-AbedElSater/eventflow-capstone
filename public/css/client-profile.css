@@ -19,6 +19,12 @@
     --danger: #D0021B;
     --transition: all 0.3s ease;
 }
+
+body{
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+}
 .profile-avatar-wrapper{
     display:flex;
     justify-content:center;

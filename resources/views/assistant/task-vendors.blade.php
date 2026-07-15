@@ -34,6 +34,34 @@
     font-weight: 600;
     cursor: pointer;
 }
+
+/* order badges — size to content, never stretch across the card */
+.vendor_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    align-self: flex-start;
+    width: fit-content;
+    max-width: max-content;
+    flex: 0 0 auto;
+    margin-top: 4px;
+}
+.vendor_badge_ordered {
+    background: #7ED321;
+    color: white;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.vendor_badge_count {
+    background: var(--coral);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
 </style>
 @endpush
 
@@ -74,14 +102,14 @@
                         
                         {{-- 🏷️ ORDERED BADGE --}}
                         @if($order)
-                            <span style="display: inline-block; background: #7ED321; color: white; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 4px;">
+                            <span class="vendor_badge vendor_badge_ordered">
                                 <i class="fas fa-check-circle"></i> Ordered
                             </span>
                         @endif
 
                         {{-- 📦 ORDER COUNT --}}
                         @if($orderCount > 0)
-                            <span style="display: inline-block; background: var(--coral); color: white; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 4px;">
+                            <span class="vendor_badge vendor_badge_count">
                                 <i class="fas fa-box"></i> {{ $orderCount }} order{{ $orderCount > 1 ? 's' : '' }}
                             </span>
                         @endif
