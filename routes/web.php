@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Planner\BudgetController;
 
 // ============================================
 // PUBLIC ROUTES
@@ -69,7 +70,10 @@ Route::prefix('planner')->name('planner.')->middleware(['auth', 'role:planner'])
     Route::resource('events', App\Http\Controllers\Planner\EventController::class);
     Route::get('/events/analytics', [App\Http\Controllers\Planner\EventController::class, 'analytics'])->name('events.analytics');
     Route::put('/events/{event}/status', [App\Http\Controllers\Planner\EventController::class, 'updateStatus'])->name('events.status');
-
+Route::get(
+    '/events/{event}/export',
+    [BudgetController::class, 'export']
+)->name('events.export');
     // Monthly Calendar
     Route::get('/monthly-calendar', [App\Http\Controllers\Planner\MonthlyCalendarController::class, 'index'])->name('monthly-calendar.index');
 
