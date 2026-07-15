@@ -36,6 +36,7 @@
         --green-dark: #2C3821;
         --ink-soft: #5f4944;
         --ring: 0 0 0 3px rgba(198, 62, 78, 0.18);
+        --shadow-sm: 0 2px 10px rgba(98, 6, 7, 0.08);
         font-family: 'Manrope', sans-serif;
         min-height: 85vh;
         border-radius: 24px;
@@ -46,53 +47,41 @@
             linear-gradient(145deg, #fff9f3 0%, var(--cream) 52%, #f6f0e6 100%);
         border: 1px solid rgba(98, 6, 7, 0.12);
     }
-    .flow-top {
-        margin-bottom: 14px;
+    .top-actions {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 10px;
         flex-wrap: wrap;
+        margin-bottom: 20px;
     }
-    .flow-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .flow-node {
-        background: var(--white);
-        border: 1px solid rgba(98, 6, 7, 0.12);
-        border-radius: 999px;
-        padding: 7px 12px;
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--ink-soft);
-    }
-    .flow-node.active {
-        background: linear-gradient(135deg, var(--berry), var(--vampire));
-        color: var(--white);
-        border-color: transparent;
-        box-shadow: 0 10px 20px rgba(98, 6, 7, 0.22);
-    }
-    .flow-link { text-decoration: none; }
-    .mode-toggle {
-        border: 1px solid rgba(98, 6, 7, 0.2);
-        border-radius: 12px;
+    .top-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .top-btn {
+        border: 0;
+        border-radius: 10px;
         padding: 10px 14px;
-        font-weight: 800;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--white);
+        color: var(--vampire);
+        box-shadow: var(--shadow-sm);
+    }
+    .mode-toggle {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: linear-gradient(135deg, var(--green), var(--green-dark));
-        color: var(--amnesiac);
+        background: var(--vampire);
+        color: #fff;
     }
-    .editor-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 32px; }
-    .editor-head h1 {
-        margin: 0;
-        font-family: 'Fraunces', serif;
-        font-size: 38px;
-        color: var(--vampire);
-        line-height: 1.05;
-    }
-    .editor-head p { margin: 7px 0 0; color: var(--ink-soft); font-weight: 600; }
-    .editor-actions { display: flex; gap: 10px; flex-wrap: wrap; }
     .ebtn {
         border: 0;
         border-radius: 12px;
@@ -242,19 +231,19 @@
         border-color: rgba(245, 249, 229, 0.22);
         color: #f8f5f0;
     }
-    .editor-shell.dark .editor-head h1,
     .editor-shell.dark .panel h3,
     .editor-shell.dark .kpi strong,
-    .editor-shell.dark .table th,
-    .editor-shell.dark .flow-node {
+    .editor-shell.dark .table th {
         color: #fff6e9;
     }
-    .editor-shell.dark .flow-node {
-        background: rgba(245, 249, 229, 0.08);
-        border-color: rgba(245, 249, 229, 0.22);
+    .editor-shell.dark .top-btn {
+        background: var(--white);
+        color: var(--vampire);
     }
-    .editor-shell.dark .flow-node.active { color: var(--white); }
-    .editor-shell.dark .editor-head p,
+    .editor-shell.dark .mode-toggle {
+        background: var(--amnesiac);
+        color: var(--green-dark);
+    }
     .editor-shell.dark .kpi small { color: rgba(255, 255, 255, 0.78); }
     .editor-shell.dark .in,
     .editor-shell.dark .sel,
@@ -274,10 +263,6 @@
         background: #2f1a1d;
         color: #fff9ef;
     }
-    .editor-shell.dark .mode-toggle {
-        background: linear-gradient(135deg, var(--amnesiac), #d9e6c0);
-        color: var(--green-dark);
-    }
     .editor-shell.dark .ebtn-soft {
         background: rgba(245, 249, 229, 0.12);
         color: #fff7ed;
@@ -291,32 +276,20 @@
         .span-8,.span-6,.span-4,.span-3 { grid-column: span 12; }
         .fields { grid-template-columns: 1fr; }
         .toolbar { grid-template-columns: 1fr; }
-        .editor-head { flex-direction: column; align-items: flex-start; }
     }
 </style>
 
 <div class="editor-shell">
-    <div class="flow-top">
-        <div class="flow-nav">
-            <a class="flow-link" href="{{ route('planner.events.budget', $event) }}"><span class="flow-node"><i class="fas fa-globe"></i> Universe Hub</span></a>
-            <a class="flow-link" href="{{ route('planner.events.budget.draft', $event) }}"><span class="flow-node"><i class="fas fa-robot"></i> AI Studio</span></a>
-            <span class="flow-node active"><i class="fas fa-table"></i> Editor World</span>
+    <div class="top-actions">
+        <div class="top-nav">
+            <a href="{{ route('planner.events.budget', $event) }}" class="top-btn"><i class="fas fa-house"></i> Hub</a>
+            <a href="{{ route('planner.events.budget.draft', $event) }}" class="top-btn"><i class="fas fa-robot"></i> AI Studio</a>
+            <a href="{{ route('planner.tasks.index') }}" class="top-btn"><i class="fas fa-tasks"></i> Tasks Page</a>
+            <a href="{{ route('planner.events.export', $event) }}" class="top-btn"><i class="fas fa-file-pdf"></i> Export PDF</a>
         </div>
         <button type="button" class="mode-toggle" id="mode-toggle">
             <i class="fas fa-circle-half-stroke"></i> Toggle Dark / Light
         </button>
-    </div>
-
-    <div class="editor-head">
-        <div>
-            <h1>Budget Editor World</h1>
-            <p>Create your final operational budget with creative controls, advanced visuals, and precision editing.</p>
-        </div>
-        <div class="editor-actions">
-            <a href="{{ route('planner.events.budget', $event) }}" class="ebtn ebtn-soft"><i class="fas fa-home"></i> Hub</a>
-            <a href="{{ route('planner.events.budget.draft', $event) }}" class="ebtn ebtn-soft"><i class="fas fa-robot"></i> AI Studio</a>
-            <a href="{{ route('planner.tasks.index') }}" class="ebtn ebtn-mid"><i class="fas fa-tasks"></i> Tasks Page</a>
-        </div>
     </div>
 
     @if(session('success'))
@@ -336,7 +309,7 @@
         <div class="kpi span-3"><small>Status</small><strong style="font-size:18px;"><span class="status-badge st-{{ $budget->status }}"><i class="fas fa-circle"></i>{{ ucfirst($budget->status) }}</span></strong><div class="meta">Assistant Fees: ${{ number_format($assistantFeesTotal, 2) }}</div></div>
     </div>
     <br>
-  
+
 
     <div class="grid">
         <div class="panel span-8">
@@ -479,7 +452,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
     (function () {
         const wrappers = Array.from(document.querySelectorAll('.editor-item-wrap'));
@@ -579,10 +551,6 @@
                 options: { plugins: { legend: { position: 'bottom' } } }
             });
         }
-
-        @if(session('success'))
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        @endif
 
         const container = document.querySelector('.editor-shell');
         const modeToggle = document.getElementById('mode-toggle');
