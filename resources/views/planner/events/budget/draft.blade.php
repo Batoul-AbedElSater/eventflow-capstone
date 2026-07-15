@@ -1,210 +1,312 @@
 @extends('layouts.planner')
 
-@section('title', 'AI Draft Studio - ' . $event->name)
+@section('title', 'Budget - ' . $event->name)
 
 @section('content')
 @php
-    $draft = $event->aiBudgetDraft;
-    $ai = $draft?->ai_response ?? [];
     $budget = $event->budget;
+    $draft = $event->aiBudgetDraft;
     $budgetItems = $budget?->items ?? collect();
 @endphp
+<div x-data="budgetGenerator({{ $event->id }})" class="budget-page" x-init="init()" id="budget-page-root">
 
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;600&display=swap');
-    .draft-shell {
-        --coral: #E19184;
-        --berry: #C63E4E;
-        --vampire: #620607;
-        --cream: #EFE7DA;
-        --white: #FFFFFF;
-        --amnesiac: #F5F9E5;
-        --green: #475B35;
-        --green-dark: #2C3821;
-        font-family: 'Inter', sans-serif;
-        min-height: 84vh;
-        border-radius: 20px;
-        padding: 24px;
-        background: linear-gradient(140deg, #fff8f1 0%, var(--cream) 42%, #f2f5e6 100%);
-    }
-    .flow-top {
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    .flow-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .flow-node {
-        background: #fff;
-        border: 1px solid #e1d7da;
-        border-radius: 999px;
-        padding: 6px 10px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #6a5e62;
-    }
-    .flow-node.active { background: linear-gradient(135deg, var(--berry), var(--vampire)); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(98, 6, 7, 0.25); }
-    .flow-link { text-decoration: none; }
-    .mode-toggle {
-        border: 0;
-        border-radius: 10px;
-        padding: 9px 13px;
-        font-weight: 700;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(135deg, var(--green), var(--green-dark));
-        color: #fff;
-    }
-    .draft-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .draft-head h1 { margin: 0; font-family: 'Outfit', sans-serif; color: var(--vampire); font-size: 34px; }
-    .draft-head p { margin: 6px 0 0; color: #675a5d; }
-    .draft-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .draft-btn {
-        border: 0; border-radius: 10px; padding: 10px 14px; text-decoration: none;
-        font-weight: 700; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
-    }
-    .btn-generate { background: linear-gradient(135deg, var(--berry), var(--vampire)); color: #fff; }
-    .btn-import { background: linear-gradient(135deg, var(--coral), var(--berry)); color: #fff; }
-    .btn-editor { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #fff; }
-    .btn-back { background: #f8f2e8; color: var(--vampire); border: 1px solid rgba(98, 6, 7, 0.15); }
-    .draft-panel {
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid #ede4e6;
-        border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 14px;
-        box-shadow: 0 8px 24px rgba(79, 31, 42, 0.07);
-        animation: rise 0.4s ease;
-    }
-    @keyframes rise { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-    .stat { background: #fffaf6; border-radius: 10px; padding: 12px; border-top: 3px solid var(--berry); }
-    .stat small { color: #7b6f72; display: block; margin-bottom: 5px; }
-    .stat strong { font-size: 24px; color: #301519; }
-    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
-    .cat {
-        border: 1px solid #eee3e5;
-        border-radius: 10px;
-        padding: 12px;
-        background: linear-gradient(180deg, #fff, #fefafb);
-    }
-    .cat h4 { margin: 0 0 8px; color: #4f1f2a; display: flex; justify-content: space-between; font-family: 'Outfit', sans-serif; }
-    .list { margin: 0; padding-left: 18px; color: #5e5356; font-size: 13px; }
-    .alert { padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; font-weight: 600; }
-    .ok { background: #ebf7ef; border: 1px solid #b9ddc2; color: #25673a; }
-    .err { background: #fff1f0; border: 1px solid #f1c2bf; color: #8c2c25; }
-    .loading {
-        display: none; text-align: center; padding: 26px; color: #4f1f2a; font-weight: 700;
-    }
-    .context-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-    }
-    .context-box {
-        border-radius: 10px;
-        background: #fff6f0;
-        border: 1px solid rgba(198, 62, 78, 0.2);
-        padding: 10px;
-    }
-    .context-box small { display:block; color:#6e5752; margin-bottom:4px; }
-    .context-box strong { color:var(--vampire); font-size:18px; }
-    .draft-shell.dark {
-        background: linear-gradient(140deg, #1b0b0f 0%, #2b1016 45%, #1b271a 100%);
-        color: #fff9f0;
-    }
-    .draft-shell.dark .draft-panel,
-    .draft-shell.dark .context-box,
-    .draft-shell.dark .stat,
-    .draft-shell.dark .cat {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.16);
-        color: #fff9f0;
-    }
-    .draft-shell.dark h1,
-    .draft-shell.dark h2,
-    .draft-shell.dark h3,
-    .draft-shell.dark h4,
-    .draft-shell.dark p,
-    .draft-shell.dark small,
-    .draft-shell.dark li,
-    .draft-shell.dark .cat h4,
-    .draft-shell.dark .context-box small,
-    .draft-shell.dark .context-box strong,
-    .draft-shell.dark .stat strong,
-    .draft-shell.dark .stat small {
-        color: #fffaf2 !important;
-    }
-    .draft-shell.dark select,
-    .draft-shell.dark input,
-    .draft-shell.dark textarea {
-        background: rgba(245, 249, 229, 0.1);
-        color: #fffaf2;
-        border-color: rgba(245, 249, 229, 0.28);
-    }
-    .draft-shell.dark select option {
-        background: #2f1a1d;
-        color: #fff9ef;
-    }
-    .draft-shell.dark .mode-toggle { background: var(--amnesiac); color: var(--green-dark); }
-    @media (max-width: 1020px) { .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-</style>
+    <style>
+        .budget-page {
+            --cream: #F5EBDF;
+            --cream-deep: #EFE7DA;
+            --card: #FFFFFF;
+            --maroon: #5C2430;
+            --olive: #475B35;
+            --coral: #E19184;
+            --coral-deep: #C63E4E;
+            --muted: #8B7B72;
+            --amber-bg: #FBEAE6;
+            --amber-border: #E8B9AC;
+            --amber-text: #8C3A2E;
+            --blue-bg: #EFF6FF;
+            --blue-border: #BFDBFE;
+            --blue-text: #1E3A8A;
+            --red-bg: #FEE2E2;
+            --red-border: #FECACA;
+            --red-text: #991B1B;
+            --green: #15803D;
+            --shadow: 0 8px 28px rgba(92, 36, 48, 0.08);
+            --shadow-sm: 0 2px 10px rgba(92, 36, 48, 0.06);
+            font-family: inherit;
+        }
+        .budget-error {
+            background: var(--red-bg);
+            border: 1px solid var(--red-border);
+            color: var(--red-text);
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .state-panel {
+            text-align: center;
+            padding: 90px 20px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .state-icon {
+            font-size: 56px;
+            color: var(--coral);
+        }
+        .state-icon.spin { opacity: 0.9; }
+        .state-icon.dim { opacity: 0.35; }
+        .state-title {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 24px;
+            color: var(--maroon);
+            margin: 20px 0 8px 0;
+        }
+        .state-copy {
+            color: var(--muted);
+            font-size: 15px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .stat-tile {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 22px 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 4px solid var(--tile-accent, var(--coral));
+        }
+        .stat-label {
+            font-size: 12px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .stat-value {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--tile-accent, var(--maroon));
+        }
+        .panel {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 28px;
+        }
+        .panel-title {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-title i { color: var(--coral); }
+        .panel-title .count { font-size: 15px; color: var(--olive); font-family: inherit; }
+        .assistant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+        .assistant-card {
+            background: var(--amber-bg);
+            border: 1px solid var(--amber-border);
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .assistant-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .assistant-name { color: var(--amber-text); font-size: 15px; font-weight: 700; }
+        .assistant-fee {
+            background: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--green);
+            font-size: 14px;
+        }
+        .assistant-list { list-style: none; padding: 0; margin: 0; }
+        .assistant-list li {
+            font-size: 13px;
+            color: var(--muted);
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        .assistant-list i { color: var(--coral); margin-right: 9px; margin-top: 3px; font-size: 12px; }
+        .assistant-note {
+            font-size: 12px;
+            color: var(--amber-text);
+            margin: 16px 0 0 0;
+            font-style: italic;
+            text-align: center;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 18px;
+        }
+        .category-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--coral);
+        }
+        .category-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        .category-name { font-size: 16px; font-weight: 700; color: var(--maroon); margin: 0; }
+        .category-cost { font-size: 20px; font-weight: 700; color: var(--green); font-family: Georgia, serif; }
+        .category-note {
+            background: var(--blue-bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--blue-text);
+            margin-bottom: 14px;
+        }
+        .category-block { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+        .category-block strong { color: var(--olive); }
+        .category-block div { padding: 3px 0; }
+        .category-work {
+            font-size: 12px;
+            color: var(--blue-text);
+            border-top: 1px solid var(--cream-deep);
+            padding-top: 12px;
+        }
+        .category-work div { padding: 2px 0; }
+        .notice {
+            border-radius: 16px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .notice-warning { background: var(--red-bg); border: 1px solid var(--red-border); }
+        .notice-question { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+        .notice-title {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .notice-warning .notice-title { color: var(--red-text); }
+        .notice-question .notice-title { color: var(--blue-text); }
+        .notice-warning div.notice-line { color: var(--red-text); }
+        .notice-question div.notice-line { color: var(--blue-text); }
+        .notice-line { font-size: 14px; padding: 3px 0; }
+        @media (max-width: 900px) {
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            .stat-grid { grid-template-columns: 1fr; }
+        }
 
-<div class="draft-shell">
-    <div class="flow-top">
-        <div class="flow-nav">
-            <a class="flow-link" href="{{ route('planner.events.budget', $event) }}"><span class="flow-node"><i class="fas fa-globe"></i> Universe Hub</span></a>
-            <span class="flow-node active"><i class="fas fa-robot"></i> AI Studio</span>
-            <a class="flow-link" href="{{ $event->budget ? route('planner.events.budget.editor', $event) : '#' }}"><span class="flow-node"><i class="fas fa-table"></i> Editor World</span></a>
-        </div>
-        <button type="button" class="mode-toggle" id="mode-toggle">
-            <i class="fas fa-circle-half-stroke"></i> Toggle Dark / Light
-        </button>
-    </div>
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .top-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+        .top-right-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .top-btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card);
+            color: var(--maroon);
+            box-shadow: var(--shadow-sm);
+        }
+        .mode-toggle {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--maroon);
+            color: #fff;
+            font-size: 1rem;
+        }
 
-    <div class="draft-head">
-        <div>
-            <h1>AI Draft Studio</h1>
-            <p>Generate AI suggestions that now use your latest planner edits from the Budget Editor.</p>
-        </div>
-        <div class="draft-actions">
-            <a href="{{ route('planner.events.budget', $event) }}" class="draft-btn btn-back"><i class="fas fa-home"></i> Workspace Hub</a>
-            <button id="generate-ai-budget" type="button" class="draft-btn btn-generate" data-loading-text='<i class="fas fa-spinner fa-spin"></i> Generating...'>
-                <i class="fas fa-robot"></i> Generate AI Plan
-            </button>
-            @if($draft && !$event->budget)
-                <form method="POST" action="{{ route('planner.events.budget.import', $event) }}" class="js-submit-lock" onsubmit="return confirm('Import this AI draft to Budget Editor?');">
-                    @csrf
-                    <button class="draft-btn btn-import" type="submit" data-loading-text='<i class="fas fa-spinner fa-spin"></i> Importing...'>
-                        <i class="fas fa-file-import"></i> Import to Editor
-                    </button>
-                </form>
-            @elseif($event->budget)
-                <a href="{{ route('planner.events.budget.editor', $event) }}" class="draft-btn btn-editor"><i class="fas fa-arrow-right"></i> Go to Editor</a>
+        .budget-page.dark {
+            background: #3A2D26;
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .budget-page.dark .top-btn { background: var(--card); color: var(--maroon); }
+        .budget-page.dark .mode-toggle { background: var(--cream); color: var(--maroon); }
+        .context-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .context-box {
+            border-radius: 10px;
+            background: var(--amber-bg);
+            border: 1px solid var(--amber-border);
+            padding: 10px;
+        }
+        .context-box small { display:block; color:#6e5752; margin-bottom:4px; }
+        .context-box strong { color:var(--maroon); font-size:18px; }
+        @media (max-width: 900px) {
+            .context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+
+    <div class="top-actions">
+        <div class="top-nav">
+            <a href="{{ route('planner.events.budget', $event) }}" class="top-btn"><i class="fas fa-house"></i> Hub</a>
+            @if($event->budget)
+                <a href="{{ route('planner.events.budget.editor', $event) }}" class="top-btn"><i class="fas fa-table"></i> Budget Editor</a>
+            @else
+                <span class="top-btn" style="opacity:0.5;pointer-events:none;"><i class="fas fa-table"></i> Budget Editor</span>
             @endif
+            <a href="{{ route('planner.tasks.index') }}" class="top-btn"><i class="fas fa-tasks"></i> Tasks Page</a>
         </div>
-    </div>
-
-    @if(session('success'))
-        <div class="alert ok">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="alert err">{{ session('error') }}</div>
-    @endif
-
-    <div id="draft-loading" class="draft-panel loading">
-        <i class="fas fa-sparkles"></i> AI is designing your budget draft...
+        <div class="top-right-group">
+            <button @click="generateBudget()" :disabled="loading" class="btn-primary">
+                <span x-show="!loading"><i class="fas fa-robot"></i> Generate Budget Plan</span>
+                <span x-show="loading"><i class="fas fa-spinner fa-spin"></i> Generating...</span>
+            </button>
+            <button type="button" class="mode-toggle" id="mode-toggle">
+                <i class="fas fa-circle-half-stroke"></i> Toggle Dark / Light
+            </button>
+        </div>
     </div>
 
     @if($budget)
-        <div class="draft-panel">
-                <h3 style="margin:0 0 10px;color:#620607;font-family:'Outfit',sans-serif;">Planner Budget Context Used by AI</h3>
-            <p style="margin:0 0 10px;color:#5c5f70;font-size:13px;">
-                When you click Generate AI Plan, AI considers these current editor values.
+        <div class="panel">
+            <h3 class="panel-title" style="color:#620607;">Planner Budget Context Used by AI</h3>
+            <p style="margin:0 0 14px;color:#5c5f70;font-size:13px;">
+                When you click Generate Budget Plan, AI considers these current editor values.
             </p>
             <div class="context-grid">
                 <div class="context-box"><small>Editor Status</small><strong>{{ ucfirst($budget->status) }}</strong></div>
@@ -216,140 +318,186 @@
         </div>
     @endif
 
-    @if($draft)
-        <div class="draft-panel">
-            <h3 style="margin:0 0 12px;color:#4f1f2a;font-family:'Outfit',sans-serif;">AI Budget Overview</h3>
-            <div class="stat-grid">
-                <div class="stat"><small>Total Client Budget</small><strong>${{ number_format((float) ($ai['total_client_budget'] ?? 0), 2) }}</strong></div>
-                <div class="stat"><small>Planner Fee</small><strong>${{ number_format((float) ($ai['planner_fee_amount'] ?? 0), 2) }}</strong></div>
-                <div class="stat"><small>Assistant Fees</small><strong>${{ number_format((float) ($ai['total_assistant_fees'] ?? 0), 2) }}</strong></div>
-                <div class="stat"><small>Remaining</small><strong>${{ number_format((float) ($ai['remaining_for_event'] ?? 0), 2) }}</strong></div>
+    <div x-show="error" x-cloak class="budget-error" x-text="error"></div>
+
+    <div x-show="loading" class="state-panel">
+        <i class="fas fa-spinner fa-spin state-icon spin"></i>
+        <p class="state-copy" style="margin-top: 20px;">AI is analyzing your event and creating a budget plan...</p>
+    </div>
+
+    <div x-show="aiResponse && !loading" x-cloak>
+        <div class="stat-grid">
+            <div class="stat-tile" style="--tile-accent: var(--maroon);">
+                <div class="stat-label">Total Client Budget</div>
+                <div class="stat-value" x-text="'$' + (aiResponse.total_client_budget || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
+            </div>
+            <div class="stat-tile" style="--tile-accent: #1E40AF;">
+                <div class="stat-label">Planner Fee (15%)</div>
+                <div class="stat-value" x-text="'$' + (aiResponse.planner_fee_amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
+            </div>
+            <div class="stat-tile" style="--tile-accent: var(--amber-text);">
+                <div class="stat-label">Assistant Fees</div>
+                <div class="stat-value" x-text="'$' + (aiResponse.total_assistant_fees || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
+            </div>
+            <div class="stat-tile" style="--tile-accent: var(--green);">
+                <div class="stat-label">Remaining for Event</div>
+                <div class="stat-value" x-text="'$' + (aiResponse.remaining_for_event || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></div>
             </div>
         </div>
 
-        <div class="draft-panel">
-            <h3 style="margin:0 0 12px;color:#4f1f2a;font-family:'Outfit',sans-serif;">Suggested Categories</h3>
-            <div class="cat-grid">
-                @foreach(($ai['categories'] ?? []) as $category)
-                    <div class="cat">
-                        <h4>
-                            <span>{{ $category['category'] ?? 'General' }}</span>
-                            <span>${{ number_format((float) ($category['estimated_cost'] ?? 0), 2) }}</span>
-                        </h4>
-                        @if(!empty($category['suggested_orders']))
-                            <ul class="list">
-                                @foreach($category['suggested_orders'] as $order)
-                                    <li>{{ $order }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
+        <div class="panel">
+            <h3 class="panel-title"><i class="fas fa-users"></i> Suggested Assistants: <span class="count" x-text="aiResponse.suggested_assistants"></span></h3>
+            <div class="assistant-grid">
+                <template x-for="a in aiResponse.assistants" :key="a.assistant_number">
+                    <div class="assistant-card">
+                        <div class="assistant-card-head">
+                            <span class="assistant-name">Assistant <span x-text="a.assistant_number"></span></span>
+                            <span class="assistant-fee">$<span x-text="a.fee.toFixed(2)"></span></span>
+                        </div>
+                        <ul class="assistant-list">
+                            <template x-for="r in a.responsibilities" :key="r">
+                                <li><i class="fas fa-check-circle"></i><span x-text="r"></span></li>
+                            </template>
+                        </ul>
                     </div>
-                @endforeach
+                </template>
+            </div>
+            <p class="assistant-note">⚠️ These are suggestions only. Assign tasks manually from the Tasks page.</p>
+        </div>
+
+        <div class="panel">
+            <h3 class="panel-title"><i class="fas fa-list"></i> Budget Categories <span class="count">(Total: $<span x-text="(aiResponse.final_budget_for_categories || 0).toLocaleString('en-US', {minimumFractionDigits: 2})"></span>)</span></h3>
+            <div class="category-grid">
+                <template x-for="cat in aiResponse.categories" :key="cat.category">
+                    <div class="category-card">
+                        <div class="category-head">
+                            <h4 class="category-name" x-text="cat.category"></h4>
+                            <span class="category-cost" x-text="'$' + cat.estimated_cost.toLocaleString('en-US', {minimumFractionDigits: 2})"></span>
+                        </div>
+                        <div x-show="cat.guest_based_note" class="category-note" x-text="cat.guest_based_note"></div>
+                        <div class="category-block">
+                            <strong>Suggested Orders:</strong>
+                            <template x-for="order in cat.suggested_orders" :key="order">
+                                <div>• <span x-text="order"></span></div>
+                            </template>
+                        </div>
+                        <div class="category-work">
+                            <strong>Assistant Work:</strong>
+                            <template x-for="work in cat.suggested_assistant_work" :key="work">
+                                <div>• <span x-text="work"></span></div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
 
-        @if(!empty($ai['warnings']))
-            <div class="draft-panel">
-                <h3 style="margin:0 0 10px;color:#8c2c25;font-family:'Outfit',sans-serif;">Warnings</h3>
-                <ul class="list">
-                    @foreach($ai['warnings'] as $warning)
-                        <li>{{ $warning }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if(!empty($ai['planner_questions']))
-            <div class="draft-panel">
-                <h3 style="margin:0 0 10px;color:#1e4e88;font-family:'Outfit',sans-serif;">Planner Questions</h3>
-                <ul class="list">
-                    @foreach($ai['planner_questions'] as $question)
-                        <li>{{ $question }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-    @else
-        <div class="draft-panel">
-            <h3 style="margin:0 0 8px;color:#4f1f2a;font-family:'Outfit',sans-serif;">No draft yet</h3>
-            <p style="margin:0;color:#66595c;">Click <strong>Generate AI Plan</strong> to start Part A suggestions, then import to Budget Editor (Part B).</p>
+        <div x-show="aiResponse.warnings?.length" class="notice notice-warning">
+            <h4 class="notice-title">⚠️ Warnings</h4>
+            <template x-for="w in aiResponse.warnings" :key="w">
+                <div class="notice-line" x-text="'• ' + w"></div>
+            </template>
         </div>
-    @endif
+
+        <div x-show="aiResponse.planner_questions?.length" class="notice notice-question">
+            <h4 class="notice-title">💬 Questions to Clarify with Client</h4>
+            <template x-for="q in aiResponse.planner_questions" :key="q">
+                <div class="notice-line" x-text="'❓ ' + q"></div>
+            </template>
+        </div>
+    </div>
+
+    <div x-show="!aiResponse && !loading" class="state-panel">
+        <i class="fas fa-robot state-icon dim"></i>
+        <h2 class="state-title">AI Budget Planning</h2>
+        <p class="state-copy">Click "Generate Budget Plan" to get AI-powered budget suggestions for this event.</p>
+    </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+function budgetGenerator(eventId) {
+    return {
+        loading: false,
+        error: null,
+        aiResponse: null,
+
+        async init() {
+            // Auto-load existing draft on page load
+            const saved = localStorage.getItem('budget_draft_' + eventId);
+            if (saved) {
+                try {
+                    this.aiResponse = JSON.parse(saved);
+                } catch (e) {
+                    // Invalid saved data, ignore
+                }
+            }
+        },
+
+        async generateBudget() {
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const response = await fetch(`/planner/events/${eventId}/budget/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    credentials: 'include',
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                const isJson = contentType.includes('application/json');
+                const data = isJson ? await response.json() : null;
+
+                if (!response.ok) {
+                    const serverMessage = data?.message
+                        || (isJson ? null : await response.text())
+                        || `Request failed with status ${response.status}`;
+                    throw new Error(serverMessage);
+                }
+
+                if (!data || !data.success) {
+                    throw new Error(data.message || 'Failed to generate budget');
+                }
+
+                this.aiResponse = data.data.ai_response;
+
+                // Save to localStorage so it persists on revisit
+                localStorage.setItem('budget_draft_' + eventId, JSON.stringify(data.data.ai_response));
+
+            } catch (err) {
+                this.error = err.message || 'Something went wrong. Please try again.';
+                console.error('Budget generation error:', err);
+            } finally {
+                this.loading = false;
+            }
+        }
+    };
+}
+</script>
 <script>
     (function () {
-        const generateBtn = document.getElementById('generate-ai-budget');
-        const loadingPanel = document.getElementById('draft-loading');
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-
-        function launchConfetti() {
-            confetti({ particleCount: 130, spread: 90, origin: { y: 0.6 } });
-        }
-
-        function lockButton(button) {
-            if (!button || button.disabled) return;
-            if (button.dataset.loadingText) {
-                button.dataset.originalText = button.innerHTML;
-                button.innerHTML = button.dataset.loadingText;
-            }
-            button.disabled = true;
-        }
-
-        if (generateBtn) {
-            generateBtn.addEventListener('click', async function () {
-                lockButton(generateBtn);
-                if (loadingPanel) loadingPanel.style.display = 'block';
-                try {
-                    const response = await fetch('{{ route('planner.events.budget.generate', $event) }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        credentials: 'same-origin'
-                    });
-                    const data = await response.json();
-                    if (!response.ok || !data.success) {
-                        throw new Error(data.message || 'Failed to generate draft.');
-                    }
-                    launchConfetti();
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 550);
-                } catch (error) {
-                    alert(error.message || 'Failed to generate draft.');
-                    window.location.reload();
-                }
-            });
-        }
-
-        document.querySelectorAll('.js-submit-lock').forEach(function (form) {
-            form.addEventListener('submit', function () {
-                lockButton(form.querySelector('button[type="submit"]'));
-            });
-        });
-
-        @if(session('success'))
-            launchConfetti();
-        @endif
-
-        const container = document.querySelector('.draft-shell');
-        const modeToggle = document.getElementById('mode-toggle');
         const key = 'budget_mode';
-        if (container && modeToggle) {
-            function applyMode(mode) {
-                container.classList.toggle('dark', mode === 'dark');
-                localStorage.setItem(key, mode);
-            }
+        const container = document.getElementById('budget-page-root');
+        const toggle = document.getElementById('mode-toggle');
+        if (!container || !toggle) return;
 
-            applyMode(localStorage.getItem(key) || 'light');
-            modeToggle.addEventListener('click', function () {
-                const next = container.classList.contains('dark') ? 'light' : 'dark';
-                applyMode(next);
-            });
+        function setMode(mode) {
+            container.classList.toggle('dark', mode === 'dark');
+            localStorage.setItem(key, mode);
         }
+
+        setMode(localStorage.getItem(key) || 'light');
+
+        toggle.addEventListener('click', function () {
+            const next = container.classList.contains('dark') ? 'light' : 'dark';
+            setMode(next);
+        });
     })();
 </script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 @endsection

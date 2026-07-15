@@ -10,6 +10,7 @@ use App\Models\AiBudgetDraft;
 use App\Services\BudgetService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use RuntimeException;
 
 class BudgetController extends Controller
@@ -198,4 +199,27 @@ class BudgetController extends Controller
             abort(403);
         }
     }
+
+public function export(Event $event)
+{
+    $this->authorizePlannerEvent($event);
+
+    $event->load([
+        'budget.items',
+        'eventType',
+    ]);
+
+    if (!$event->budget) {
+        return redirect()
+            ->route('planner.events.budget.editor', $event)
+            ->with('error', 'No budget available to export.');
+    }
+
+    $pdf = Pdf::loadView(
+        'planner.export.export',
+        compact('event')
+    );
+
+    return $pdf->download('event-plan-'.$event->id.'.pdf');
+}
 }
