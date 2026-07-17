@@ -1,11 +1,10 @@
 /* Color Palette */
 :root {
     --onyx: #C63E4E;
-    --ivory: #620607 ;
-    --beige:   #EFE7DA;
+    --ivory: #620607;
+    --beige: #EFE7DA;
     --ebony: #E19184;
     --white: #FFFFFF;
-
 }
 
 * {
@@ -15,8 +14,8 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    
+  font-family: Georgia, 'Times New Roman', serif;
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,46 +35,46 @@ body::before {
     height: 100%;
     opacity: 0.12;
     background-color: var(--beige);
-    background-image: 
+    background-image:
         /* Balloons Pattern */
-        radial-gradient(circle at 20px 20px, transparent 15px, rgba(88, 96, 65, 0.3) 15px, rgba(88, 96, 65, 0.3) 17px, transparent 17px),
+        radial-gradient(circle at 20px 20px, transparent 15px, rgba(198, 62, 78, 0.25) 15px, rgba(198, 62, 78, 0.25) 17px, transparent 17px),
         /* Confetti Lines */
         repeating-linear-gradient(
             45deg,
             transparent,
             transparent 60px,
-            rgba(88, 96, 65, 0.15) 60px,
-            rgba(88, 96, 65, 0.15) 62px
+            rgba(198, 62, 78, 0.12) 60px,
+            rgba(198, 62, 78, 0.12) 62px
         ),
         repeating-linear-gradient(
             -45deg,
             transparent,
             transparent 60px,
-            rgba(88, 96, 65, 0.15) 60px,
-            rgba(88, 96, 65, 0.15) 62px
+            rgba(198, 62, 78, 0.12) 60px,
+            rgba(198, 62, 78, 0.12) 62px
         ),
         /* Gift Box Pattern */
         repeating-linear-gradient(
             90deg,
             transparent,
             transparent 40px,
-            rgba(88, 96, 65, 0.1) 40px,
-            rgba(88, 96, 65, 0.1) 42px
+            rgba(198, 62, 78, 0.08) 40px,
+            rgba(198, 62, 78, 0.08) 42px
         ),
         repeating-linear-gradient(
             0deg,
             transparent,
             transparent 40px,
-            rgba(88, 96, 65, 0.1) 40px,
-            rgba(88, 96, 65, 0.1) 42px
+            rgba(198, 62, 78, 0.08) 40px,
+            rgba(198, 62, 78, 0.08) 42px
         );
-    background-size: 
+    background-size:
         100px 100px,
         100% 100%,
         100% 100%,
         80px 80px,
         80px 80px;
-    background-position: 
+    background-position:
         0 0,
         0 0,
         0 0,
@@ -87,7 +86,7 @@ body::before {
 
 /* Decorative Corner Elements */
 body::after {
-   
+
     position: absolute;
     top: 15px;
     left: 50%;
@@ -185,7 +184,7 @@ form::-webkit-scrollbar {
 }
 
 form::-webkit-scrollbar-track {
-    background: rgba(245, 245, 220, 0.3);
+    background: rgba(239, 231, 218, 0.5);
     border-radius: 10px;
 }
 
@@ -254,26 +253,40 @@ p {
     color: var(--onyx);
 }
 
+/* Border color now matches the input's own background - no visible border line */
 .input-wrapper input {
     width: 100%;
     background-color: var(--beige);
-    border: 1px solid #475B35;
+    border: 1px solid var(--beige);
     padding: 13px 45px 13px 45px;
     font-size: 14px;
     border-radius: 10px;
     outline: none;
     transition: all 0.3s;
-    color: var(--onyx);
+    color: var(--ivory);
 }
 
+/* Focus state: no green, just a soft warm highlight in the same palette */
 .input-wrapper input:focus {
-    background-color: #475B35;
-    border-color: var(--ebony);
-    box-shadow: 0 0 10px rgba(88, 96, 65, 0.3);
+    background-color: var(--beige);
+    border-color: var(--onyx);
+    box-shadow: 0 0 0 3px rgba(198, 62, 78, 0.15);
 }
 
 .input-wrapper input::placeholder {
-    color: #999;
+    color: rgba(98, 6, 7, 0.45);
+}
+
+/* Keep burgundy text (and beige background) even on browser-saved/autofilled values */
+.input-wrapper input:-webkit-autofill,
+.input-wrapper input:-webkit-autofill:hover,
+.input-wrapper input:-webkit-autofill:focus,
+.input-wrapper input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--ivory);
+    -webkit-box-shadow: 0 0 0 1000px var(--beige) inset;
+    box-shadow: 0 0 0 1000px var(--beige) inset;
+    caret-color: var(--ivory);
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Error Messages */
@@ -298,7 +311,7 @@ p {
 .role-btn {
     flex: 1;
     background: var(--beige);
-    border: 1px solid rgba(88, 96, 65, 0.2);
+    border: 1px solid var(--beige);
     border-radius: 10px;
     padding: 12px 8px;
     cursor: pointer;
@@ -307,10 +320,10 @@ p {
 }
 
 .role-btn:hover {
-    background: var(--ivory);
+    background: var(--ebony);
     border-color: var(--ebony);
     transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(88, 96, 65, 0.2);
+    box-shadow: 0 3px 10px rgba(198, 62, 78, 0.25);
 }
 
 .role-btn input[type="radio"] {
@@ -318,7 +331,7 @@ p {
 }
 
 .role-btn input[type="radio"]:checked ~ span {
-    color: var(--ebony);
+    color: var(--onyx);
     font-weight: 700;
 }
 
@@ -352,10 +365,10 @@ p {
 
 /* Auth Button */
 .auth-btn {
-    border-radius: 10px;
+      border-radius: 10px;
     border: none;
     background: linear-gradient(135deg, var(--ebony), var(--onyx));
-    color: var(--ivory);
+    color: var(--white); /* Changed from var(--ivory) to white */
     font-size: 14px;
     font-weight: 700;
     padding: 14px 50px;
@@ -369,11 +382,12 @@ p {
 .auth-btn:hover {
     background: linear-gradient(135deg, var(--onyx), var(--ebony));
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(88, 96, 65, 0.4);
+    box-shadow: 0 5px 15px rgba(198, 62, 78, 0.4);
 }
 
 .auth-btn:active {
     transform: translateY(0);
+    color: var(--white); /* Added to keep white on active state */
 }
 
 /* Overlay Container (Dark Moving Panel) */
@@ -448,14 +462,14 @@ p {
 }
 
 .overlay-panel h1 {
-    color: var(--ivory);
+    color: var(--white);
     font-size: 32px;
     margin-bottom: 15px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .overlay-panel p {
-    color: var(--beige);
+    color: var(--white);
     font-size: 14px;
     line-height: 1.6;
     margin-bottom: 25px;
@@ -473,8 +487,8 @@ p {
 /* Ghost Button (Transparent) */
 .ghost-btn {
     background-color: transparent;
-    border: 2px solid var(--ivory);
-    color: var(--ivory);
+    border: 2px solid var(--white); /* Changed border from beige to white */
+    color: var(--white); /* Changed from beige to white */
     border-radius: 10px;
     padding: 12px 40px;
     font-size: 14px;
@@ -483,12 +497,11 @@ p {
     cursor: pointer;
     transition: all 0.3s;
 }
-
 .ghost-btn:hover {
-    background-color: var(--ivory);
-    color: var(--ebony);
+    background-color: var(--white); /* Changed from beige to white */
+    color: var(--ebony); /* Changed from ebony to keep contrast */
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 255, 240, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4); /* Updated shadow for white */
 }
 
 .ghost-btn:active {
@@ -501,15 +514,15 @@ p {
         min-height: 700px;
         width: 100%;
     }
-    
+
     form {
         padding: 25px 30px 35px 30px;
     }
-    
+
     .overlay-panel h1 {
         font-size: 26px;
     }
-    
+
     .overlay-panel p {
         font-size: 13px;
     }
@@ -519,15 +532,15 @@ p {
     .container {
         border-radius: 15px;
     }
-    
+
     form {
         padding: 20px 25px 30px 25px;
     }
-    
+
     h1 {
         font-size: 22px;
     }
-    
+
     .form-title {
         font-size: 16px;
     }

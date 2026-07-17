@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventType;
+use App\Models\Notification; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -31,34 +32,50 @@ class EventController extends Controller
     /**
      * Store a newly created event
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'event_type_id' => 'required|exists:event_types,id',
-            'description' => 'nullable|string',
-            'start_date' => 'required|date',
-            'start_time' => 'nullable',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'end_time' => 'nullable',
-            'location_text' => 'required|string',
-            'guest_estimate' => 'required|integer|min:1',
-            'budget_overall' => 'required|numeric|min:0',
-            'planner_id' => 'nullable|exists:users,id',
-        ]);
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'event_type_id' => 'required|exists:event_types,id',
+        'description' => 'nullable|string',
+        'start_date' => 'required|date',
+        'start_time' => 'nullable',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+        'end_time' => 'nullable',
+        'location_text' => 'required|string',
+        'guest_estimate' => 'required|integer|min:1',
+        'budget_overall' => 'required|numeric|min:0',
+        'planner_id' => 'nullable|exists:users,id',
+    ]);
 
-        $validated['client_id'] = Auth::id();
-        $validated['status'] = $request->planner_id ? 'pending' : 'draft';
+    $validated['client_id'] = Auth::id();
+    $validated['status'] = $request->planner_id ? 'pending' : 'draft';
 
-        $event = Event::create($validated);
+    $event = Event::create($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Event created successfully',
-            'data' => $event->load('eventType', 'planner')
-        ], 201);
+    // Notify planner if assigned
+    if ($request->planner_id) {
+        try {
+            Notification::create([
+                'user_id' => $request->planner_id,
+                'type' => 'request',
+                'priority' => 'high',
+                'title' => 'New Event Request',
+                'message' => Auth::user()->name . ' has requested you to plan: ' . $event->name,
+                'icon' => 'fas fa-calendar-plus',
+                'action_url' => '/planner/requests',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to create planner notification: ' . $e->getMessage());
+        }
     }
 
+    return response()->json([
+        'success' => true,
+        'message' => 'Event created successfully',
+        'data' => $event->load('eventType', 'planner')
+    ], 201);
+}
     /**
      * Display the specified event
      */

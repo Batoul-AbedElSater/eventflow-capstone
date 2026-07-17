@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\TaskAssignment;
 use App\Models\VendorOrder;
+use App\Models\Notification;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;  
 
 class AssistantController extends Controller
 {
@@ -60,31 +62,48 @@ class AssistantController extends Controller
     /**
      * Mark a task as completed
      */
-    public function completeTask(Request $request, $taskId)
-    {
-        $user = $request->user();
+  public function completeTask(Request $request, $taskId)
+{
+    $user = $request->user();
 
-        $isAssigned = TaskAssignment::where('task_id', $taskId)
-            ->where('assistant_id', $user->id)
-            ->exists();
+    $isAssigned = TaskAssignment::where('task_id', $taskId)
+        ->where('assistant_id', $user->id)
+        ->exists();
 
-        if (!$isAssigned) {
-            return response()->json(['success' => false, 'message' => 'Not assigned to this task'], 403);
-        }
-
-        $task = Task::findOrFail($taskId);
-        $task->update([
-            'status' => 'done',
-            'progress' => 100,
-            'completed_at' => now(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Task marked as complete!',
-            'data' => $task
-        ]);
+    if (!$isAssigned) {
+        return response()->json(['success' => false, 'message' => 'Not assigned to this task'], 403);
     }
+
+    $task = Task::with('event')->findOrFail($taskId);
+    $task->update([
+        'status' => 'done',
+        'progress' => 100,
+        'completed_at' => now(),
+    ]);
+
+    // Notify planner
+    if ($task->event && $task->event->planner_id) {
+        try {
+            Notification::create([
+                'user_id' => $task->event->planner_id,
+                'type' => 'task',
+                'priority' => 'medium',
+                'title' => 'Task Completed',
+                'message' => $user->name . ' marked "' . $task->title . '" as done for ' . $task->event->name,
+                'icon' => 'fas fa-check-circle',
+                'action_url' => '/planner/events/' . $task->event->id . '/tasks',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create task-completed notification: ' . $e->getMessage());
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Task marked as complete!',
+        'data' => $task
+    ]);
+}
 
     /**
      * Get vendors for a specific task
@@ -127,41 +146,63 @@ class AssistantController extends Controller
      * Place or update an order
      */
     public function submitOrder(Request $request, $taskId, $vendorId)
-    {
-        $validated = $request->validate([
-            'price' => 'required|numeric|min:0',
-            'notes' => 'nullable|string|max:500',
-        ]);
+{
+    $validated = $request->validate([
+        'price' => 'required|numeric|min:0',
+        'notes' => 'nullable|string|max:500',
+    ]);
 
-        $task = Task::findOrFail($taskId);
-        $vendor = Vendor::findOrFail($vendorId);
+    $task = Task::with('event')->findOrFail($taskId);
+    $vendor = Vendor::findOrFail($vendorId);
 
-        $isAssigned = TaskAssignment::where('task_id', $taskId)
-            ->where('assistant_id', $request->user()->id)
-            ->exists();
+    $isAssigned = TaskAssignment::where('task_id', $taskId)
+        ->where('assistant_id', $request->user()->id)
+        ->exists();
 
-        if (!$isAssigned) {
-            return response()->json(['success' => false, 'message' => 'Not assigned'], 403);
-        }
-
-        $order = VendorOrder::updateOrCreate(
-            [
-                'task_id' => $taskId,
-                'vendor_id' => $vendorId,
-                'assistant_id' => $request->user()->id,
-            ],
-            [
-                'price' => $validated['price'],
-                'notes' => $validated['notes'],
-            ]
-        );
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Order placed successfully!',
-            'data' => $order
-        ]);
+    if (!$isAssigned) {
+        return response()->json(['success' => false, 'message' => 'Not assigned'], 403);
     }
+
+    $isNewOrder = !VendorOrder::where('task_id', $taskId)
+        ->where('vendor_id', $vendorId)
+        ->where('assistant_id', $request->user()->id)
+        ->exists();
+
+    $order = VendorOrder::updateOrCreate(
+        [
+            'task_id' => $taskId,
+            'vendor_id' => $vendorId,
+            'assistant_id' => $request->user()->id,
+        ],
+        [
+            'price' => $validated['price'],
+            'notes' => $validated['notes'],
+        ]
+    );
+
+    // Notify planner
+    if ($task->event && $task->event->planner_id) {
+        try {
+            Notification::create([
+                'user_id' => $task->event->planner_id,
+                'type' => 'order',
+                'priority' => 'medium',
+                'title' => 'New Order Placed',
+                'message' => $request->user()->name . ' placed an order with ' . $vendor->name . ' for ' . $task->event->name,
+                'icon' => 'fas fa-shopping-cart',
+                'action_url' => '/planner/events/' . $task->event->id . '/vendors/' . $vendor->id,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create order notification: ' . $e->getMessage());
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => $isNewOrder ? 'Order placed successfully!' : 'Order updated successfully!',
+        'data' => $order
+    ]);
+}
 
     /**
      * Get all orders for this assistant
