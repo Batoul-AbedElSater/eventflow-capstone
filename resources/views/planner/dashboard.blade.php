@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="dashboard-container">
-    
+
     {{-- Flash Messages --}}
     @if(session('success'))
         <div class="alert alert-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
@@ -23,10 +23,6 @@
             <div class="mini-stat">
                 <span class="number">{{ $stats['active_events'] ?? 0 }}</span>
                 <span class="label">Active Events</span>
-            </div>
-            <div class="mini-stat">
-                <span class="number">{{ $stats['pending_requests'] ?? 0 }}</span>
-                <span class="label">New Requests</span>
             </div>
             <div class="mini-stat">
                 <span class="number">{{ $todayTasks->count() ?? 0 }}</span>
@@ -57,11 +53,6 @@
                     <div class="day-events">
                         @forelse($day['events'] as $event)
                             <div class="calendar-event {{ $event->eventType->name }}">
-                                <span class="event-emoji">
-                                    @if($event->eventType->name === 'Wedding') 💒
-                                    @elseif($event->eventType->name === 'Birthday') 🎂
-                                    @else 🎉 @endif
-                                </span>
                                 <div class="event-details">
                                     <strong>{{ Str::limit($event->name, 20) }}</strong>
                                     <span class="event-time">{{ $event->start_date->format('g:i A') }}</span>
@@ -83,7 +74,7 @@
     <div class="card time-machine-card">
         <div class="card-header">
             <h3><i class="fas fa-history"></i> Time Machine - Your Journey</h3>
-           
+
         </div>
         <div class="card-body">
             <div class="time-machine-timeline">
@@ -120,7 +111,7 @@
             </div>
 
             <div class="journey-insights">
-                <h4><i class="fas fa-brain"></i> AI Journey Insights</h4>
+                <h4> AI Journey Insights</h4>
                 <div class="insights-grid">
                     <div class="insight-card"><i class="fas fa-trending-up"></i><p>Your busiest season is <strong>{{ $journeyInsights['best_month'] }}</strong> – plan ahead for peak months!</p></div>
                     <div class="insight-card"><i class="fas fa-chart-line"></i><p>You're averaging <strong>{{ $journeyInsights['avg_monthly_events'] }} events/month</strong> – on track for {{ $journeyInsights['avg_monthly_events'] * 12 }} events this year.</p></div>
@@ -132,7 +123,7 @@
 
     <div style="height: 50px;"></div>
 
-   
+
 
     {{-- CONFLICT DETECTOR --}}
     @if(count($conflicts) > 0)
@@ -147,38 +138,8 @@
                             <p>{{ $conflict['event1']->name }} and {{ $conflict['event2']->name }}</p>
                             <span class="conflict-date">Both on {{ $conflict['event1']->start_date->format('M d, Y') }}</span>
                         </div>
-                        <button class="btn-secondary btn-sm review-conflict" data-event1="{{ $conflict['event1']->id }}" data-event2="{{ $conflict['event2']->id }}"><i class="fas fa-eye"></i> Review</button>
                     </div>
                 @endforeach
-            </div>
-        </div>
-        <div style="height: 50px;"></div>
-    @endif
-
-    {{-- EVENT HEALTH MONITOR --}}
-    @if(count($eventHealth) > 0)
-        <div class="card">
-           <div class="card-header"><h3><i class="fas fa-heartbeat"></i> Event Health Monitor</h3></div>
-            <div class="card-body">
-                <div class="health-grid">
-                    @foreach($eventHealth as $health)
-                        <div class="health-card {{ $health['status'] }}">
-                            <div class="health-header">
-                                <h4>{{ $health['event']->name }}</h4>
-                                <span class="health-score {{ $health['status'] }}">{{ $health['overall'] }}%</span>
-                            </div>
-                            <div class="health-vitals">
-                                <div class="vital"><label>💓 Timeline</label><div class="progress-bar"><div class="progress-fill" style="width: {{ $health['timeline'] }}%"></div></div><span>{{ $health['timeline'] }}%</span></div>
-                                <div class="vital"><label>⚠️ Tasks</label><div class="progress-bar"><div class="progress-fill" style="width: {{ $health['tasks'] }}%"></div></div><span>{{ $health['tasks'] }}%</span></div>
-                            </div>
-                            <div class="health-status">
-                                @if($health['status'] === 'healthy') <span class="status-badge healthy">🟢 Healthy</span>
-                                @elseif($health['status'] === 'warning') <span class="status-badge warning">🟡 Needs Attention</span>
-                                @else <span class="status-badge critical">🔴 Critical</span> @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
             </div>
         </div>
         <div style="height: 50px;"></div>
@@ -215,22 +176,16 @@
                             @endforeach
                         </div>
                         <div class="weather-recommendations">
-                            <h5>🚨 Urgent Recommendations:</h5>
+                            <h5> Urgent Recommendations:</h5>
                             <ul>
                                 @if($rainChance > 20)
-                                    <li><i class="fas fa-exclamation-triangle"></i> Book backup tent TODAY ({{ $rainChance }}% rain risk)</li>
                                     <li><i class="fas fa-building"></i> Confirm indoor space availability</li>
                                 @else
                                     <li><i class="fas fa-check-circle"></i> Weather looks favorable – low rain risk</li>
                                 @endif
                                 <li><i class="fas fa-bell"></i> Inform client about 14‑day forecast</li>
-                                <li><i class="fas fa-shield-alt"></i> Consider weather insurance ({{ number_format($event->budget_overall * 0.01, 0) }} SAR)</li>
+
                             </ul>
-                        </div>
-                        <div class="weather-actions">
-                            <button class="btn-secondary btn-sm auto-message" data-event-name="{{ $event->name }}" data-client-email="{{ optional($event->client)->email ?? '' }}"><i class="fas fa-envelope"></i> Auto-Message Client</button>
-                            <button class="btn-secondary btn-sm find-vendors" data-location="{{ $event->location_text }}"><i class="fas fa-search"></i> Find Tent Vendors</button>
-                            <button class="btn-secondary btn-sm set-rain-alert" data-event-id="{{ $event->id }}" data-rain-chance="{{ $rainChance }}"><i class="fas fa-bell"></i> Set Rain Alert</button>
                         </div>
                     </div>
                 @endforeach
@@ -287,7 +242,7 @@
                                 <div class="detail-item"><i class="fas fa-calendar"></i><span>{{ $request->start_date->format('M d, Y') }}</span></div>
                                 <div class="detail-item"><i class="fas fa-map-marker-alt"></i><span>{{ Str::limit($request->location_text, 30) }}</span></div>
                                 <div class="detail-item"><i class="fas fa-users"></i><span>{{ $request->guest_estimate }} guests</span></div>
-                                <div class="detail-item"><i class="fas fa-dollar-sign"></i><span>{{ number_format($request->budget_overall, 0) }} SAR</span></div>
+                                <div class="detail-item"><i class="fas fa-dollar-sign"></i><span>{{ number_format($request->budget_overall, 0) }} </span></div>
                             </div>
                             <div class="request-actions">
                                 <form method="POST" action="{{ route('planner.requests.accept', $request->id) }}" style="flex:1;">@csrf<button type="submit" class="btn-accept"><i class="fas fa-check"></i> Accept</button></form>
@@ -323,7 +278,7 @@ if (rapidContainer) {
     const doneBtn = document.getElementById('doneBtn');
     const skipBtn = document.getElementById('skipBtn');
     const remindBtn = document.getElementById('remindBtn');
-    
+
     function updateDisplay() {
         if (currentIndex < tasks.length) {
             const task = tasks[currentIndex];
@@ -340,7 +295,7 @@ if (rapidContainer) {
         if (progressText) progressText.textContent = `Progress: ${completedCount}/${tasks.length} tasks`;
         if (streakSpan) streakSpan.textContent = `Streak: ${streak} tasks in a row!`;
     }
-    
+
   async function completeTask(taskId) {
     try {
         const response = await fetch(`/planner/tasks/${taskId}/status`, {
@@ -363,7 +318,7 @@ if (rapidContainer) {
         alert('Could not update task. Please refresh and try again.');
     }
 }
-    
+
     doneBtn?.addEventListener('click', () => {
         const taskId = doneBtn.getAttribute('data-task-id');
         completeTask(taskId);

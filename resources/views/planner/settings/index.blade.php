@@ -109,12 +109,12 @@
     }
 
     .settings-shell{
-        max-width: 1140px;
-        margin: 0 auto;
-        padding: 48px 30px 80px;
-        font-family: 'Inter', system-ui, sans-serif;
-        color: var(--text);
-        background: var(--cream);
+        max-width: 1800px;
+    margin: 0 auto;
+    padding: 0px 2px;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text);
+    background: var(--cream);
     }
 
     .settings-grid{
@@ -123,10 +123,10 @@
     }
 
     .settings-card{
-        border-radius: 32px;
-        background: var(--white);
-        border: 1px solid var(--border);
-        box-shadow: 0 26px 78px rgba(98,6,7,.08);
+       border-radius: 16px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    box-shadow: 0 26px 78px rgba(98,6,7,.08);
     }
 
     .settings-card-header p{

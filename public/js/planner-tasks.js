@@ -52,26 +52,24 @@ function restoreFocusTimer() {
 function initializePowerMode() {
     const powerBtn = document.getElementById('powerModeBtn');
     if (!powerBtn) return;
-    
+
     const newBtn = powerBtn.cloneNode(true);
     powerBtn.parentNode.replaceChild(newBtn, powerBtn);
-    
+
     newBtn.addEventListener('click', function(e) {
         e.preventDefault();
         powerModeActive = !powerModeActive;
-        
+
         if (powerModeActive) {
             this.classList.add('active');
             document.querySelectorAll('.task-card-epic').forEach(card => {
                 card.classList.add('power-mode-active');
             });
-            showNotification('⚡ POWER MODE ACTIVATED!', 'success');
         } else {
             this.classList.remove('active');
             document.querySelectorAll('.task-card-epic').forEach(card => {
                 card.classList.remove('power-mode-active');
             });
-            showNotification('Power Mode Deactivated', 'info');
         }
     });
 }
@@ -85,12 +83,12 @@ function initializeFocusTimerModal() {
     const startBtn = document.getElementById('startFocusBtn');
     const titleInput = document.getElementById('focusTitle');
     const minutesInput = document.getElementById('focusMinutesPopup');
-    
+
     if (!timerBtn || !modal) return;
-    
+
     const newTimerBtn = timerBtn.cloneNode(true);
     timerBtn.parentNode.replaceChild(newTimerBtn, timerBtn);
-    
+
     newTimerBtn.addEventListener('click', function(e) {
         e.preventDefault();
         if (focusTimerInterval) {
@@ -101,34 +99,34 @@ function initializeFocusTimerModal() {
             if (minutesInput) minutesInput.value = '25';
         }
     });
-    
+
     const closeModalHandler = () => modal.classList.remove('active');
     if (closeModal) closeModal.addEventListener('click', closeModalHandler);
     if (cancelBtn) cancelBtn.addEventListener('click', closeModalHandler);
     modal.addEventListener('click', function(e) {
         if (e.target === modal) closeModalHandler();
     });
-    
+
     startBtn.addEventListener('click', function() {
         let title = titleInput?.value.trim();
         if (!title) title = 'Focus Session';
         let minutes = parseInt(minutesInput?.value) || 25;
         if (minutes < 1) minutes = 1;
         if (minutes > 180) minutes = 180;
-        
+
         currentFocusTitle = title;
         focusTimeRemaining = minutes * 60;
-        
+
         const timerButton = document.getElementById('focusTimerBtn');
         if (timerButton) {
             timerButton.innerHTML = `<i class="fas fa-stop-circle"></i> Stop Timer (${title})`;
             timerButton.classList.add('timer-active');
         }
-        
+
         const endTime = Date.now() + (minutes * 60 * 1000);
         localStorage.setItem('focusTimerEnd', endTime);
         localStorage.setItem('focusTimerTitle', title);
-        
+
         modal.classList.remove('active');
         startFocusTimer(timerButton, title, minutes);
     });
@@ -136,7 +134,7 @@ function initializeFocusTimerModal() {
 
 function startFocusTimer(button, title, minutes, isRestored = false) {
     if (focusTimerInterval) clearInterval(focusTimerInterval);
-    
+
     focusTimerInterval = setInterval(() => {
         if (focusTimeRemaining <= 0) {
             clearInterval(focusTimerInterval);
@@ -145,11 +143,11 @@ function startFocusTimer(button, title, minutes, isRestored = false) {
             button.classList.remove('timer-active');
             localStorage.removeItem('focusTimerEnd');
             localStorage.removeItem('focusTimerTitle');
-            
+
             const msg = `🎉 Focus session "${title}" (${minutes} min) complete! Take a break!`;
             alert(msg);
             showNotification(msg, 'success');
-            
+
             if (typeof confetti !== 'undefined') {
                 confetti({
                     particleCount: 150,
@@ -160,18 +158,18 @@ function startFocusTimer(button, title, minutes, isRestored = false) {
             }
             return;
         }
-        
+
         focusTimeRemaining--;
         const minutesLeft = Math.floor(focusTimeRemaining / 60);
         const secondsLeft = focusTimeRemaining % 60;
         button.innerHTML = `<i class="fas fa-stop-circle"></i> ${title} - ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
-        
+
         if (!isRestored) {
             const newEndTime = Date.now() + (focusTimeRemaining * 1000);
             localStorage.setItem('focusTimerEnd', newEndTime);
         }
     }, 1000);
-    
+
     if (!isRestored) {
         showNotification(`🎯 Focus session "${title}" started! ${minutes} minutes`, 'success');
     }
@@ -242,7 +240,17 @@ function initializeTaskModal() {
     const form = document.getElementById('taskForm');
     const progressRange = document.getElementById('taskProgress');
     const progressVal = document.getElementById('progressValue');
-    
+
+    // .main-content has `position: relative; z-index: 1;` in planner-dashboard.css,
+    // which creates its own stacking context and traps any descendant's z-index
+    // inside it — so the modal's z-index:10000 never gets compared directly to
+    // the header's z-index:1000. Moving the modal to be a direct child of <body>
+    // escapes that stacking context entirely so it can stack above the header.
+    const modalEl = document.getElementById('taskModal');
+    if (modalEl && modalEl.parentElement !== document.body) {
+        document.body.appendChild(modalEl);
+    }
+
     if (createBtn) createBtn.addEventListener('click', () => openTaskModal());
     if (closeBtn) closeBtn.addEventListener('click', closeTaskModal);
     if (cancelBtn) cancelBtn.addEventListener('click', closeTaskModal);
@@ -287,7 +295,7 @@ async function loadTaskData(taskId) {
         document.getElementById('taskDueDate').value = task.due_date ? task.due_date.substring(0,16) : '';
         document.getElementById('taskProgress').value = task.progress || 0;
         document.getElementById('progressValue').textContent = (task.progress || 0) + '%';
-        
+
         // ✅ Load assigned assistant
         if (task.assistants && task.assistants.length > 0) {
             const assistantSelect = document.getElementById('taskAssistant');
@@ -311,12 +319,12 @@ async function loadTaskData(taskId) {
 
 async function handleTaskSubmit(e) {
     e.preventDefault();
-    
+
     const submitBtn = document.querySelector('#taskForm .btn-primary-epic');
     if (submitBtn) submitBtn.disabled = true;  // ✅ Prevent double click
-    
+
     const taskId = document.getElementById('taskId').value;
-    
+
     const assistantSelect = document.getElementById('taskAssistant');
     const assistantId = assistantSelect?.value || null;
 
@@ -330,9 +338,9 @@ async function handleTaskSubmit(e) {
         due_date: document.getElementById('taskDueDate').value || null,
         progress: parseInt(document.getElementById('taskProgress').value),
         assistant_id: assistantId,
-        vendor_ids: vendorIds  
+        vendor_ids: vendorIds
     };
-    
+
     try {
         const url = taskId ? `/planner/tasks/${taskId}` : '/planner/tasks';
         const method = taskId ? 'PUT' : 'POST';
@@ -433,12 +441,12 @@ window.closeAssignModal = function() {
 window.confirmAssignAssistant = function() {
     const taskId = document.getElementById('assignTaskId')?.value;
     const assistantId = document.getElementById('assignAssistantSelect')?.value;
-    
+
     if (!assistantId) {
         alert('Please select an assistant');
         return;
     }
-    
+
     assignAssistantToTask(taskId, assistantId);
     window.closeAssignModal();
 };
@@ -468,7 +476,7 @@ async function assignAssistantToTask(taskId, assistantId) {
 
 window.removeAssistant = async function(taskId, assistantId) {
     if (!confirm('Remove this assistant from the task?')) return;
-    
+
     try {
         const response = await fetch(`/planner/tasks/${taskId}/unassign/${assistantId}`, {
             method: 'DELETE',
@@ -513,7 +521,7 @@ function showNotification(message, type = 'success') {
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 3000);
 }
-// ========== VENDOR SELECTION ==========
+
 // ========== VENDOR SELECTION ==========
 const selectedVendors = [];
 
@@ -543,17 +551,21 @@ document.addEventListener('DOMContentLoaded', function() {
             checkIcon.style.borderColor = '#C63E4E';
             selectedVendors.push({ id: vendorId, name: vendorName });
         }
-        
+
         updateVendorSelectText();
     });
-    
+
     // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#vendorSelectBox') && !e.target.closest('#vendorDropdown')) {
-                const dropdown = document.getElementById('vendorDropdown');
-                if (dropdown) dropdown.classList.add('hidden');
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#vendorSelectBox') && !e.target.closest('#vendorDropdown')) {
+            const dropdown = document.getElementById('vendorDropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+                window.removeEventListener('scroll', vendorDropdownReposition, true);
+                window.removeEventListener('resize', vendorDropdownReposition);
             }
-        });
+        }
+    });
 });
 
 function updateVendorSelectText() {
@@ -570,12 +582,64 @@ function updateVendorSelectText() {
 function getSelectedVendorIds() {
     return selectedVendors.map(v => v.id);
 }
+
+// ---- Vendor dropdown open/close + positioning (fixed, viewport-relative) ----
 function toggleVendorDropdown() {
     const dropdown = document.getElementById('vendorDropdown');
+    const box = document.getElementById('vendorSelectBox');
     const arrow = document.getElementById('vendorArrow');
-    if (!dropdown) return;
-    dropdown.classList.toggle('hidden');
+    if (!dropdown || !box) return;
+
+    const isHidden = dropdown.classList.contains('hidden');
+
+    if (isHidden) {
+        positionVendorDropdown(box, dropdown);
+        dropdown.classList.remove('hidden');
+        // Keep it glued to the select box if the modal scrolls or the window resizes
+        window.addEventListener('scroll', vendorDropdownReposition, true);
+        window.addEventListener('resize', vendorDropdownReposition);
+    } else {
+        dropdown.classList.add('hidden');
+        window.removeEventListener('scroll', vendorDropdownReposition, true);
+        window.removeEventListener('resize', vendorDropdownReposition);
+    }
+
     if (arrow) arrow.classList.toggle('open');
+}
+
+function vendorDropdownReposition() {
+    const dropdown = document.getElementById('vendorDropdown');
+    const box = document.getElementById('vendorSelectBox');
+    if (!dropdown || !box || dropdown.classList.contains('hidden')) return;
+    positionVendorDropdown(box, dropdown);
+}
+
+function positionVendorDropdown(box, dropdown) {
+    const rect = box.getBoundingClientRect();
+    const dropdownMaxHeight = 150; // matches CSS max-height
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    const openUpward = spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow;
+
+    dropdown.style.position = 'fixed';
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+    dropdown.style.zIndex = '100001';
+
+    if (openUpward) {
+        dropdown.style.bottom = (window.innerHeight - rect.top) + 'px';
+        dropdown.style.top = 'auto';
+        dropdown.style.borderRadius = '8px 8px 0 0';
+        dropdown.style.borderTop = '1px solid #ddd';
+        dropdown.style.borderBottom = 'none';
+    } else {
+        dropdown.style.top = rect.bottom + 'px';
+        dropdown.style.bottom = 'auto';
+        dropdown.style.borderRadius = '0 0 8px 8px';
+        dropdown.style.borderTop = 'none';
+        dropdown.style.borderBottom = '1px solid #ddd';
+    }
 }
 
 // Inject keyframe animations and modal styles

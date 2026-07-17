@@ -10,13 +10,13 @@ let eventTypeChart = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Planner Events Page Loaded');
-    
+
     initializeViewToggle();
     initializeKanbanDragDrop();
     initializeFilters();
     initializeCalendar();
     initializeFAB();
-    
+
     // Load analytics on demand
     document.querySelector('[data-view="analytics"]')?.addEventListener('click', loadAnalytics);
 });
@@ -27,18 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeViewToggle() {
     const viewButtons = document.querySelectorAll('.view-toggle-btn');
-    
+
     viewButtons.forEach(btn => {
         btn.addEventListener('click', function() {
             const view = this.dataset.view;
-            
+
             // Update active button
             viewButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Switch views
             document.querySelectorAll('.view-container').forEach(v => v.style.display = 'none');
-            
+
             if (view === 'kanban') {
                 document.getElementById('kanbanView').style.display = 'block';
             } else if (view === 'calendar') {
@@ -47,7 +47,7 @@ function initializeViewToggle() {
             } else if (view === 'analytics') {
                 document.getElementById('analyticsView').style.display = 'block';
             }
-            
+
             currentView = view;
         });
     });
@@ -59,7 +59,7 @@ function initializeViewToggle() {
 
 function initializeKanbanDragDrop() {
     const containers = document.querySelectorAll('.kanban-cards-container');
-    
+
     containers.forEach(container => {
         new Sortable(container, {
             group: 'kanban',
@@ -69,7 +69,7 @@ function initializeKanbanDragDrop() {
             onEnd: function(evt) {
                 const eventId = evt.item.dataset.eventId;
                 const newStatus = evt.to.closest('.kanban-column').dataset.status;
-                
+
                 updateEventStatus(eventId, newStatus);
             }
         });
@@ -86,17 +86,17 @@ async function updateEventStatus(eventId, newStatus) {
             },
             body: JSON.stringify({ status: newStatus })
         });
-        
+
         if (!response.ok) throw new Error('Failed to update status');
-        
+
         const data = await response.json();
-        
+
         // Show success notification
         showNotification('Event status updated successfully!', 'success');
-        
+
         // Update column counts
         updateColumnCounts();
-        
+
     } catch (error) {
         console.error('Error:', error);
         showNotification('Failed to update status', 'error');
@@ -107,8 +107,9 @@ async function updateEventStatus(eventId, newStatus) {
 function updateColumnCounts() {
     document.querySelectorAll('.kanban-column').forEach(column => {
         const status = column.dataset.status;
-        const count = column.querySelectorAll('.kanban-card-supreme').length;
-        column.querySelector('.column-count').textContent = count;
+        const visibleCount = Array.from(column.querySelectorAll('.kanban-card-supreme'))
+            .filter(card => card.style.display !== 'none').length;
+        column.querySelector('.column-count').textContent = visibleCount;
     });
 }
 
@@ -119,26 +120,42 @@ function updateColumnCounts() {
 function initializeFilters() {
     const searchInput = document.getElementById('eventSearch');
     const typeFilter = document.getElementById('filterType');
-    
+
+    console.log('🔍 Filter elements found:', {
+        searchInput: !!searchInput,
+        typeFilter: !!typeFilter,
+    });
+
+    if (typeFilter) {
+        const availableTypes = Array.from(document.querySelectorAll('.kanban-card-supreme'))
+            .map(card => card.dataset.type);
+        console.log('🔍 data-type values found on cards:', availableTypes);
+        console.log('🔍 dropdown option values:', Array.from(typeFilter.options).map(o => o.value));
+    }
+
     searchInput?.addEventListener('input', applyFilters);
     typeFilter?.addEventListener('change', applyFilters);
 }
 
 function applyFilters() {
-    const searchTerm = document.getElementById('eventSearch').value.toLowerCase();
-    const typeFilter = document.getElementById('filterType').value.toLowerCase();
-    
+    const searchTerm = (document.getElementById('eventSearch')?.value || '').trim().toLowerCase();
+    const typeFilter = (document.getElementById('filterType')?.value || '').trim().toLowerCase();
+
     document.querySelectorAll('.kanban-card-supreme').forEach(card => {
-        const eventName = card.querySelector('.card-event-name').textContent.toLowerCase();
-        const eventType = card.dataset.type.toLowerCase();
-        const clientName = card.querySelector('.client-name').textContent.toLowerCase();
-        
-        const matchesSearch = eventName.includes(searchTerm) || clientName.includes(searchTerm);
-        const matchesType = !typeFilter || eventType === typeFilter;
-        
-        card.style.display = (matchesSearch && matchesType) ? 'block' : 'none';
+        const eventNameEl = card.querySelector('.card-event-name');
+        const clientNameEl = card.querySelector('.client-name');
+
+        const eventName = (eventNameEl?.textContent || '').toLowerCase();
+        const clientName = (clientNameEl?.textContent || '').toLowerCase();
+        // Guard against missing/empty data-type instead of letting it throw
+        const eventType = (card.dataset.type || '').trim().toLowerCase();
+
+        const matchesSearch = searchTerm === '' || eventName.includes(searchTerm) || clientName.includes(searchTerm);
+        const matchesType = typeFilter === '' || eventType === typeFilter;
+
+        card.style.display = (matchesSearch && matchesType) ? '' : 'none';
     });
-    
+
     updateColumnCounts();
 }
 
@@ -151,7 +168,7 @@ function initializeCalendar() {
         currentMonth.setMonth(currentMonth.getMonth() - 1);
         renderCalendar();
     });
-    
+
     document.getElementById('nextMonth')?.addEventListener('click', () => {
         currentMonth.setMonth(currentMonth.getMonth() + 1);
         renderCalendar();
@@ -161,19 +178,19 @@ function initializeCalendar() {
 function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     const monthName = document.getElementById('currentMonth');
-    
+
     if (!grid) return;
-    
+
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
-    
-    monthName.textContent = currentMonth.toLocaleDateString('en-US', { 
-        month: 'long', 
-        year: 'numeric' 
+
+    monthName.textContent = currentMonth.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric'
     });
-    
+
     grid.innerHTML = '';
-    
+
     // Day headers
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     dayNames.forEach(day => {
@@ -182,35 +199,35 @@ function renderCalendar() {
         header.textContent = day;
         grid.appendChild(header);
     });
-    
+
     // Get first day of month
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
+
     // Empty cells before month starts
     for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement('div');
         grid.appendChild(empty);
     }
-    
+
     // Calendar days
     for (let day = 1; day <= daysInMonth; day++) {
         const dayEl = document.createElement('div');
         dayEl.className = 'calendar-day';
-        
+
         // Mock event count (replace with real data)
         const eventCount = Math.floor(Math.random() * 5);
         dayEl.classList.add(`level-${Math.min(eventCount, 4)}`);
-        
+
         dayEl.innerHTML = `
             <div class="calendar-day-number">${day}</div>
             ${eventCount > 0 ? `<div class="calendar-day-events">${eventCount}</div>` : ''}
         `;
-        
+
         dayEl.addEventListener('click', () => {
             showDayEvents(year, month, day);
         });
-        
+
         grid.appendChild(dayEl);
     }
 }
@@ -226,14 +243,14 @@ function showDayEvents(year, month, day) {
 
 async function loadAnalytics() {
     const period = document.getElementById('revenuePeriod')?.value || 'month';
-    
+
     try {
         const response = await fetch(`/planner/events/analytics?period=${period}`);
         const data = await response.json();
-        
+
         renderRevenueChart(data.revenue);
         renderEventTypeChart(data.event_types);
-        
+
     } catch (error) {
         console.error('Error loading analytics:', error);
     }
@@ -242,11 +259,11 @@ async function loadAnalytics() {
 function renderRevenueChart(data) {
     const ctx = document.getElementById('revenueChart');
     if (!ctx) return;
-    
+
     if (revenueChart) {
         revenueChart.destroy();
     }
-    
+
     revenueChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -286,11 +303,11 @@ function renderRevenueChart(data) {
 function renderEventTypeChart(data) {
     const ctx = document.getElementById('eventTypeChart');
     if (!ctx) return;
-    
+
     if (eventTypeChart) {
         eventTypeChart.destroy();
     }
-    
+
     eventTypeChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -329,7 +346,7 @@ function initializeFAB() {
     document.querySelectorAll('.fab-action-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const action = this.dataset.action;
-            
+
             switch(action) {
                 case 'accept-all':
                     acceptAllPending();
@@ -350,13 +367,13 @@ function initializeFAB() {
 
 async function acceptAllPending() {
     if (!confirm('Accept all pending events?')) return;
-    
+
     const pendingCards = document.querySelectorAll('[data-status="pending"]');
-    
+
     for (const card of pendingCards) {
         await updateEventStatus(card.dataset.eventId, 'confirmed');
     }
-    
+
     location.reload();
 }
 
@@ -410,9 +427,9 @@ function showNotification(message, type = 'success') {
         z-index: 10000;
         animation: slideIn 0.4s ease-out;
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.4s ease-out';
         setTimeout(() => notification.remove(), 400);
