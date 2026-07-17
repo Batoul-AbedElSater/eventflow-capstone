@@ -387,18 +387,33 @@
     <div class="top-actions">
         <div class="top-nav">
             <a href="{{ route('planner.events.budget', $event) }}" class="top-btn"><i class="fas fa-house"></i> Hub</a>
-            @if($event->budget)
+                   @if($event->budget)
                 <a href="{{ route('planner.events.budget.editor', $event) }}" class="top-btn"><i class="fas fa-table"></i> Budget Editor</a>
-            @else
+            @elseif($draft)
+                <form action="{{ route('planner.events.budget.import', $event) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="top-btn" style="cursor:pointer;">
+                        <i class="fas fa-file-import"></i> Import & Open Editor
+                    </button>
+                </form>
+                        @else
                 <span class="top-btn" style="opacity:0.5;pointer-events:none;"><i class="fas fa-table"></i> Budget Editor</span>
             @endif
             <a href="{{ route('planner.tasks.index') }}" class="top-btn"><i class="fas fa-tasks"></i> Tasks Page</a>
         </div>
-        <div class="top-right-group">
+             <div class="top-right-group">
             <button @click="generateBudget()" :disabled="loading" class="btn-primary">
                 <span x-show="!loading"><i class="fas fa-robot"></i> Generate Budget Plan</span>
                 <span x-show="loading"><i class="fas fa-spinner fa-spin"></i> Generating...</span>
             </button>
+            @if($draft && !$budget)
+                <form action="{{ route('planner.events.budget.import', $event) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #475B35, #2C3821);">
+                        <i class="fas fa-file-import"></i> Import to Budget Editor
+                    </button>
+                </form>
+            @endif
             <button type="button" class="mode-toggle" id="mode-toggle">
                 <i class="fas fa-circle-half-stroke"></i> Toggle Dark / Light
             </button>
@@ -569,10 +584,14 @@ function budgetGenerator(eventId) {
 
                 this.aiResponse = data.data.ai_response;
 
-                // Save to localStorage so it persists on revisit
+                          // Save to localStorage so it persists on revisit
                 localStorage.setItem('budget_draft_' + eventId, JSON.stringify(data.data.ai_response));
 
+                // Reload page so Import button appears
+                window.location.reload();
+
             } catch (err) {
+                
                 this.error = err.message || 'Something went wrong. Please try again.';
                 console.error('Budget generation error:', err);
             } finally {

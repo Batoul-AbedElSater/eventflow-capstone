@@ -135,7 +135,7 @@ style="background:#FFFFFF; border-radius:24px; overflow:hidden; box-shadow:0 18p
 <td style="background:#F8F9FA; text-align:center; padding:25px;">
 
     <div style="font-size:16px; font-weight:800; color:#620607;">
-        EventFlow
+        Plano-eve
     </div>
 
     <div style="font-size:12px; color:#777; margin-top:5px;">

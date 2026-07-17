@@ -594,7 +594,7 @@
 <header class="header">
     <div class="header-left">
         <h1 class="logo-text">
-            <span style="color:#620607;">Event</span><span style="color:#C63E4E;">Flow</span>
+            <span style="color:#620607;">Plano-</span><span style="color:#C63E4E;">eve</span>
         </h1>
     </div>
 

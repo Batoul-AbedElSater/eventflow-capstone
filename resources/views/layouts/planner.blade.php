@@ -725,7 +725,7 @@
          <div class="header-left">
 
              <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s;">
-                <span style="color:#620607;">Even</span><span style="color:#C63E4E;">tique</span>
+                <span style="color:#620607;">Plano-</span><span style="color:#C63E4E;">eve</span>
             </h1>
 
         </div>

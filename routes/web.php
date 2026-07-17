@@ -3,25 +3,31 @@
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Planner\BudgetController;
-
 // ============================================
 // PUBLIC ROUTES
 // ============================================
 
+// Step 1: Welcome splash page (first thing guests see)
 Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
-
         return match ($role) {
             'planner' => redirect()->route('planner.dashboard'),
-            'client' => redirect()->route('client.dashboard'),
+            'client'  => redirect()->route('client.dashboard'),
             'assistant' => redirect()->route('assistant.dashboard'),
-            default => redirect()->route('login'),
+            default   => redirect()->route('login'),
         };
     }
-
-    return redirect()->route('login');
+    return view('entry.welcome');
 })->name('home');
+
+// Step 2: Full landing page
+Route::get('/landing', function () {
+    if (auth()->check()) {
+        return redirect()->route('home');
+    }
+    return view('entry.landing');
+})->name('landing');
 
 // ============================================
 // AUTHENTICATION ROUTES

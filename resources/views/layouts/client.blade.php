@@ -655,8 +655,7 @@ background-color: var(--cream);
 
     <div class="header-left">
         <h1 style="font-family: 'Comic Sans MS', 'Raleway', sans-serif; font-size: 33px; font-weight: 900;">
-            <span style="color:#620607;">Event</span>
-            <span style="color:#C63E4E;">Flow</span>
+            <span style="color:#620607;">Plano-</span><span style="color:#C63E4E;">eve</span>
         </h1>
     </div>
 

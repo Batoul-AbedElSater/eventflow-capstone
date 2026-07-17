@@ -49,25 +49,11 @@ class BudgetAiController extends Controller
         ], 404);
     }
 
-    // Check for completed/cancelled status
-    if ($event->status === 'completed') {
-        return response()->json([
-            'success' => false,
-            'message' => 'This event is completed. Budget cannot be generated for completed events.',
-        ], 422);
-    }
-
+    // Check for cancelled status only
     if ($event->status === 'cancelled') {
         return response()->json([
             'success' => false,
             'message' => 'This event is cancelled. Budget cannot be generated for cancelled events.',
-        ], 422);
-    }
-
-    if (!in_array($event->status, ['confirmed', 'in_progress'])) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Budget can only be generated for confirmed or in-progress events.',
         ], 422);
     }
 
