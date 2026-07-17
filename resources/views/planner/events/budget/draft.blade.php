@@ -256,13 +256,6 @@
             font-size: 1rem;
         }
 
-        .budget-page.dark {
-            background: #3A2D26;
-            border-radius: 20px;
-            padding: 24px;
-        }
-        .budget-page.dark .top-btn { background: var(--card); color: var(--maroon); }
-        .budget-page.dark .mode-toggle { background: var(--cream); color: var(--maroon); }
         .context-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -278,6 +271,116 @@
         .context-box strong { color:var(--maroon); font-size:18px; }
         @media (max-width: 900px) {
             .context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        /* ================================
+           DARK MODE
+           Mirrors the Budget Editor's dark theme: every card, panel, tile,
+           and text element gets explicit dark-safe colors instead of only
+           swapping the page background.
+        ================================ */
+        .budget-page.dark {
+            background:
+                radial-gradient(circle at 14% 16%, rgba(225, 145, 132, 0.26) 0%, rgba(225, 145, 132, 0) 42%),
+                radial-gradient(circle at 82% 84%, rgba(71, 91, 53, 0.26) 0%, rgba(71, 91, 53, 0) 40%),
+                linear-gradient(160deg, #5a3a3e 0%, #684450 44%, #4a5439 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: #fffdfa;
+        }
+
+        .budget-page.dark .top-btn {
+            background: rgba(245, 249, 229, 0.22);
+            color: #fffaf0;
+            box-shadow: none;
+            border: 1px solid rgba(245, 249, 229, 0.36);
+        }
+        .budget-page.dark .mode-toggle {
+            background: var(--cream);
+            color: var(--maroon);
+        }
+        .budget-page.dark .btn-primary {
+            filter: saturate(1.1);
+        }
+
+        .budget-page.dark .panel,
+        .budget-page.dark .stat-tile,
+        .budget-page.dark .category-card,
+        .budget-page.dark .state-panel {
+            background: rgba(245, 249, 229, 0.2);
+            border-color: rgba(245, 249, 229, 0.34);
+            box-shadow: none;
+            color: #fffdfa;
+        }
+        .budget-page.dark .category-card { border: 1px solid rgba(225, 145, 132, 0.55); }
+
+        .budget-page.dark .panel-title,
+        .budget-page.dark .state-title,
+        .budget-page.dark .stat-value,
+        .budget-page.dark .category-name,
+        .budget-page.dark .context-box strong {
+            color: #fffdfa;
+        }
+        .budget-page.dark .stat-value { color: var(--tile-accent, #fffdfa); }
+
+        .budget-page.dark .stat-label,
+        .budget-page.dark .state-copy,
+        .budget-page.dark .category-block,
+        .budget-page.dark .assistant-list li,
+        .budget-page.dark .context-box small {
+            color: rgba(255, 253, 250, 0.95);
+        }
+        .budget-page.dark .category-block strong { color: #e7f2d7; }
+        .budget-page.dark .panel-title .count { color: #e7f2d7; }
+
+        .budget-page.dark .assistant-card {
+            background: rgba(225, 145, 132, 0.24);
+            border-color: rgba(225, 145, 132, 0.5);
+        }
+        .budget-page.dark .assistant-name,
+        .budget-page.dark .assistant-note {
+            color: #ffe6de;
+        }
+        .budget-page.dark .assistant-fee {
+            background: rgba(245, 249, 229, 0.3);
+            color: #d9f4c4;
+        }
+
+        .budget-page.dark .category-note {
+            background: rgba(59, 130, 246, 0.26);
+            color: #e6efff;
+        }
+        .budget-page.dark .category-work {
+            color: #e6efff;
+            border-top-color: rgba(245, 249, 229, 0.28);
+        }
+
+        .budget-page.dark .context-box {
+            background: rgba(225, 145, 132, 0.24);
+            border-color: rgba(225, 145, 132, 0.48);
+        }
+
+        .budget-page.dark .notice-warning {
+            background: rgba(153, 27, 27, 0.32);
+            border-color: rgba(252, 165, 165, 0.55);
+        }
+        .budget-page.dark .notice-question {
+            background: rgba(30, 58, 138, 0.4);
+            border-color: rgba(191, 219, 254, 0.55);
+        }
+        .budget-page.dark .notice-warning .notice-title,
+        .budget-page.dark .notice-warning div.notice-line {
+            color: #ffdbd5;
+        }
+        .budget-page.dark .notice-question .notice-title,
+        .budget-page.dark .notice-question div.notice-line {
+            color: #e6efff;
+        }
+
+        .budget-page.dark .budget-error {
+            background: rgba(153, 27, 27, 0.32);
+            border-color: rgba(252, 165, 165, 0.55);
+            color: #ffdbd5;
         }
     </style>
 

@@ -40,13 +40,10 @@
     <div class="view-controls-supreme">
         <div class="view-toggle-buttons">
             <button class="view-toggle-btn active" data-view="kanban">
-                <i class="fas fa-columns"></i> Kanban
+                <i class="fas fa-columns"></i> Events
             </button>
             <button class="view-toggle-btn" data-view="calendar">
                 <i class="fas fa-calendar"></i> Calendar
-            </button>
-            <button class="view-toggle-btn" data-view="analytics">
-                <i class="fas fa-chart-line"></i> Analytics
             </button>
         </div>
 
@@ -56,12 +53,17 @@
                 <input type="text" id="eventSearch" placeholder="Search events...">
             </div>
 
+            {{--
+                FIX: filter by event_type_id (a real column on events) instead of
+                a derived slug/name string. This is immune to typos, casing, and
+                renamed event types — the id never changes. The kanban-card
+                partial must render data-type="{{ $event->event_type_id }}" to match.
+            --}}
             <select class="filter-select-luxury" id="filterType">
                 <option value="">All Types</option>
-                <option value="wedding">Wedding</option>
-                <option value="birthday">Birthday</option>
-                <option value="corporate">Corporate</option>
-                <option value="conference">Conference</option>
+                @foreach($events->pluck('eventType')->filter()->unique('id')->sortBy('name') as $type)
+                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                @endforeach
             </select>
         </div>
     </div>
@@ -148,86 +150,6 @@
         </div>
     </div>
 
-    {{-- ANALYTICS DASHBOARD VIEW --}}
-    <div class="view-container" id="analyticsView" style="display: none;">
-        <div class="analytics-dashboard-supreme">
-
-            <div class="analytics-card revenue-chart-card">
-                <div class="analytics-card-header">
-                    <h3><i class="fas fa-chart-line"></i> Revenue Trends</h3>
-                    <select class="period-select" id="revenuePeriod">
-                        <option value="week">This Week</option>
-                        <option value="month" selected>This Month</option>
-                        <option value="year">This Year</option>
-                    </select>
-                </div>
-                <canvas id="revenueChart"></canvas>
-            </div>
-
-            <div class="analytics-card event-distribution-card">
-                <div class="analytics-card-header">
-                    <h3><i class="fas fa-chart-pie"></i> Event Types</h3>
-                </div>
-                <canvas id="eventTypeChart"></canvas>
-            </div>
-
-            <div class="analytics-card top-clients-card">
-                <div class="analytics-card-header">
-                    <h3><i class="fas fa-star"></i> Top Clients</h3>
-                </div>
-                <div class="top-clients-list">
-                    @foreach($topClients as $client)
-                        <div class="top-client-item">
-                            <div class="client-avatar">{{ strtoupper(substr($client->name, 0, 1)) }}</div>
-                            <div class="client-info">
-                                <strong>{{ $client->name }}</strong>
-                                <span>{{ $client->events_count }} events</span>
-                            </div>
-                            <div class="client-revenue">${{ number_format($client->total_revenue, 0) }}</div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="analytics-card performance-metrics-card">
-                <div class="analytics-card-header">
-                    <h3><i class="fas fa-tachometer-alt"></i> Performance</h3>
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <div class="metric-icon"><i class="fas fa-percentage"></i></div>
-                        <div class="metric-content">
-                            <span class="metric-value">{{ $metrics['acceptance_rate'] }}%</span>
-                            <span class="metric-label">Acceptance Rate</span>
-                        </div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-icon"><i class="fas fa-clock"></i></div>
-                        <div class="metric-content">
-                            <span class="metric-value">{{ $metrics['avg_response_time'] }}h</span>
-                            <span class="metric-label">Avg Response</span>
-                        </div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-icon"><i class="fas fa-smile"></i></div>
-                        <div class="metric-content">
-                            <span class="metric-value">{{ $metrics['satisfaction_score'] }}/5</span>
-                            <span class="metric-label">Client Rating</span>
-                        </div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-icon"><i class="fas fa-calendar-check"></i></div>
-                        <div class="metric-content">
-                            <span class="metric-value">{{ $metrics['completion_rate'] }}%</span>
-                            <span class="metric-label">Completion Rate</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
 </div>
 @endsection
 
@@ -238,57 +160,6 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-    // Initialize drag-and-drop only on the 3 active columns
-    document.addEventListener('DOMContentLoaded', function () {
-        const containers = ['confirmed-container', 'in_progress-container', 'completed-container'];
-
-        containers.forEach(id => {
-            const el = document.getElementById(id);
-            if (!el) return;
-
-            Sortable.create(el, {
-                group: 'events',        // shared group allows cross-column dragging
-                animation: 150,
-                ghostClass: 'kanban-card-ghost',
-                chosenClass: 'kanban-card-chosen',
-                onEnd: function (evt) {
-                    const eventId = evt.item.dataset.eventId;
-                    const newStatus = evt.to.closest('.kanban-column').dataset.status;
-
-                    // Update column counts
-                    document.querySelectorAll('.kanban-column').forEach(col => {
-                        col.querySelector('.column-count').textContent =
-                            col.querySelector('.kanban-cards-container').children.length;
-                    });
-
-                    // Persist to server
-                    fetch(`/planner/events/${eventId}/status`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({ status: newStatus })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.success) {
-                            console.error('Status update failed:', data.message);
-                        }
-                    })
-                    .catch(err => console.error('Request failed:', err));
-                }
-            });
-        });
-    });
-</script>
-<script src="{{ asset('js/planner-events.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
-{{-- your sortable drag/drop script --}}
-
 <script src="{{ asset('js/planner-events.js') }}"></script>
 
 {{-- your custom functional calendar script goes AFTER planner-events.js --}}

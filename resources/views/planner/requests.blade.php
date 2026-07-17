@@ -45,20 +45,6 @@
                         <i class="fas fa-dollar-sign"></i> High Budget
                     </a>
                 </div>
-                <div class="filter-right">
-                    <form method="GET" action="{{ route('planner.requests') }}" id="sortForm">
-                        @if(request('filter'))
-                            <input type="hidden" name="filter" value="{{ request('filter') }}">
-                        @endif
-                        <select class="sort-select" name="sort" onchange="this.form.submit()">
-                            <option value="newest" {{ request('sort') === 'newest' || !request('sort') ? 'selected' : '' }}>Newest First</option>
-                            <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Oldest First</option>
-                            <option value="budget-high" {{ request('sort') === 'budget-high' ? 'selected' : '' }}>Highest Budget</option>
-                            <option value="budget-low" {{ request('sort') === 'budget-low' ? 'selected' : '' }}>Lowest Budget</option>
-                            <option value="guests" {{ request('sort') === 'guests' ? 'selected' : '' }}>Most Guests</option>
-                        </select>
-                    </form>
-                </div>
             </div>
 
     @if($pendingRequests->count() > 0)

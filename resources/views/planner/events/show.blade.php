@@ -16,7 +16,7 @@
             <p class="event-subtitle">{{ \Carbon\Carbon::parse($event->start_date)->format('l, F d, Y') }} at {{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }}</p>
 
             <div class="quick-actions-magic">
-               
+
                 <a href="{{ route('planner.messages') }}" class="action-btn-magic message">
                     <i class="fas fa-comments"></i> Message Client
                 </a>
@@ -827,11 +827,11 @@
 <!-- Status Update Modal -->
 <div id="statusModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
     <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%;">
-        <h3 style="font-size: 24px; font-weight: 900; color: #475B35; margin: 0 0 20px 0;">Update Event Status</h3>
+        <h3 style="font-size: 24px; font-weight: 900; color: #C63E4E; margin: 0 0 20px 0;">Update Event Status</h3>
 
         <form id="statusForm">
             <div style="margin-bottom: 20px;">
-                <label style="display: block; font-weight: 700; color: #475B35; margin-bottom: 10px;">Select Status</label>
+                <label style="display: block; font-weight: 700; color: #C63E4E; margin-bottom: 10px;">Select Status</label>
                 <select id="statusSelect" style="width: 100%; padding: 14px; border: 2px solid #EFE7DA; border-radius: 12px; font-size: 15px;">
                     <option value="confirmed" {{ $event->status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
                     <option value="in_progress" {{ $event->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
@@ -841,10 +841,10 @@
             </div>
 
             <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                <button type="button" onclick="closeStatusModal()" style="padding: 14px 28px; background: #EFE7DA; color: #475B35; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                <button type="button" onclick="closeStatusModal()" style="padding: 14px 28px; background:white; border:2px solid #C63E4E; color: #C63E4E; border-radius: 12px; font-weight: 700; cursor: pointer;">
                     Cancel
                 </button>
-                <button type="submit" style="padding: 14px 28px; background: linear-gradient(135deg, #475B35, #2C3821); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
+                <button type="submit" style="padding: 14px 28px; background: #C63E4E; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">
                     Update Status
                 </button>
             </div>

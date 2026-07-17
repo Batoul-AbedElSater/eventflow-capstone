@@ -213,7 +213,7 @@
 
 </div>
 
-<link rel="stylesheet" href="{{ asset('css/client-profile.css') }}">
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}">
 <script>
 const avatarInput = document.getElementById('avatar');
 const avatarPreview = document.getElementById('avatarPreview');
