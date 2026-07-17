@@ -128,16 +128,16 @@ class TaskController extends Controller
     $assistant = User::find($validated['assistant_id']);
     $planner = $request->user();
     \App\Models\Notification::create([
-        'user_id' => $assistant->id,
-        'type' => 'task',
-        'priority' => $validated['priority'] === 'urgent' ? 'high' : 'medium',
-        'title' => 'New Task Assigned to You',
-        'message' => "{$planner->name} assigned you the task \"{$task->title}\" for event: {$event->name}",
-        'icon' => 'fas fa-tasks',
-        'action_url' => '/assistant/tasks',
-        'is_read' => false,
-        'is_archived' => false,
-    ]);
+    'user_id' => $assistant->id,
+    'type' => 'task',
+    'priority' => $validated['priority'],   // <-- pass through as-is
+    'title' => 'New Task Assigned to You',
+    'message' => "{$planner->name} assigned you the task \"{$task->title}\" for event: {$event->name}",
+    'icon' => 'fas fa-tasks',
+    'action_url' => '/assistant/tasks',
+    'is_read' => false,
+    'is_archived' => false,
+]);
             }
 
             if (!empty($validated['vendor_ids'])) {
@@ -194,17 +194,19 @@ class TaskController extends Controller
                     ]);
                       $assistant = User::find($validated['assistant_id']);
     $planner = $request->user();
-    \App\Models\Notification::create([
-        'user_id' => $assistant->id,
-        'type' => 'task',
-        'priority' => 'medium',
-        'title' => 'Task Assigned to You',
-        'message' => "{$planner->name} assigned you the task \"{$task->title}\"",
-        'icon' => 'fas fa-tasks',
-        'action_url' => '/assistant/tasks',
-        'is_read' => false,
-        'is_archived' => false,
-    ]);
+  $assistant = User::find($validated['assistant_id']);
+$planner = $request->user();
+\App\Models\Notification::create([
+    'user_id' => $assistant->id,
+    'type' => 'task',
+    'priority' => $task->priority,   // <-- use the task's actual priority (already updated above via $task->update($validated))
+    'title' => 'Task Assigned to You',
+    'message' => "{$planner->name} assigned you the task \"{$task->title}\"",
+    'icon' => 'fas fa-tasks',
+    'action_url' => '/assistant/tasks',
+    'is_read' => false,
+    'is_archived' => false,
+]);
                 }
             }
 

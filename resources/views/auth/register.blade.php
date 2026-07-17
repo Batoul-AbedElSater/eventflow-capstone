@@ -111,7 +111,7 @@
             <div class="overlay-panel overlay-left">
                 <h1>Welcome Back!</h1>
                 @auth
-                    <p class="welcome-user">Hello, {{ Auth::user()->name }}! 👋</p>
+                    <p class="welcome-user">Hello, {{ Auth::user()->name }}! </p>
                 @else
                     <p>To keep connected with us please login with your personal info</p>
                 @endauth

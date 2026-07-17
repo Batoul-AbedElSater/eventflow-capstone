@@ -133,32 +133,29 @@ class NotificationController extends Controller
      * Get notification statistics
      * GET /api/client/notifications/stats
      */
-    public function stats(Request $request)
-    {
-        $userId = $request->user()->id;
-        
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'total_today' => Notification::where('user_id', $userId)
-                    ->whereDate('created_at', today())
-                    ->count(),
-                'unread' => Notification::where('user_id', $userId)
-                    ->where('is_read', false)
-                    ->where('is_archived', false)
-                    ->count(),
-                'urgent' => Notification::where('user_id', $userId)
-                    ->where('is_read', false)
-                    ->whereIn('priority', ['high', 'urgent'])
-                    ->where('is_archived', false)
-                    ->count(),
-                'total' => Notification::where('user_id', $userId)
-                    ->where('is_archived', false)
-                    ->count(),
-            ],
-        ]);
-    }
-
+   public function stats(Request $request)
+{
+    $userId = $request->user()->id;
+    
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'total_today' => Notification::where('user_id', $userId)
+                ->whereDate('created_at', today())
+                ->count(),
+            'unread' => Notification::where('user_id', $userId)
+                ->where('is_read', false)
+                ->count(),
+            'urgent' => Notification::where('user_id', $userId)
+                ->where('is_read', false)
+                ->whereIn('priority', ['high', 'urgent'])
+                ->count(),
+            'total' => Notification::where('user_id', $userId)
+                ->where('is_archived', false)
+                ->count(),
+        ],
+    ]);
+}
     /**
      * Get only unread notifications (for badge count)
      * GET /api/client/notifications/unread
