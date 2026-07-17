@@ -19,6 +19,8 @@ public function index()
 
         $events = Event::where('planner_id', $plannerId)
             ->whereIn('status', ['confirmed', 'in_progress', 'completed'])
+            // NOTE: event_types table only has id + name (no slug column),
+            // so we filter/match on name (lowercased) instead of slug.
             ->with(['client:id,name,email', 'eventType:id,name'])
             ->orderBy('start_date', 'desc')
             ->get();

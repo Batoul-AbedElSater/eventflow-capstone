@@ -3,6 +3,19 @@
 @section('title', 'Analytics')
 
 @section('content')
+@php
+
+    $eventTypeColors = [
+         '#F0C4C0', // pale rose wine
+    '#E19184', // coral
+    '#C63E4E', // berry red
+    '#9E2F3B', // dark berry
+    '#7A1F2B', // wine red
+    '#620607', // deep wine
+    '#4A1015', // dark maroon
+    '#2E080C', //
+    ];
+@endphp
 <div class="dashboard-container">
 
     {{-- Page Header --}}
@@ -11,16 +24,6 @@
             <h1>Analytics & Insights</h1>
 
         </div>
-       <!-- <div class="header-actions">
-            <select class="filter-select">
-                <option>Last 12 Months</option>
-                <option>Last 6 Months</option>
-                <option>This Year</option>
-            </select>
-            <button class="btn-secondary">
-                <i class="fas fa-download"></i> Export Report
-            </button>
-        </div>-->
     </div>
 
     {{-- Key Stats Grid --}}
@@ -118,7 +121,7 @@
             <div class="chart-legend">
                 @foreach($eventTypeStats as $type)
                     <div class="legend-item">
-                        <span class="legend-dot" style="background: {{ $loop->index === 0 ? '#E19184' : ($loop->index === 1 ? '#C63E4E' : '#475B35') }}"></span>
+                        <span class="legend-dot" style="background: {{ $eventTypeColors[$loop->index % count($eventTypeColors)] }}"></span>
                         <span class="legend-label">{{ $type['name'] }}</span>
                         <span class="legend-value">{{ $type['count'] }} events</span>
                     </div>
@@ -237,6 +240,13 @@ new Chart(revenueCtx, {
 });
 
 // Event Types Pie Chart
+const eventTypeColors = @json($eventTypeColors);
+const eventTypeCount = {{ $eventTypeStats->count() }};
+const eventTypeChartColors = Array.from(
+    { length: eventTypeCount },
+    (_, i) => eventTypeColors[i % eventTypeColors.length]
+);
+
 const typesCtx = document.getElementById('eventTypesChart').getContext('2d');
 new Chart(typesCtx, {
     type: 'doughnut',
@@ -244,7 +254,7 @@ new Chart(typesCtx, {
         labels: {!! json_encode($eventTypeStats->pluck('name')) !!},
         datasets: [{
             data: {!! json_encode($eventTypeStats->pluck('count')) !!},
-            backgroundColor: ['#E19184', '#C63E4E', '#475B35', '#620607'],
+            backgroundColor: eventTypeChartColors,
             borderWidth: 0
         }]
     },

@@ -1,7 +1,7 @@
 /* ============================================
    HAFLET FLOW - SETTINGS SYSTEM STYLES
    Color Palette Integration
-   ============================================ */
+   ============================================
 
 :root {
     --garden-green: #475B35;
@@ -10,22 +10,19 @@
     --calypso-berry: #C63E4E;
     --vampire-hunter: #620607;
     --cream: #EFE7DA;
-    
-    /* Shadows */
+
+
     --shadow-sm: 0 2px 8px rgba(71, 91, 53, 0.08);
     --shadow-md: 0 4px 15px rgba(71, 91, 53, 0.08);
     --shadow-lg: 0 8px 30px rgba(71, 91, 53, 0.1);
     --shadow-xl: 0 10px 40px rgba(71, 91, 53, 0.15);
-    
-    /* Transitions */
+
     --transition-fast: 0.2s ease;
     --transition-base: 0.3s ease;
     --transition-slow: 0.4s ease;
 }
 
-/* ============================================
-   SETTINGS WRAPPER & LAYOUT
-   ============================================ */
+
 
 .settings-wrapper {
     min-height: 100vh;
@@ -61,17 +58,12 @@
 }
 
 .settings-container {
-    max-width: 1400px;
+   padding: 0px 2px;
+    max-width: 1800px;
     margin: 0 auto;
-    padding: 40px;
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 40px;
 }
 
-/* ============================================
-   SIDEBAR NAVIGATION
-   ============================================ */
+
 
 .settings-sidebar {
     position: sticky;
@@ -122,9 +114,7 @@
     flex-shrink: 0;
 }
 
-/* ============================================
-   MAIN SETTINGS CONTENT
-   ============================================ */
+
 
 .settings-content {
     background: white;
@@ -133,9 +123,7 @@
     box-shadow: var(--shadow-md);
 }
 
-/* ============================================
-   SETTINGS CARDS
-   ============================================ */
+
 
 .settings-card {
     background: linear-gradient(135deg, rgba(245, 249, 229, 0.5) 0%, rgba(239, 231, 218, 0.5) 100%);
@@ -159,9 +147,7 @@
     background: linear-gradient(135deg, rgba(225, 145, 132, 0.05) 0%, rgba(239, 231, 218, 0.05) 100%);
 }
 
-/* ============================================
-   CARD HEADERS
-   ============================================ */
+
 
 .card-title {
     font-family: 'Playfair Display', serif;
@@ -178,9 +164,6 @@
     margin: 0 0 16px 0;
 }
 
-/* ============================================
-   FORM ELEMENTS
-   ============================================ */
 
 .form-group {
     margin-bottom: 20px;
@@ -239,9 +222,7 @@
     margin-bottom: 16px;
 }
 
-/* ============================================
-   TOGGLES & SWITCHES
-   ============================================ */
+
 
 .toggle-switch {
     position: relative;
@@ -289,9 +270,7 @@ input:checked + .toggle-slider:before {
     transform: translateX(22px);
 }
 
-/* ============================================
-   NOTIFICATION ITEMS
-   ============================================ */
+
 
 .notification-group {
     display: flex;
@@ -329,9 +308,7 @@ input:checked + .toggle-slider:before {
     margin: 0;
 }
 
-/* ============================================
-   FREQUENCY SELECTORS
-   ============================================ */
+
 
 .frequency-selector,
 .theme-selector,
@@ -402,9 +379,7 @@ input:checked + .toggle-slider:before {
     margin: 0;
 }
 
-/* ============================================
-   COLOR SELECTOR
-   ============================================ */
+
 
 .color-selector {
     display: grid;
@@ -449,9 +424,7 @@ input:checked + .toggle-slider:before {
     transform: scale(1.1);
 }
 
-/* ============================================
-   THEME STYLES
-   ============================================ */
+
 
 .light-theme {
     background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
@@ -479,9 +452,7 @@ input:checked + .toggle-slider:before {
     margin: 0;
 }
 
-/* ============================================
-   FONT STYLES
-   ============================================ */
+
 
 .small-font {
     font-size: 12px;
@@ -495,9 +466,6 @@ input:checked + .toggle-slider:before {
     font-size: 20px;
 }
 
-/* ============================================
-   LAYOUT PREVIEW
-   ============================================ */
 
 .layout-preview {
     display: grid;
@@ -546,9 +514,7 @@ input:checked + .toggle-slider:before {
     margin: 0;
 }
 
-/* ============================================
-   ANIMATION GROUPS
-   ============================================ */
+
 
 .animation-group,
 .sidebar-group,
@@ -588,9 +554,7 @@ input:checked + .toggle-slider:before {
     margin: 0;
 }
 
-/* ============================================
-   QUIET HOURS
-   ============================================ */
+
 
 .quiet-hours-section {
     background: white;
@@ -619,9 +583,7 @@ input:checked + .toggle-slider:before {
     border-top: 1px solid #f0f0f0;
 }
 
-/* ============================================
-   BUTTONS
-   ============================================ */
+
 
 .btn-primary,
 .btn-save,
@@ -684,9 +646,6 @@ input:checked + .toggle-slider:before {
     background: #ff6b6b;
 }
 
-/* ============================================
-   PREVIEW SECTIONS
-   ============================================ */
 
 .preview-box {
     padding: 24px;
@@ -719,9 +678,6 @@ input:checked + .toggle-slider:before {
     margin-top: 16px;
 }
 
-/* ============================================
-   TAGS & BADGES
-   ============================================ */
 
 .tag,
 .spec-checkbox span,
@@ -748,9 +704,7 @@ input:checked + .toggle-slider:before {
     color: white;
 }
 
-/* ============================================
-   CHECKBOXES & RADIO BUTTONS
-   ============================================ */
+
 
 .spec-checkbox,
 .area-checkbox,
@@ -805,9 +759,6 @@ input:checked + .toggle-slider:before {
     background: rgba(225, 145, 132, 0.05);
 }
 
-/* ============================================
-   CERTIFICATION ITEMS
-   ============================================ */
 
 .cert-item {
     background: linear-gradient(135deg, var(--coral-haze) 0%, var(--calypso-berry) 100%);
@@ -828,9 +779,7 @@ input:checked + .toggle-slider:before {
     margin-left: 8px;
 }
 
-/* ============================================
-   COMPLETION BAR
-   ============================================ */
+
 
 .completion-bar {
     width: 100%;
@@ -848,9 +797,7 @@ input:checked + .toggle-slider:before {
     transition: width var(--transition-base);
 }
 
-/* ============================================
-   BREAKDOWN & STATS
-   ============================================ */
+
 
 .breakdown-list,
 .vendors-list,
@@ -906,9 +853,7 @@ input:checked + .toggle-slider:before {
     color: #999;
 }
 
-/* ============================================
-   RATING SLIDER
-   ============================================ */
+
 
 .rating-slider {
     flex: 1;
@@ -941,9 +886,7 @@ input:checked + .toggle-slider:before {
     box-shadow: 0 2px 8px rgba(198, 62, 78, 0.4);
 }
 
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
+
 
 @media (max-width: 1024px) {
     .settings-container {
@@ -1057,9 +1000,7 @@ input:checked + .toggle-slider:before {
     }
 }
 
-/* ============================================
-   ANIMATIONS & TRANSITIONS
-   ============================================ */
+
 
 @keyframes slideInUp {
     from {
@@ -1085,9 +1026,7 @@ input:checked + .toggle-slider:before {
     animation: slideInUp var(--transition-slow) ease-out;
 }
 
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
+
 
 .text-center {
     text-align: center;
@@ -1120,3 +1059,4 @@ input:checked + .toggle-slider:before {
 .gap-20 {
     gap: 20px;
 }
+*/

@@ -95,90 +95,92 @@
 <div class="task-modal-epic" id="taskModal">
     <div class="task-modal-overlay" onclick="closeTaskModal()"></div>
     <div class="task-modal-content">
-        <div class="task-modal-header">
-            <h2 id="modalTitle">Create New Task</h2>
-            <button class="modal-close-btn" id="closeTaskModalBtn"><i class="fas fa-times"></i></button>
-        </div>
-        <form id="taskForm" class="task-form-epic">
-            <input type="hidden" id="taskId" name="task_id">
-            <div class="form-group-epic">
-                <label for="taskTitle">Task Title *</label>
-                <input type="text" id="taskTitle" required placeholder="Enter task title...">
+        <div class="task-modal-scroll-inner">
+            <div class="task-modal-header">
+                <h2 id="modalTitle">Create New Task</h2>
+                <button class="modal-close-btn" id="closeTaskModalBtn"><i class="fas fa-times"></i></button>
             </div>
-            <div class="form-group-epic">
-                <label for="taskDescription">Description</label>
-                <textarea id="taskDescription" rows="3" placeholder="Add details..."></textarea>
-            </div>
-            <div class="form-row-epic">
+            <form id="taskForm" class="task-form-epic">
+                <input type="hidden" id="taskId" name="task_id">
                 <div class="form-group-epic">
-                    <label for="taskPriority">Priority</label>
-                    <select id="taskPriority">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                        <option value="urgent">Urgent</option>
-                    </select>
+                    <label for="taskTitle">Task Title *</label>
+                    <input type="text" id="taskTitle" required placeholder="Enter task title...">
                 </div>
                 <div class="form-group-epic">
-                    <label for="taskEvent">Event</label>
-                    <select id="taskEvent">
-                        <option value="">No Event</option>
-                        @foreach($events as $event)
-                            <option value="{{ $event->id }}">{{ $event->name }}</option>
-                        @endforeach
-                    </select>
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" rows="3" placeholder="Add details..."></textarea>
                 </div>
+                <div class="form-row-epic">
+                    <div class="form-group-epic">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="form-group-epic">
+                        <label for="taskEvent">Event</label>
+                        <select id="taskEvent">
+                            <option value="">No Event</option>
+                            @foreach($events as $event)
+                                <option value="{{ $event->id }}">{{ $event->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-              <div class="form-group-epic">
-    <label for="taskAssistant">Assign Assistant</label>
-    <select id="taskAssistant">
-        <option value="">No Assistant</option>
-        @foreach($assistants as $assistant)
-            <option value="{{ $assistant->id }}">{{ $assistant->name }}</option>
-        @endforeach
-    </select>
-</div>
+                    <div class="form-group-epic">
+                        <label for="taskAssistant">Assign Assistant</label>
+                        <select id="taskAssistant">
+                            <option value="">No Assistant</option>
+                            @foreach($assistants as $assistant)
+                                <option value="{{ $assistant->id }}">{{ $assistant->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-<div class="form-group-epic">
-    <label>Select Vendors</label>
+                    <div class="form-group-epic">
+                        <label>Select Vendors</label>
 
-    {{-- Custom Select Box --}}
-    <div class="vendor-select-box" id="vendorSelectBox" style="border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; min-height: 42px; padding: 8px 12px; position: relative;" onclick="event.stopPropagation(); toggleVendorDropdown()">
-        <span id="vendorSelectText" style="color: #999; font-size: 14px;">No vendors selected</span>
-        <span style="position: absolute; right: 12px; top: 12px; color: #999;">▼</span>
-    </div>
+                        {{-- Custom Select Box --}}
+                        <div class="vendor-select-box" id="vendorSelectBox" style="border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer; min-height: 42px; padding: 8px 12px; position: relative;" onclick="event.stopPropagation(); toggleVendorDropdown()">
+                            <span id="vendorSelectText" style="color: #999; font-size: 14px;">No vendors selected</span>
+                            <span style="position: absolute; right: 12px; top: 12px; color: #999;">▼</span>
+                        </div>
 
-    {{-- Dropdown List --}}
-    <div id="vendorDropdown" class="vendor-dropdown hidden" style="border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; background: white; max-height: 150px; overflow-y: auto; position: absolute; z-index: 1000; width: calc(100% - 40px);">
-        @foreach($vendors as $vendor)
-            <div class="vendor-list-item"
-                 data-vendor-id="{{ $vendor->id }}"
-                 data-vendor-name="{{ $vendor->name }}"
-                 style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
-                <span class="vendor-check-icon" style="width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;">✓</span>
-                <span style="font-size: 14px; color: #333;">{{ $vendor->name }}</span>
-            </div>
-        @endforeach
-    </div>
-</div>
-            </div>
-            <div class="form-row-epic">
-                <div class="form-group-epic">
-                    <label for="taskDueDate">Due Date</label>
-                    <input type="datetime-local" id="taskDueDate">
+                        {{-- Dropdown List --}}
+                        <div id="vendorDropdown" class="vendor-dropdown hidden" style="border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; background: white; max-height: 150px; overflow-y: auto; z-index: 1000;">
+                            @foreach($vendors as $vendor)
+                                <div class="vendor-list-item"
+                                     data-vendor-id="{{ $vendor->id }}"
+                                     data-vendor-name="{{ $vendor->name }}"
+                                     style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
+                                    <span class="vendor-check-icon" style="width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;">✓</span>
+                                    <span style="font-size: 14px; color: #333;">{{ $vendor->name }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group-epic">
-                    <label>Progress <span class="progress-value" id="progressValue">0%</span></label>
-                    <input type="range" id="taskProgress" min="0" max="100" value="0">
+                <div class="form-row-epic">
+                    <div class="form-group-epic">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="datetime-local" id="taskDueDate">
+                    </div>
+                    <div class="form-group-epic">
+                        <label>Progress <span class="progress-value" id="progressValue">0%</span></label>
+                        <input type="range" id="taskProgress" min="0" max="100" value="0">
+                    </div>
                 </div>
-            </div>
-            <div class="form-actions-epic">
-                <button type="button" class="btn-secondary-epic" id="cancelTaskBtn">Cancel</button>
-                <button type="submit" class="btn-primary-epic"> Save Task</button>
-            </div>
-        </form>
-    </div>
-</div>
+                <div class="form-actions-epic">
+                    <button type="button" class="btn-secondary-epic" id="cancelTaskBtn">Cancel</button>
+                    <button type="submit" class="btn-primary-epic"> Save Task</button>
+                </div>
+            </form>
+        </div><!-- /.task-modal-scroll-inner -->
+    </div><!-- /.task-modal-content -->
+</div><!-- /.task-modal-epic -->
 
 <!-- Achievement Popup -->
 <div class="achievement-popup" id="achievementPopup">
