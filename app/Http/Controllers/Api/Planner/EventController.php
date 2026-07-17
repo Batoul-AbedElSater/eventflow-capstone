@@ -140,34 +140,33 @@ class EventController extends Controller
      * Update event status
      * PUT /api/planner/events/{event}/status
      */
-    public function updateStatus(Request $request, $id)
-    {
-        try {
-            $event = Event::where('planner_id', $request->user()->id)->findOrFail($id);
+   public function updateStatus(Request $request, $id)
+{
+    try {
+        $event = Event::where('planner_id', $request->user()->id)->findOrFail($id);
 
-            $validated = $request->validate([
-                'status' => 'required|in:confirmed,in_progress,completed'
-            ]);
+        $validated = $request->validate([
+            'status' => 'required|in:confirmed,in_progress,completed,cancelled'  // Add cancelled
+        ]);
 
-            $event->update($validated);
+        $event->update($validated);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Event status updated',
-                'data' => [
-                    'id' => $event->id,
-                    'status' => $event->status,
-                ]
-            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Event status updated',
+            'data' => [
+                'id' => $event->id,
+                'status' => $event->status,
+            ]
+        ]);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update status',
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to update status',
+        ], 500);
     }
-
+}
     /**
      * Delete event
      * DELETE /api/planner/events/{event}
