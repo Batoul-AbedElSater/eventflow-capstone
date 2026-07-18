@@ -178,6 +178,11 @@ public function submitOrder(Request $request, $taskId, $vendorId)
     // 🔔 NOTIFICATION: Order placed by assistant → notify planner
     $planner = User::find($task->user_id);
     if ($planner) {
+        // Determine the correct action URL based on whether task has an event
+        $actionUrl = $task->event_id 
+            ? route('planner.events.vendors.show', ['event' => $task->event_id, 'vendor' => $vendorId])
+            : route('planner.tasks.index');
+        
         \App\Models\Notification::create([
             'user_id' => $planner->id,
             'type' => 'order',
@@ -185,7 +190,7 @@ public function submitOrder(Request $request, $taskId, $vendorId)
             'title' => 'New Order Placed',
             'message' => Auth::user()->name . " placed an order with {$vendor->name} for task: {$task->title}",
             'icon' => 'fas fa-shopping-cart',
-            'action_url' => route('planner.events.vendors.show', [$task->event_id, $vendorId]),
+            'action_url' => $actionUrl,
             'is_read' => false,
             'is_archived' => false,
         ]);

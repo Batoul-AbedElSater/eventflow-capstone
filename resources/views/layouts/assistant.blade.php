@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="user-id" content="{{ Auth::id() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - EventFlow Assistant</title>
+    <title>@yield('title', 'Dashboard') - Plano-eve Assistant</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -193,8 +193,8 @@
         color: var(--green);
     }
     .profile-dropdown:hover span { color: var(--berry); }
-    .profile-dropdown i { font-size: 13px; color: var(--green); transition: transform 0.3s ease; }
-    .profile-dropdown.open i { transform: rotate(180deg); color: var(--berry); }
+.profile-dropdown > i { font-size: 13px; color: var(--vampire); transition: transform 0.3s ease; }
+.profile-dropdown.open > i { transform: rotate(180deg); color: var(--vampire); }
 
     .dropdown-menu {
         position: absolute;
@@ -261,25 +261,26 @@
         justify-content: center;
     }
     .notification-modal.active { display: flex; }
-    .notification-modal-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(98, 6, 7, 0.85);
-        backdrop-filter: blur(15px);
-    }
-    .notification-modal-content {
-        background: linear-gradient(135deg, white, #EFE7DA);
-        border-radius: 30px;
-        padding: 40px;
-        max-width: 900px;
-        width: 95%;
-        max-height: 85vh;
-        overflow-y: auto;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
-        position: relative;
-        z-index: 1;
-        animation: modalSlideUp 0.5s ease;
-    }
+.notification-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);  /* Changed from rgba(255, 255, 255, 0.2) */
+    backdrop-filter: blur(15px);
+}
+
+.notification-modal-content {
+    background: linear-gradient(135deg, white, #EFE7DA);
+    border-radius: 30px;
+    padding: 40px;
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+    animation: modalSlideUp 0.5s ease;
+}
     @keyframes modalSlideUp {
         from { transform: translateY(100px) scale(0.9); opacity: 0; }
         to { transform: translateY(0) scale(1); opacity: 1; }
@@ -736,13 +737,15 @@
         const dropdownBtn = document.getElementById('profileDropdownBtn');
         const dropdownMenu = document.getElementById('profileDropdownMenu');
         if (dropdownBtn && dropdownMenu) {
-            const chevron = dropdownBtn.querySelector('i');
+            const chevron = dropdownBtn.querySelector('.fa-chevron-down');
+            
             dropdownBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const isOpen = dropdownMenu.classList.toggle('show');
-                dropdownBtn.classList.toggle('open');
+                dropdownBtn.classList.toggle('open', isOpen);
                 chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
             });
+            
             document.addEventListener('click', function(e) {
                 if (!dropdownBtn.contains(e.target)) {
                     dropdownMenu.classList.remove('show');

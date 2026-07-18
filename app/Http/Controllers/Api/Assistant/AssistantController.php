@@ -62,7 +62,7 @@ class AssistantController extends Controller
     /**
      * Mark a task as completed
      */
-  public function completeTask(Request $request, $taskId)
+ public function completeTask(Request $request, $taskId)
 {
     $user = $request->user();
 
@@ -98,13 +98,26 @@ class AssistantController extends Controller
         }
     }
 
+    // Calculate fresh stats after the update
+    $base = Task::whereHas('assignments', fn($q) => $q->where('assistant_id', $user->id));
+    
+    $stats = [
+        'total' => (clone $base)->count(),
+        'urgent' => (clone $base)->where('priority', 'urgent')->where('status', '!=', 'done')->count(),
+        'in_progress' => (clone $base)->where('status', 'in_progress')->count(),
+        'completed' => (clone $base)->where('status', 'done')->count(),
+        'pending' => (clone $base)->whereIn('status', ['pending', 'in_progress'])->count(),
+    ];
+
     return response()->json([
         'success' => true,
         'message' => 'Task marked as complete!',
-        'data' => $task
+        'data' => [
+            'task' => $task->fresh(), // Get fresh instance from database
+            'stats' => $stats // Include updated stats
+        ]
     ]);
 }
-
     /**
      * Get vendors for a specific task
      */

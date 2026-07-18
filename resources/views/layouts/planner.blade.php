@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="user-id" content="{{ Auth::id() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - EventFlow Planner</title>
+    <title>@yield('title', 'Dashboard') - Plano-eve Planner</title>
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -240,29 +240,28 @@
         border: 3px solid var(--vampire);
         transition: all 0.3s;
     }
-
-    .profile-dropdown span {
-        font-family: 'Raleway', sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--vampire);
-        transition: all 0.3s;
-    }
+.profile-dropdown span {
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--vampire);
+    transition: all 0.3s;
+}
     .profile-dropdown:hover span {
         color: var(--vampire);
     }
-    .profile-dropdown i {
-        font-size: 13px;
-        color: var(--vampire);
-        transition: transform 0.3s ease;
-    }
-    .profile-dropdown:hover i {
-        color: var(--vampire);
-    }
-    .profile-dropdown.open i {
-        transform: rotate(180deg);
-        color: var(--vampire);
-    }
+.profile-dropdown > i {
+    font-size: 13px;
+    color: var(--vampire);
+    transition: transform 0.3s ease;
+}
+.profile-dropdown:hover > i {
+    color: var(--vampire);
+}
+.profile-dropdown.open > i {
+    transform: rotate(180deg);
+    color: var(--vampire);
+}
 
     /* ===== DROPDOWN MENU (berry border) ===== */
     .dropdown-menu {
@@ -852,7 +851,7 @@
             <div class="notif-stats-grid">
                 <div class="notif-stat-card total"><div class="stat-icon"><i class="fas fa-bell"></i></div><div class="stat-info"><strong id="modalStatTotal">0</strong><span>Total Today</span></div></div>
                 <div class="notif-stat-card unread"><div class="stat-icon"><i class="fas fa-envelope"></i></div><div class="stat-info"><strong id="modalStatUnread">0</strong><span>Unread</span></div></div>
-                <div class="notif-stat-card urgent"><div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div><div class="stat-info"><strong id="modalStatUrgent">0</strong><span>Urgent</span></div></div>
+              
             </div>
        <div class="notif-filter-tabs">
     <button class="notif-tab active" data-filter="all"><i class="fas fa-inbox"></i> All</button>
@@ -860,7 +859,7 @@
     <button class="notif-tab" data-filter="message"><i class="fas fa-envelope"></i> Messages</button>
     <button class="notif-tab" data-filter="order"><i class="fas fa-shopping-cart"></i> Orders</button>
     <button class="notif-tab" data-filter="task"><i class="fas fa-tasks"></i> Tasks</button>
-    <button class="notif-tab" data-filter="urgent"><i class="fas fa-exclamation-triangle"></i> Urgent</button>
+  
 </div>
             <div class="notif-list" id="notifModalList"></div>
             <div class="notif-modal-actions">
@@ -884,7 +883,8 @@
                     e.stopPropagation();
                     const isOpen = dropdownMenu.classList.toggle('show');
                     dropdownBtn.classList.toggle('open');
-                    chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+                  chevron.style.transition = 'transform 0.3s ease';
+chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
                 });
                 document.addEventListener('click', function(e) {
                     if (!dropdownBtn.contains(e.target)) {
@@ -1026,15 +1026,62 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    recognition.onresult = function (event) {
-        let text = '';
+   recognition.onresult = function (event) {
+    let text = '';
+    let isFinal = false;
 
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            text += event.results[i][0].transcript;
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+        text += event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+            isFinal = true;
         }
+    }
 
-        transcript.textContent = text;
-    };
+    transcript.textContent = text;
+
+    if (isFinal) {
+        processVoiceCommand(text.toLowerCase());
+    }
+};
+
+function processVoiceCommand(command) {
+    let response = '';
+    let action = null;
+
+    if (command.includes('dashboard') || command.includes('home')) {
+        response = 'Going to dashboard...';
+        action = () => window.location.href = '{{ route('planner.dashboard') }}';
+    } else if (command.includes('request')) {
+        response = 'Opening event requests...';
+        action = () => window.location.href = '{{ route('planner.requests') }}';
+    } else if (command.includes('event')) {
+        response = 'Opening my events...';
+        action = () => window.location.href = '{{ route('planner.events.index') }}';
+    } else if (command.includes('task')) {
+        response = 'Opening tasks...';
+        action = () => window.location.href = '{{ route('planner.tasks.index') }}';
+    } else if (command.includes('message')) {
+        response = 'Opening messages...';
+        action = () => window.location.href = '{{ route('planner.messages') }}';
+    } else if (command.includes('analytic')) {
+        response = 'Opening analytics...';
+        action = () => window.location.href = '{{ route('planner.events.analytics') }}';
+    } else if (command.includes('setting')) {
+        response = 'Opening settings...';
+        action = () => window.location.href = '{{ route('planner.settings.index') }}';
+    } else if (command.includes('profile')) {
+        response = 'Opening profile...';
+        action = () => window.location.href = '{{ route('planner.profile') }}';
+    } else {
+        response = `I heard "${command}". Try: Dashboard, Requests, Events, Tasks, Messages, Analytics, Settings, or Profile.`;
+    }
+
+    status.textContent = response;
+
+    if (action) {
+        setTimeout(action, 1200);
+    }
+}
 });
 </script>
 </body>
