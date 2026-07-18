@@ -66,26 +66,25 @@ class NotificationController extends Controller
     }
 
     // Get notification stats
-    public function stats()
-    {
-        $userId = Auth::id();
+public function stats()
+{
+    $userId = Auth::id();
 
-        $stats = [
-            'total_today' => Notification::where('user_id', $userId)
-                ->whereDate('created_at', today())
-                ->count(),
-            'unread' => Notification::where('user_id', $userId)
-                ->unread()
-                ->count(),
-            'urgent' => Notification::where('user_id', $userId)
-                ->unread()
-                ->priority('urgent')
-                ->count(),
-        ];
+    $stats = [
+        'total_today' => Notification::where('user_id', $userId)
+            ->active()  // ADD THIS - only count active notifications
+            ->whereDate('created_at', today())
+            ->count(),
+        'unread' => Notification::where('user_id', $userId)
+            ->active()  // ADD THIS - only count active notifications
+            ->unread()
+            ->count(),
+    ];
 
-        return response()->json($stats);
-    }
+    return response()->json($stats);
+}
     // deletes all active notifications
+// deletes all active notifications
 public function deleteAll()
 {
     Notification::where('user_id', Auth::id())

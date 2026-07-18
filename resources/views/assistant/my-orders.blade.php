@@ -330,14 +330,12 @@
                 <a href="{{ route('assistant.vendor.order', ['task' => $order->task_id, 'vendor' => $order->vendor_id]) }}" class="btn-edit-order">
                     <i class="fas fa-edit"></i> Edit Order
                 </a>
-
-                <form method="POST" action="{{ route('assistant.orders.delete', $order->id) }}" onsubmit="return confirm('Delete this order?')" style="margin-left: auto;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-delete-order">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </form>
+<form method="POST" action="{{ route('assistant.orders.delete', $order->id) }}" onsubmit="return confirm('Delete this order?')" style="margin-left: auto;">
+    @csrf
+    <button type="submit" class="btn-delete-order">
+        <i class="fas fa-trash"></i>
+    </button>
+</form>
             </div>
         </div>
     @empty

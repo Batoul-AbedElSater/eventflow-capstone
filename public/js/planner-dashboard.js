@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // VOICE COMMANDER
     // ============================================
     const voiceBtn = document.getElementById('voiceCommanderBtn');
-    const voiceModal = document.getElementById('voiceModal');
+   const voiceModal = document.getElementById('voiceCommanderModal');
     const voiceCloseBtn = document.getElementById('voiceCloseBtn');
     const voiceActionBtn = document.getElementById('voiceActionBtn');
     const voiceAnimation = document.querySelector('.voice-animation');
@@ -486,7 +486,7 @@ function processVoiceCommand(command) {
             
             document.getElementById('modalStatTotal').textContent = stats.total_today;
             document.getElementById('modalStatUnread').textContent = stats.unread;
-            document.getElementById('modalStatUrgent').textContent = stats.urgent;
+          
             
             renderModalNotifications();
             
