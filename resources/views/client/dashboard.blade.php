@@ -465,7 +465,7 @@
 .event-lock-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.75);
+    background: rgba(44, 8, 8, 0.45); /* dark, more transparent */
     backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
@@ -475,36 +475,67 @@
 .pending-overlay .lock-content,
 .declined-overlay .lock-content {
     text-align: center;
-    padding: 30px;
-    color: white;
+    padding: 35px 30px;
+    color: var(--vampire, #620607);
+    max-width: 280px;
 }
+
 .lock-icon-luxury {
-    font-size: 60px;
-    margin-bottom: 15px;
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 30px;
+    background: var(--coral, #E19184);
+    color: var(--white, #fff);
+    box-shadow: 0 8px 20px rgba(225, 145, 132, 0.35);
 }
-.lock-icon-luxury.declined { color: #D0021B; }
-.lock-icon-luxury i { color: white; }
+
+.lock-icon-luxury.declined {
+    background: var(--vampire, #620607);
+    box-shadow: 0 8px 20px rgba(98, 6, 7, 0.3);
+}
+
+.lock-icon-luxury i {
+    color: var(--white, #fff);
+}
+
 .lock-content h4 {
-    font-size: 24px;
-    margin: 10px 0;
+    font-size: 21px;
+    font-weight: 800;
+    margin: 6px 0 8px;
+    color: var(--white, #fff);
+    font-family: 'DM Serif Display', Georgia, serif;
 }
+
 .lock-content p {
-    margin-bottom: 20px;
-    opacity: 0.9;
+    font-size: 14px;
+    margin-bottom: 22px;
+    color: rgba(239, 231, 218, 0.85); /* cream, not green */
+    line-height: 1.4;
 }
-.btn-lock-delete, .btn-lock-remove {
-    background: #D0021B;
-    color: white;
-    border: none;
-    padding: 12px 24px;
+
+.btn-lock-delete,
+.btn-lock-remove {
+    background: var(--white, #fff);
+    color: var(--vampire, #620607);
+    border: 2px solid var(--vampire, #620607);
+    padding: 11px 24px;
     border-radius: 12px;
     font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.25s ease;
 }
-.btn-lock-delete:hover, .btn-lock-remove:hover {
-    background: #a00116;
-    transform: scale(1.05);
+
+.btn-lock-delete:hover,
+.btn-lock-remove:hover {
+    background: var(--vampire, #620607);
+    color: var(--white, #fff);
+    transform: translateY(-2px);
 }
 
 .event-card-body {

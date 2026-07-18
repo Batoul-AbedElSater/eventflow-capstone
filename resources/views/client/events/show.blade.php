@@ -21,6 +21,101 @@
     margin-top: 30px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.1);
 }
+
+
+.message-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+    max-width: 75%;
+}
+
+.message-item.sent {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.message-item.received {
+    margin-right: auto;
+}
+
+.message-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--coral);
+    background: var(--berry);
+    box-shadow: 0 2px 6px rgba(198, 62, 78, 0.35);
+    flex-shrink: 0;
+}
+
+.message-item.received .message-avatar {
+    background: var(--cream);
+    color: var(--coral);
+    box-shadow: 0 2px 6px rgba(71, 91, 53, 0.35);
+}
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-item.sent .message-content {
+    align-items: flex-end;
+}
+
+/* Sender name label - bold, colored, small */
+.message-sender {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    padding: 0 4px;
+}
+
+.message-item.sent .message-sender {
+    color: var(--berry);
+}
+
+.message-item.received .message-sender {
+    color: var(--green);
+}
+
+/* Message bubble text - regular weight, comfortable size, high contrast */
+.message-text {
+    padding: 10px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.message-item.sent .message-text {
+    background: var(--berry);
+    color: var(--white);
+    border-bottom-right-radius: 4px;
+}
+
+.message-item.received .message-text {
+    background: rgba(239, 231, 218, 0.55);
+    color: var(--vampire);
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(98, 6, 7, 0.08);
+}
+
+.message-time {
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(71, 91, 53, 0.5);
+    margin-top: 4px;
+    padding: 0 4px;
+}
 .rating-card textarea {
     width: 100%;
     margin: 15px 0;
