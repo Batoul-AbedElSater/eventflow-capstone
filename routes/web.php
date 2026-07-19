@@ -7,7 +7,6 @@ use App\Http\Controllers\Planner\BudgetController;
 // PUBLIC ROUTES
 // ============================================
 
-// Step 1: Welcome splash page (first thing guests see)
 Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
@@ -18,16 +17,8 @@ Route::get('/', function () {
             default   => redirect()->route('login'),
         };
     }
-    return view('entry.welcome');
-})->name('home');
-
-// Step 2: Full landing page
-Route::get('/landing', function () {
-    if (auth()->check()) {
-        return redirect()->route('home');
-    }
     return view('entry.landing');
-})->name('landing');
+})->name('home');
 
 // ============================================
 // AUTHENTICATION ROUTES

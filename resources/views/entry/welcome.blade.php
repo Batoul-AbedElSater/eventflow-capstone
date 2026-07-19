@@ -1,4 +1,4 @@
-{{-- resources/views/landing.blade.php --}}
+{{-- resources/views/landing.blade.php
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,4 +123,4 @@
         });
     </script>
 </body>
-</html>
+</html>--}}
