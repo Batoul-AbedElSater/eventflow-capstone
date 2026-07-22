@@ -132,7 +132,7 @@
         {{-- Milestones --}}
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-trophy"></i> Milestones Unlocked</h3>
+                <h3><i class="fas fa-trophy"></i> Milestones Progress</h3>
             </div>
             <div class="card-body">
                 <div class="milestones-grid">
@@ -142,6 +142,7 @@
                             <div class="milestone-info">
                                 <strong>{{ $milestone['title'] }}</strong>
                                 <span>{{ $milestone['date'] }}</span>
+                                <span>{{ $milestone['unlocked'] ? 'Unlocked' : 'In progress' }}</span>
                             </div>
                             @if($milestone['unlocked'])
                                 <i class="fas fa-check-circle milestone-check"></i>

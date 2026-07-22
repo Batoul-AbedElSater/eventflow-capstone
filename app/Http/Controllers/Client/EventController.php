@@ -10,6 +10,7 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use App\Models\Rating;
 
 class EventController extends Controller
@@ -45,9 +46,26 @@ class EventController extends Controller
     public function create()
     {
         $eventTypes = EventType::all();
-        $planners = \App\Models\User::where('role', 'planner')
+
+        $plannerQuery = \App\Models\User::where('role', 'planner')
             ->with('plannerProfile')
-            ->get();
+            ->withAvg('plannerRatings as rating_avg', 'score')
+            ->withCount('plannerRatings as review_count')
+            ->orderByDesc('rating_avg')
+            ->orderBy('name');
+
+        $planners = $plannerQuery->get();
+
+        // Fallback for legacy data where role might not be set correctly.
+        if ($planners->isEmpty()) {
+            $planners = \App\Models\User::whereHas('plannerProfile')
+                ->with('plannerProfile')
+                ->withAvg('plannerRatings as rating_avg', 'score')
+                ->withCount('plannerRatings as review_count')
+                ->orderByDesc('rating_avg')
+                ->orderBy('name')
+                ->get();
+        }
 
         return view('client.events.create', compact('eventTypes', 'planners'));
     }
@@ -63,7 +81,10 @@ class EventController extends Controller
             'location_text' => 'required|string',
             'guest_estimate' => 'required|integer|min:1',
             'budget_overall' => 'required|numeric|min:0',
-            'planner_id' => 'nullable|exists:users,id',
+            'planner_id' => [
+                'nullable',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', 'planner')),
+            ],
             'event_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
@@ -99,7 +120,14 @@ class EventController extends Controller
     public function show($id)
         {
             $event = Event::where('client_id', Auth::id())
-                ->with('eventType', 'planner', 'guests') // CHANGED: invitations -> guests
+                ->with([
+                    'eventType',
+                    'planner',
+                    'planner.plannerProfile',
+                    'planner.plannerRatings',
+                    'guests',
+                    'budget.items',
+                ])
                 ->findOrFail($id);
 
             return view('client.events.show', compact('event'));

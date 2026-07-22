@@ -123,6 +123,58 @@
 
     <div style="height: 50px;"></div>
 
+    {{-- EVENT HEALTH MONITOR --}}
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-heartbeat"></i> Event Health Monitor</h3>
+        </div>
+        <div class="card-body">
+            @if(count($eventHealth) > 0)
+                <div class="health-grid">
+                    @foreach($eventHealth as $health)
+                        <div class="health-card {{ $health['status'] }}">
+                            <div class="health-header">
+                                <h4>{{ $health['event']->name }}</h4>
+                                <span class="health-score {{ $health['status'] }}">{{ $health['overall'] }}%</span>
+                            </div>
+
+                            <div class="health-vitals">
+                                <div class="vital">
+                                    <label>Task Completion</label>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: {{ $health['tasks'] }}%"></div>
+                                    </div>
+                                    <span>{{ $health['tasks'] }}%</span>
+                                </div>
+
+                                <div class="vital">
+                                    <label>Timeline Readiness</label>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: {{ $health['timeline'] }}%"></div>
+                                    </div>
+                                    <span>{{ $health['timeline'] }}%</span>
+                                </div>
+                            </div>
+
+                            <div class="health-status">
+                                <span class="status-badge {{ $health['status'] }}">
+                                    <i class="fas fa-circle"></i> {{ ucfirst($health['status']) }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="empty-state-small">
+                    <i class="fas fa-heart"></i>
+                    <p>No active events to analyze yet. Accept an event request to start tracking event health.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <div style="height: 50px;"></div>
+
 
 
     {{-- CONFLICT DETECTOR --}}

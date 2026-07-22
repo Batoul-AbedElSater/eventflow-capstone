@@ -143,6 +143,37 @@ body:has(.event-show-container) {
     color: var(--green-dark);
 }
 
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+.overview-card {
+    height: 100%;
+}
+
+.card-budget {
+    grid-column: 1 / -1;
+    order: 1;
+}
+
+.card-event-details {
+    grid-column: span 6;
+    order: 2;
+}
+
+.card-planner {
+    grid-column: span 6;
+    order: 3;
+}
+
+.card-description {
+    grid-column: 1 / -1;
+    order: 4;
+}
+
 .event-hero-section {
     background: linear-gradient(135deg, var(--vampire), var(--berry) 58%, var(--coral)) !important;
     border-radius: 24px !important;
@@ -284,6 +315,104 @@ body:has(.event-show-container) {
     background: linear-gradient(90deg, var(--coral), var(--berry)) !important;
 }
 
+.budget-plan-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+}
+
+.budget-plan-status.approved {
+    background: rgba(198, 62, 78, 0.16);
+    color: var(--berry);
+}
+
+.budget-plan-status.finalized,
+.budget-plan-status.shared {
+    background: rgba(71, 91, 53, 0.16);
+    color: var(--green-dark);
+}
+
+.budget-plan-meta {
+    margin-top: 8px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: rgba(71, 91, 53, 0.76);
+}
+
+.budget-breakdown-grid {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.budget-breakdown-cell {
+    border: 1px solid rgba(98, 6, 7, 0.1);
+    border-radius: 12px;
+    padding: 10px;
+    background: rgba(239, 231, 218, 0.34);
+}
+
+.budget-breakdown-cell span {
+    display: block;
+    font-size: 12px;
+    color: rgba(71, 91, 53, 0.76);
+}
+
+.budget-breakdown-cell strong {
+    font-size: 18px;
+    color: var(--vampire);
+}
+
+.budget-category-list {
+    margin-top: 14px;
+    display: grid;
+    gap: 8px;
+}
+
+.budget-category-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(98, 6, 7, 0.08);
+    font-size: 13px;
+}
+
+.budget-category-row strong {
+    color: var(--vampire);
+}
+
+.budget-category-row span {
+    color: rgba(71, 91, 53, 0.82);
+}
+
+.budget-note-box {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(198, 62, 78, 0.18);
+    background: rgba(225, 145, 132, 0.12);
+    color: var(--green-dark);
+    font-size: 13px;
+    white-space: pre-line;
+}
+
+@media (max-width: 720px) {
+    .budget-breakdown-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .guests-table-luxury thead th {
     background: var(--green-dark) !important;
     color: var(--white) !important;
@@ -396,6 +525,18 @@ body:has(.event-show-container) {
 }
 
 @media (max-width: 820px) {
+    .overview-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .card-budget,
+    .card-event-details,
+    .card-planner,
+    .card-description {
+        grid-column: 1 / -1;
+    }
+
     .hero-content {
         align-items: flex-start !important;
         flex-direction: column !important;
@@ -547,7 +688,7 @@ body:has(.event-show-container) {
         <div class="tab-content active" id="overview-tab">
             <div class="overview-grid">
                 {{-- Event Details Card --}}
-                <div class="overview-card">
+                <div class="overview-card card-event-details">
                     <div class="card-header">
                         <div class="card-icon">
                             <i class="fas fa-info-circle"></i>
@@ -586,7 +727,7 @@ body:has(.event-show-container) {
 
                 {{-- Description Card --}}
                 @if($event->description)
-                <div class="overview-card">
+                <div class="overview-card card-description">
                     <div class="card-header">
                         <div class="card-icon">
                             <i class="fas fa-align-left"></i>
@@ -600,7 +741,7 @@ body:has(.event-show-container) {
                 @endif
 
                 {{-- Budget Card --}}
-                <div class="overview-card">
+                <div class="overview-card card-budget">
                     <div class="card-header">
                         <div class="card-icon">
                             <i class="fas fa-coins"></i>
@@ -608,33 +749,110 @@ body:has(.event-show-container) {
                         <h3>Budget Overview</h3>
                     </div>
                     <div class="card-body">
-                        <div class="budget-summary">
-                            <div class="budget-item total">
-                                <span class="budget-label">Total Budget</span>
-                                <strong>{{ number_format($event->budget_overall, 2) }} SAR</strong>
-                            </div>
-                            <div class="budget-item spent">
-                                <span class="budget-label">Amount Spent</span>
-                                <strong>{{ number_format($event->getTotalSpent(), 2) }} SAR</strong>
-                            </div>
-                            <div class="budget-item remaining">
-                                <span class="budget-label">Remaining</span>
-                                <strong>{{ number_format($event->budget_overall - $event->getTotalSpent(), 2) }} SAR</strong>
-                            </div>
-                        </div>
-                        <div class="budget-progress-bar">
+                        @php
+                            $plannerBudget = $event->budget;
+                            $visibleStatuses = ['approved', 'finalized', 'shared'];
+                            $isBudgetVisibleToClient = $plannerBudget
+                                && ($plannerBudget->shared_with_client || in_array($plannerBudget->status, $visibleStatuses, true));
+                        @endphp
+
+                        @if($isBudgetVisibleToClient)
                             @php
-                                $budgetPercent = $event->budget_overall > 0 ? min(100, ($event->getTotalSpent() / $event->budget_overall) * 100) : 0;
+                                $budgetItems = $plannerBudget->items ?? collect();
+                                $clientBudgetTotal = (float) ($plannerBudget->total_client_budget ?? $event->budget_overall ?? 0);
+                                $estimatedTotal = (float) ($plannerBudget->estimated_total ?? 0);
+                                $actualTotal = (float) ($plannerBudget->actual_total ?? 0);
+                                $usedAmount = !is_null($plannerBudget->actual_total) ? $actualTotal : $estimatedTotal;
+                                $remainingAmount = $clientBudgetTotal - $usedAmount;
+                                $usagePercent = $clientBudgetTotal > 0 ? min(100, ($usedAmount / $clientBudgetTotal) * 100) : 0;
+                                $itemCounts = [
+                                    'pending' => $budgetItems->where('status', 'pending')->count(),
+                                    'confirmed' => $budgetItems->where('status', 'confirmed')->count(),
+                                    'paid' => $budgetItems->where('status', 'paid')->count(),
+                                ];
+                                $topCategories = $budgetItems
+                                    ->groupBy(fn ($item) => $item->category ?: 'General')
+                                    ->map(fn ($group) => (float) $group->sum('estimated_cost'))
+                                    ->sortDesc()
+                                    ->take(4);
                             @endphp
-                            <div class="budget-progress-fill" style="width: {{ $budgetPercent }}%"></div>
-                        </div>
-                        <p class="budget-percentage">{{ round($budgetPercent) }}% of budget used</p>
+
+                            <div class="budget-plan-status {{ $plannerBudget->status }}">
+                                <i class="fas fa-check-circle"></i>
+                                Planner Plan {{ ucfirst($plannerBudget->status) }}
+                            </div>
+                            <div class="budget-plan-meta">
+                                Last update: {{ optional($plannerBudget->updated_at)->format('M j, Y g:i A') ?? 'N/A' }}
+                            </div>
+
+                            <div class="budget-summary">
+                                <div class="budget-item total">
+                                    <span class="budget-label">Client Budget</span>
+                                    <strong>${{ number_format($clientBudgetTotal, 2) }}</strong>
+                                </div>
+                                <div class="budget-item spent">
+                                    <span class="budget-label">{{ !is_null($plannerBudget->actual_total) ? 'Actual Spent' : 'Planned Spend' }}</span>
+                                    <strong>${{ number_format($usedAmount, 2) }}</strong>
+                                </div>
+                                <div class="budget-item remaining">
+                                    <span class="budget-label">Remaining</span>
+                                    <strong>${{ number_format($remainingAmount, 2) }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="budget-progress-bar">
+                                <div class="budget-progress-fill" style="width: {{ $usagePercent }}%"></div>
+                            </div>
+                            <p class="budget-percentage">{{ round($usagePercent) }}% of client budget used</p>
+
+                            <div class="budget-breakdown-grid">
+                                <div class="budget-breakdown-cell">
+                                    <span>Pending Items</span>
+                                    <strong>{{ $itemCounts['pending'] }}</strong>
+                                </div>
+                                <div class="budget-breakdown-cell">
+                                    <span>Confirmed Items</span>
+                                    <strong>{{ $itemCounts['confirmed'] }}</strong>
+                                </div>
+                                <div class="budget-breakdown-cell">
+                                    <span>Paid Items</span>
+                                    <strong>{{ $itemCounts['paid'] }}</strong>
+                                </div>
+                            </div>
+
+                            @if($topCategories->isNotEmpty())
+                                <div class="budget-category-list">
+                                    @foreach($topCategories as $categoryName => $categoryTotal)
+                                        <div class="budget-category-row">
+                                            <strong>{{ $categoryName }}</strong>
+                                            <span>${{ number_format($categoryTotal, 2) }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if($plannerBudget->planner_notes)
+                                <div class="budget-note-box">
+                                    {{ $plannerBudget->planner_notes }}
+                                </div>
+                            @endif
+                        @else
+                            <div class="budget-summary">
+                                <div class="budget-item total">
+                                    <span class="budget-label">Client Budget</span>
+                                    <strong>${{ number_format($event->budget_overall, 2) }}</strong>
+                                </div>
+                            </div>
+                            <p class="budget-percentage" style="margin-top: 10px;">
+                                Planner has not approved/shared a budget plan yet. You will see full breakdown here after approval.
+                            </p>
+                        @endif
                     </div>
                 </div>
 
                 {{-- Planner Info --}}
                 @if($event->planner)
-                <div class="overview-card">
+                <div class="overview-card card-planner">
                     <div class="card-header">
                         <div class="card-icon">
                             <i class="fas fa-user-tie"></i>
@@ -642,13 +860,41 @@ body:has(.event-show-container) {
                         <h3>Event Planner</h3>
                     </div>
                     <div class="card-body">
+                        @php
+                            $plannerAvatar = $event->planner->avatar_url
+                                ? (str_starts_with($event->planner->avatar_url, 'http://') || str_starts_with($event->planner->avatar_url, 'https://')
+                                    ? $event->planner->avatar_url
+                                    : asset('storage/' . ltrim($event->planner->avatar_url, '/')))
+                                : null;
+
+                            $plannerRatingAvg = optional($event->planner->plannerRatings)->avg('score');
+                            $plannerRatingText = $plannerRatingAvg ? number_format((float) $plannerRatingAvg, 1) . '/10' : 'No rating yet';
+                            $plannerReviewCount = optional($event->planner->plannerRatings)->count() ?? 0;
+                        @endphp
                         <div class="planner-info">
                             <div class="planner-avatar">
-                                {{ strtoupper(substr($event->planner->name, 0, 1)) }}
+                                @if($plannerAvatar)
+                                    <img src="{{ $plannerAvatar }}" alt="{{ $event->planner->name }} profile image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                @else
+                                    {{ strtoupper(substr($event->planner->name, 0, 1)) }}
+                                @endif
                             </div>
                             <div class="planner-details">
                                 <h4>{{ $event->planner->name }}</h4>
                                 <p>{{ $event->planner->email }}</p>
+                                @if($event->planner->plannerProfile)
+                                    @php
+                                        $plannerSpecialties = $event->planner->plannerProfile->specialties;
+                                        $plannerSpecialtiesText = is_array($plannerSpecialties)
+                                            ? implode(', ', array_filter($plannerSpecialties))
+                                            : (string) $plannerSpecialties;
+                                    @endphp
+                                    @if($plannerSpecialtiesText)
+                                        <p>{{ Str::limit($plannerSpecialtiesText, 70) }}</p>
+                                    @endif
+                                    <p>{{ $event->planner->plannerProfile->years_experience ?? 0 }} years experience</p>
+                                @endif
+                                <p>Rating: {{ $plannerRatingText }} ({{ $plannerReviewCount }} reviews)</p>
                                <a href="#" onclick="document.querySelector('.event-tab[data-tab=\'messages\']').click(); return false;" class="btn-message-planner">
                                      <i class="fas fa-comment"></i> Send Message
                                 </a>
