@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Planner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -69,14 +70,20 @@ class AnalyticsController extends Controller
 
         $taskCompletionRate = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
 
-        // Client satisfaction average
-        $avgSatisfaction = 8.5; // Mock data - calculate from reviews in real app
+        // Client satisfaction average (normalize 1-5 ratings to 10-point display when needed)
+        $ratingQuery = Rating::where('planner_id', $user->id);
+        $avgSatisfactionRaw = $ratingQuery->avg('score');
+        $avgSatisfaction = 0;
+        if (! is_null($avgSatisfactionRaw)) {
+            $avgSatisfaction = $avgSatisfactionRaw <= 5 ? $avgSatisfactionRaw * 2 : $avgSatisfactionRaw;
+        }
+        $avgSatisfaction = round($avgSatisfaction, 1);
 
         // Performance stats
         $stats = [
             'total_events' => $allEvents->count(),
             'completed_events' => $allEvents->where('status', 'completed')->count(),
-            'active_events' => $allEvents->whereIn('status', ['planned', 'in_progress'])->count(),
+            'active_events' => $allEvents->whereIn('status', ['confirmed', 'planned', 'in_progress'])->count(),
             'total_revenue' => $allEvents->where('status', 'completed')->sum('budget_overall') * 0.15,
             'avg_event_value' => $allEvents->where('status', 'completed')->avg('budget_overall') * 0.15,
             'task_completion_rate' => round($taskCompletionRate, 1),
@@ -84,12 +91,44 @@ class AnalyticsController extends Controller
             'total_clients' => $allEvents->unique('client_id')->count(),
         ];
 
-        // Milestones & achievements
+        // Milestones & achievements (dynamic, based on real data)
+        $eventsByDate = $allEvents
+            ->filter(fn ($event) => ! is_null($event->start_date))
+            ->sortBy('start_date')
+            ->values();
+
+        $first10Unlocked = $stats['total_events'] >= 10;
+        $first10Date = $first10Unlocked && $eventsByDate->get(9)
+            ? $eventsByDate->get(9)->start_date->format('M Y')
+            : 'In progress';
+
+        $highSatisfactionUnlocked = $avgSatisfaction >= 8;
+        $latestRatingDate = $ratingQuery->latest('created_at')->value('created_at');
+        $highSatisfactionDate = $highSatisfactionUnlocked && $latestRatingDate
+            ? Carbon::parse($latestRatingDate)->format('M Y')
+            : 'In progress';
+
+        $revenue50kUnlocked = $stats['total_revenue'] >= 50000;
+        $revenueThresholdDate = 'In progress';
+        if ($revenue50kUnlocked) {
+            $runningRevenue = 0;
+            foreach ($eventsByDate->where('status', 'completed') as $event) {
+                $runningRevenue += (float) $event->budget_overall * 0.15;
+                if ($runningRevenue >= 50000) {
+                    $revenueThresholdDate = $event->start_date->format('M Y');
+                    break;
+                }
+            }
+        }
+
+        $taskMasteryUnlocked = $stats['task_completion_rate'] >= 80;
+        $taskMasteryDate = $taskMasteryUnlocked ? Carbon::now()->format('M Y') : 'In progress';
+
         $milestones = [
-            ['icon' => '🎖️', 'title' => 'First 10 Events', 'date' => 'May 2024', 'unlocked' => $stats['total_events'] >= 10],
-            ['icon' => '⭐', 'title' => '5-Star Rating', 'date' => 'Jun 2024', 'unlocked' => $avgSatisfaction >= 4.5],
-            ['icon' => '💰', 'title' => '$50K Revenue', 'date' => 'Jul 2024', 'unlocked' => $stats['total_revenue'] >= 50000],
-            ['icon' => '🔥', 'title' => '30-Day Streak', 'date' => 'Aug 2024', 'unlocked' => false],
+            ['icon' => '🎖️', 'title' => 'First 10 Events', 'date' => $first10Date, 'unlocked' => $first10Unlocked],
+            ['icon' => '⭐', 'title' => 'High Satisfaction (8+/10)', 'date' => $highSatisfactionDate, 'unlocked' => $highSatisfactionUnlocked],
+            ['icon' => '💰', 'title' => '$50K Revenue', 'date' => $revenueThresholdDate, 'unlocked' => $revenue50kUnlocked],
+            ['icon' => '✅', 'title' => 'Task Mastery (80%+)', 'date' => $taskMasteryDate, 'unlocked' => $taskMasteryUnlocked],
         ];
 
         // Predictions

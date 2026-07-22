@@ -103,6 +103,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Ratings this planner received from clients.
+     */
+    public function plannerRatings()
+    {
+        return $this->hasMany(Rating::class, 'planner_id');
+    }
+
+    /**
      * Get the staff (assistant) profile for this user.
      */
     public function staffProfile()

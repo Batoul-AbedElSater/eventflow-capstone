@@ -12,7 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE `users` MODIFY COLUMN `role` ENUM('client', 'planner', 'assistant') NOT NULL DEFAULT 'client'");
+        // Skip for SQLite - not supported
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `users` MODIFY COLUMN `role` ENUM('client', 'planner', 'assistant') NOT NULL DEFAULT 'client'");
+        }
     }
 
     /**
@@ -20,6 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE `users` MODIFY COLUMN `role` ENUM('client', 'planner') NOT NULL DEFAULT 'client'");
+        // Skip for SQLite - not supported
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE `users` MODIFY COLUMN `role` ENUM('client', 'planner') NOT NULL DEFAULT 'client'");
+        }
     }
 };

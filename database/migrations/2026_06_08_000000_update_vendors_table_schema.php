@@ -9,6 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Skip MySQL-specific operations on SQLite
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         if (Schema::hasTable('vendors')) {
             if (Schema::hasColumn('vendors', 'phone')) {
                 DB::statement('ALTER TABLE `vendors` CHANGE `phone` `phoneNumber` VARCHAR(255) NOT NULL');
@@ -40,6 +45,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Skip MySQL-specific operations on SQLite
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         if (Schema::hasTable('vendors')) {
             if (Schema::hasColumn('vendors', 'phoneNumber')) {
                 DB::statement('ALTER TABLE `vendors` CHANGE `phoneNumber` `phone` VARCHAR(255) NOT NULL');

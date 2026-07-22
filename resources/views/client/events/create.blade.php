@@ -178,6 +178,16 @@
                 <h3>Choose Event Planner (Optional)</h3>
             </div>
 
+            <p style="margin: 8px 0 16px; color: #475B35; font-size: 14px;">
+                Available planners: {{ $planners->count() }}
+            </p>
+
+            @if($planners->isEmpty())
+                <div class="form-group full-width" style="background: #EFE7DA; border: 1px solid #E19184; border-radius: 10px; padding: 12px 14px; color: #620607; margin-bottom: 16px;">
+                    No planner profiles are available right now. You can continue with "No Planner Yet" and assign one later.
+                </div>
+            @endif
+
             <div class="planners-grid">
                 <div class="planner-card">
                     <input type="radio" name="planner_id" value="" id="no-planner" {{ old('planner_id') == '' ? 'checked' : '' }}>
@@ -198,24 +208,47 @@
                                id="planner-{{ $planner->id }}"
                                {{ old('planner_id') == $planner->id ? 'checked' : '' }}>
                         <label for="planner-{{ $planner->id }}">
+                            @php
+                                $avatarPath = $planner->avatar_url;
+                                $plannerAvatarUrl = $avatarPath
+                                    ? (str_starts_with($avatarPath, 'http://') || str_starts_with($avatarPath, 'https://')
+                                        ? $avatarPath
+                                        : asset('storage/' . ltrim($avatarPath, '/')))
+                                    : 'https://ui-avatars.com/api/?name=' . urlencode($planner->name) . '&background=EFE7DA&color=C63E4E&rounded=true&bold=true';
+                            @endphp
                             <div class="planner-avatar">
-                                <img  src="{{ $planner->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($planner->name) . '&background=EFE7DA&color=C63E4E&rounded=true&bold=true' }}">
+                                <img src="{{ $plannerAvatarUrl }}" alt="{{ $planner->name }} profile image">
                                {{-- -  <img src="{{ $planner->avatar_url ?? 'https://ui-avatars.com/api/?name=' . '&background=FFFFFF&color=C63E4E'}} urlencode($planner->name) }}"
                                      alt="{{ $planner->name }}">--}}
                             </div>
                             <h4>{{ $planner->name }}</h4>
                             <div class="planner-rating">
                                 <i class="fas fa-star"></i>
-                                <span>{{ $planner->rating_avg ?? '5.0' }}</span>
-                                <small>({{ $planner->review_count ?? 0 }} reviews)</small>
+                                <span>{{ $planner->rating_avg ? number_format($planner->rating_avg, 1) : 'N/A' }}</span>
+                                <small>/10 ({{ $planner->review_count ?? 0 }} reviews)</small>
                             </div>
                             @if($planner->plannerProfile)
+                                @php
+                                    $specialties = $planner->plannerProfile->specialties;
+                                    $specialtiesText = is_array($specialties)
+                                        ? implode(', ', array_filter($specialties))
+                                        : (string) $specialties;
+                                @endphp
                                 <p class="planner-specialties">
-                                    {{ Str::limit($planner->plannerProfile->specialties, 50) }}
+                                    {{ Str::limit($specialtiesText ?: 'General event planning', 70) }}
                                 </p>
-                                <p class="planner-experience">
-                                    {{ $planner->plannerProfile->years_experience }} years exp.
-                                </p>
+                                @if(!is_null($planner->plannerProfile->years_experience))
+                                    <p class="planner-experience">
+                                        {{ $planner->plannerProfile->years_experience }} years exp.
+                                    </p>
+                                @endif
+                                @if(!empty($planner->plannerProfile->bio))
+                                    <p class="planner-experience">
+                                        {{ Str::limit($planner->plannerProfile->bio, 80) }}
+                                    </p>
+                                @endif
+                            @else
+                                <p class="planner-specialties">Planner profile coming soon.</p>
                             @endif
                         </label>
                     </div>
